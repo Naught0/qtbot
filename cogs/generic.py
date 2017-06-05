@@ -47,12 +47,19 @@ class Generic():
 
     @commands.bot.command(pass_context = True)
     async def slap(self, ctx, *args):
+        if not args:
+            return await self.bot.say("You can't slap nothing.")
+
         self.member = str(ctx.message.author).split("#")
         return await self.bot.say("{} slaps {} around a bit with a large trout.".format(self.member[0], args[0]))
 
     @commands.bot.command(pass_context = True)
     async def love(self, ctx, *args):
         self.member = str(ctx.message.author).split("#")
+
+        if not args:
+            return await self.bot.say("{} loves ... nothing".format(self.member[0]))
+
         return await self.bot.say("{} gives {} some good ol' fashioned lovin'". format(self.member[0], args[0]))
 
 def setup(bot):

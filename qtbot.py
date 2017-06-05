@@ -7,7 +7,7 @@ des = "qtbot is a big qt written in python3 and _love_"
 bot = commands.Bot(command_prefix=".", description = des)
 
 # Get bot's token
-with open("apikeys.json", "r") as f:
+with open("data/apikeys.json", "r") as f:
     apiKeys = json.load(f)
 f.close()
 discord_bot_token = apiKeys["discord"]
@@ -40,7 +40,7 @@ async def load(extension_name : str):
 async def unload(extension_name : str):
     """Unloads an extension."""
     bot.unload_extension(extension_name)
-    await bot.say("{} unloaded.".format(extension_name))
+    return await bot.say("{} unloaded.".format(extension_name))
 
 
 @bot.command()

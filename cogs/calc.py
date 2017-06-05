@@ -5,7 +5,7 @@ class Calculator():
     def __init__(self, bot):
         self.bot = bot
 
-    with open("apikeys.json", "r") as f:
+    with open("data/apikeys.json", "r") as f:
         apiKeys = json.load(f)
 
     client = wolframalpha.Client(apiKeys["wolfram"])

@@ -3,7 +3,7 @@ from discord.ext import commands
 import tmdbsimple as tmdb
 
 # TMDb info
-with open("apikeys.json", "r") as f:
+with open("data/apikeys.json", "r") as f:
     apiKeys = json.load(f)
 f.close()
 

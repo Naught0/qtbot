@@ -10,12 +10,12 @@ class OSRS():
     def checkOSRSFile(self):
         # Write item file for OSRS price query
             # If no file, make one
-        if Path("item-data.json").is_file():
+        if Path("data/item-data.json").is_file():
             print("Skipping json file download...\nReading file...\n------")        
         else:
             self.data = None
             print("Creating OSRS data file...")
-            self.data = open("item-data.json", "w")
+            self.data = open("data/item-data.json", "w")
             print("Done")
 
             self.jsonItemData = requests.get("https://raw.githubusercontent.com/Naughtsee/RS/master/item-data.json").json()
@@ -26,13 +26,14 @@ class OSRS():
 
             self.data.write(fstr)
             print("Write complete\nInitializing bot...\n------")
+            self.data.close()
 
     # Get GE Prices
     @commands.bot.command()
     async def ge(self, *args):
         """ Get the buying/selling price and quantity of an OSRS item """
         # relevant API calls & formatted    
-        with open("item-data.json", "r") as f:
+        with open("data/item-data.json", "r") as f:
             self.item_data = json.load(f)
         
         self.types = ["buying", "selling", "buyingQuantity", "sellingQuantity"]
@@ -50,7 +51,7 @@ class OSRS():
         try:
             self.json_dict = requests.get((url.format(item_data[item]["id"]))).json()
         except:
-            self.item = utils.getClosest(self.item_data, self.item) 
+            self.item = getClosest(self.item_data, self.item) 
             self.json_dict = requests.get((self.url.format(self.item_data[self.item]["id"]))).json()
         
         # close file    

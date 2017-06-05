@@ -11,7 +11,7 @@ class Comics():
     async def xkcd(self, *args):
         """ Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic """
         # pre-generated blob file
-        with open("xkcd_blob.json", "r") as f:
+        with open("data/xkcd_blob.json", "r") as f:
             self.jsonData = json.load(f)
 
         # Split query into list and remove nonalpha phrases
