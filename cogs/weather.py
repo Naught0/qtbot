@@ -55,7 +55,7 @@ class Weather():
         self.wind = self.d["current_observation"]["wind_string"]
         self.humidity = self.d["current_observation"]["relative_humidity"]
 
-        return await self.bot.say("The weather for `{}`, `{}`: \n`{}` at `{}°F`. Winds `{}`. Relative humidity `{}`.".format(self.city, self.state, self.conditions, self.temp, self.wind.lower(), self.humidity))
+        return await self.bot.say("The weather for `{}, {}`: \n`{}` at `{}°F`. Winds `{}`. Relative humidity `{}`.".format(self.city, self.state, self.conditions, self.temp, self.wind.lower(), self.humidity))
 
     # Gets forecast based on zip
     @commands.bot.command(pass_context = True)
