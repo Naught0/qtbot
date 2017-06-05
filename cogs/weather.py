@@ -1,5 +1,5 @@
 import discord, json, requests, requests_cache
-from cogs.utils import *
+from cogs.utils.UserFileManip import *
 from discord.ext import commands
 
 class Weather():

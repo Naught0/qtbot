@@ -14,61 +14,62 @@ def getClosest(word_dict, word):
     # return key w/ least edits
     return min(distance_dict, key=distance_dict.get)
 
-def foundUserFile():
-    """ Checks for user file and the returns T/F """
-    return Path("user_data.json").is_file()
+class UserFileManip():
+    def foundUserFile():
+        """ Checks for user file and the returns T/F """
+        return Path("user_data.json").is_file()
 
-def getUserInfo(member, key):
-    """ Finds user and prints value of key """
-    with open("user_data.json", "r") as user_file:
-        user_data = json.load(user_file)
-
-    if (member in user_data) and (key in user_data[member]):
-        return user_data[member][key]
-    else:
-        return "error"
-
-def updateUserInfo(member, key, info):  
-    # Open file
-    with open("user_data.json", "r") as f:
-        user_data = json.load(f)
-    
-    # If found user, update
-    if member in user_data: 
-        user_data[member][key] = info
-        
-        with open("user_data.json", "w") as user_file:
-            json.dump(user_data, user_file)
-        
-        user_file.close()
-    
-    # Create user if not found
-    else:
+    def getUserInfo(self, member, key):
+        """ Finds user and prints value of key """
         with open("user_data.json", "r") as user_file:
-                user_data = json.load(user_file)
+            self.user_data = json.load(user_file)
+
+        if (member in self.user_data) and (key in self.user_data[member]):
+            return self.user_data[member][key]
+        else:
+            return "error"
+
+    def updateUserInfo(self, member, key, info):  
+        # Open file
+        with open("user_data.json", "r") as f:
+            self.user_data = json.load(f)
         
-        user_file = open("user_data.json", "r+")
+        # If found user, update
+        if member in self.user_data: 
+            self.user_data[member][key] = info
+            
+            with open("user_data.json", "w") as user_file:
+                json.dump(self.user_data, user_file)
+            
+            user_file.close()
+        
+        # Create user if not found
+        else:
+            with open("user_data.json", "r") as user_file:
+                    self.user_data = json.load(user_file)
+            
+            self.user_file = open("user_data.json", "r+")
 
-        user_data[member] = {
-            key : info
-        }
-
-        json.dump(user_data, user_file)
-
-        user_file.close()
-
-# Creates user file based on input
-def createUserFile(member, key, info):
-    new_user = {
-        member : 
-            {
+            self.user_data[member] = {
                 key : info
             }
-        }
-    f = open("user_data.json", "w+")
-    json.dump(new_user, f)
-    f.close()
-    return
+
+            json.dump(self.user_data, self.user_file)
+
+            self.user_file.close()
+
+    # Creates user file based on input
+    def createUserFile(self, member, key, info):
+        self.new_user = {
+            member : 
+                {
+                    key : info
+                }
+            }
+        self.f = open("user_data.json", "w+")
+        json.dump(self.new_user, self.f)
+        self.f.close()
+        return
 
 def keywithmaxval(d):
     """ a) create a list of the dict's keys and values; 
