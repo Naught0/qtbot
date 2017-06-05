@@ -72,23 +72,23 @@ class UserFileManip():
         return
 
 def keywithmaxval(d):
-    """ a) create a list of the dict's keys and values; 
+    """ 
+    a) create a list of the dict's keys and values; 
     b) return the key with the max value
     Shamelessly taken from:
     http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
     """ 
-
-    v=list(d.values())
-    k=list(d.keys())
+    v = list(d.values())
+    k = list(d.keys())
     return k[v.index(max(v))]   
 
 def keywithminval(d):
-    """ a) create a list of the dict's keys and values; 
+    """ 
+    a) create a list of the dict's keys and values; 
     b) return the key with the max value
     Shamelessly taken from:
     http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
     """ 
-
-    v=list(d.values())
-    k=list(d.keys())
+    v = list(d.values())
+    k = list(d.keys())
     return k[v.index(min(v))]   

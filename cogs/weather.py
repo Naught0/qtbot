@@ -50,12 +50,12 @@ class Weather():
 
         # Store the relevant parts of the call in strings
         self.state = self.d["location"]["state"]
-        self.currTemp = self.d["current_observation"]["temp_f"]
-        self.currWeather = self.d["current_observation"]["weather"]
-        self.currWind = self.d["current_observation"]["wind_string"]
+        self.temp = self.d["current_observation"]["temp_f"]
+        self.conditions = self.d["current_observation"]["weather"]
+        self.wind = self.d["current_observation"]["wind_string"]
+        self.humidity = self.d["current_observation"]["relative_humidity"]
 
-
-        return await self.bot.say("The weather in {}, {} is {} at a temperature of {}F. Winds are {}".format(self.city, self.state, self.currWeather.lower(), self.currTemp, self.currWind))
+        return await self.bot.say("The weather for `{}`, `{}`: \n`{}` at `{}°F`. Winds `{}`. Relative humidity `{}`.".format(self.city, self.state, self.conditions, self.temp, self.wind.lower(), self.humidity))
 
     # Gets forecast based on zip
     @commands.bot.command(pass_context = True)
@@ -100,7 +100,7 @@ class Weather():
         self.foreTom = self.d["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
         self.foreTomNight = self.d["forecast"]["txt_forecast"]["forecastday"][3]["fcttext"]
 
-        return await self.bot.say("Tomorrow: {0}\nTomorrow Evening: {1}".format(self.foreTom, self.foreTomNight))
+        return await self.bot.say("Tomorrow: `{0}`\nTomorrow Evening: `{1}`".format(self.foreTom, self.foreTomNight))
 
 def setup(bot):
     bot.add_cog(Weather(bot))
