@@ -1,5 +1,5 @@
 import discord, json, requests, requests_cache
-from cogs.utils.UserFileManip import *
+from cogs.utils import UserFileManip as ufm
 from discord.ext import commands
 
 class Weather():
@@ -7,7 +7,7 @@ class Weather():
         self.bot = bot
 
     # Wunderground API info
-    with open("apikeys.json", "r") as f:
+    with open("data/apikeys.json", "r") as f:
         apiKeys = json.load(f)
     f.close()
     wunderZipURL = "http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json"
@@ -26,18 +26,18 @@ class Weather():
         self.member = str(ctx.message.author)
 
         # Inits file if not created yet w/ user info
-        if not foundUserFile():
-            createUserFile(self.member, "zip", zipCode)
+        if not ufm.foundUserFile():
+            ufm.createUserFile(self.member, "zip", zipCode)
 
         # Find zip in file
         if zipCode == "":
-            zipCode = getUserInfo(self.member, "zip")
+            zipCode = ufm.getUserInfo(self.member, "zip")
         
         # Update zip
         if zipCode == "error":
             return await self.bot.say("Sorry, you're not in my file!")
         else:
-            updateUserInfo(self.member, "zip", zipCode)
+            ufm.updateUserInfo(self.member, "zip", zipCode)
 
         # Load wunderAPI info into s and decode to d
         self.d = requests.get(Weather.wunderZipURL.format(Weather.wunderKey, zipCode)).json()
@@ -68,18 +68,18 @@ class Weather():
         self.member = str(ctx.message.author)   
         
         # Inits userfile if not found with given values
-        if not foundUserFile():
-            createUserFile(self.member, "zip", zipCode)
+        if not ufm.foundUserFile():
+            ufm.createUserFile(self.member, "zip", zipCode)
 
         # If value isn't entered, check zip against database
         if zipCode == "":
-            zipCode = getUserInfo(self.member, "zip")
+            zipCode = ufm.getUserInfo(self.member, "zip")
         
         # Find / update zip
         if zipCode == "error":
             return await self.bot.say("Sorry, you're not in my file!")
         else:
-            updateUserInfo(self.member, "zip", zipCode)
+            ufm.updateUserInfo(self.member, "zip", zipCode)
 
         # json response in string form
         self.s = requests.get(Weather.wunderZipURL.format(Weather.wunderKey, zipCode)).text
