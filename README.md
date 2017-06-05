@@ -6,7 +6,7 @@
 * Calculator: 
   * calc   Calculate like, anything 
 * Comics: 
-  * xkcd   Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic. *
+  * xkcd   Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic.
 * Dictionary: 
   * define Provides the definition of *a* word  
   * ud     Consult the world's leading dictionary  
