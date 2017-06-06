@@ -29,18 +29,25 @@ async def on_ready():
 
 @bot.command()
 async def load(extension_name : str):
-    """Loads an extension"""
+    """ Loads an extension """
     try:
         bot.load_extension(extension_name)
     except (AttributeError, ImportError) as e:
         return await bot.say("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
-    await bot.say("{} loaded.".format(extension_name))
+    await bot.say("Cog `{}` loaded successfully.".format(extension_name))
 
 @bot.command()
 async def unload(extension_name : str):
-    """Unloads an extension."""
+    """ Unloads an extension. """
     bot.unload_extension(extension_name)
-    return await bot.say("{} unloaded.".format(extension_name))
+    return await bot.say("Cog `{}` has been unloaded.".format(extension_name))
+
+@bot.command()
+async def reload(extension_name : str):
+    """ Reloads an extension """
+    bot.unload_extension(extension_name)
+    bot.load_extension(extension_name)
+    return await bot.say("Cog `{}` has been reloaded.".format(extension_name))
 
 
 @bot.command()

@@ -8,8 +8,7 @@ class Generic():
 
     @commands.bot.command()
     async def todo(self):
-        await self.bot.say("[ ] Gambling bot [ ] League Match History [ ] Google")
-        return
+        return await self.bot.say("[ ] Gambling bot [ ] League Match History [ ] Google")
 
     # No kicking allowed
     @commands.bot.command()

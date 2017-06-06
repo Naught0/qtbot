@@ -14,7 +14,7 @@ class Weather():
     wunderKey = apiKeys['wunderground']
 
     # Gets weather based on zip
-    @commands.bot.command(pass_context=True, aliases=['wt', 'w'])
+    @commands.bot.command(pass_context = True, aliases = ['wt', 'w'])
     async def weather(self, ctx, zipCode = ""):
         """ 
         search via zip code and qtbot will remember you next time
