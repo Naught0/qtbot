@@ -1,7 +1,8 @@
 import discord, requests, json
 from discord.ext import commands
 from cogs.utils import UserFileManip as ufm
-from bs4 import BeautifulSoup # Unfortunate I'm using this
+from selenium import webdriver
+#from bs4 import BeautifulSoup # Unfortunate I'm using this
 import cassiopeia.riotapi as riot
 
 """
@@ -25,6 +26,7 @@ with open("data/apikeys.json", "r") as f:
 	api_keys = json.load(f)
 riot.set_region("NA")
 riot.set_api_key(api_keys["riot"])
+headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
 class League():
 	def __init__(self, bot):
@@ -73,11 +75,19 @@ class League():
 			except KeyError:
 				return await self.bot.say("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
 
+		browser = webdriver.Firefox()
+		browser.get(uri.format(summoner))
+		content = browser.find_element_by_class_name('text--main--display')
+		print(content)
+		"""
 		# Hideous Soup stuff
-		self.req = requests.get(uri.format(summoner))
+		self.req = requests.get(uri.format(summoner), headers = headers)
 		self.soup = BeautifulSoup(self.req.text, "lxml")
-		self.output = self.soup.findAll('span', {'class' : 'text--main--display'}).text
-		return await self.bot.say("I found:\n`{}`".format(self.output))
+		self.mmr = self.soup.findAll('span', {'class' : 'text--main--display'})
+		self.margin = self.soup.findAll('span', {'class' : 'text--error--subscript'})
+
+		return await self.bot.say("URL: `{}`\nI found the following for `{}`:\nMMR:`{}`\nMargin of error: `{}`".format(uri.format(summoner), summoner, self.mmr, self.margin))
+		"""
 
 def setup(bot):	
 	bot.add_cog(League(bot))
