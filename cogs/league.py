@@ -64,18 +64,19 @@ class League():
 
 	@commands.bot.command(pass_context = True, aliases = ['elo', 'mmr'])
 	async def getLeagueElo(self, ctx, summoner = ""):
+		""" Get League of Legends elo / mmr from na.whatismymmr.com """
 		uri = "https://na.whatismymmr.com/{}"
 		self.member = str(ctx.message.author)
 		if (summoner == ""):
 			try:
 				summoner = ufm.getUserInfo(self.member, "summoner_name")
 			except KeyError:
-				return await self.bot.say("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command")
+				return await self.bot.say("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
 
 		# Hideous Soup stuff
 		self.req = requests.get(uri.format(summoner))
 		self.soup = BeautifulSoup(self.req.text, "lxml")
-		self.output = self.soup.select('span', {'class' : 'text--main--display'}).text
+		self.output = self.soup.findAll('span', {'class' : 'text--main--display'}).text
 		return await self.bot.say("I found:\n`{}`".format(self.output))
 
 def setup(bot):	
