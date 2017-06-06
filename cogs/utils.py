@@ -19,7 +19,7 @@ class UserFileManip():
         """ Checks for user file and the returns T/F """
         return Path("data/user_data.json").is_file()
 
-    def getUserInfo( member, key):
+    def getUserInfo(member, key):
         """ Finds user and prints value of key """
         with open("data/user_data.json", "r") as user_file:
             user_data = json.load(user_file)
