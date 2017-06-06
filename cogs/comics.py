@@ -7,8 +7,8 @@ class Comics():
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.bot.command()
-    async def xkcd(self, *args):
+    @commands.bot.command(aliases = ['xkcd', 'xk', 'x'])
+    async def getXkcd(self, *args):
         """ Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic """
         # pre-generated blob file
         with open("data/xkcd_blob.json", "r") as f:

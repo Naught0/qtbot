@@ -4,9 +4,10 @@ from discord.ext import commands
 class Giphy():
     def __init__(self, bot):
         self.bot = bot
+        
     # Giphy 
-    @commands.bot.command()
-    async def gif(self, *args):
+    @commands.bot.command(aliases = ['gif', 'jif', 'jiff'])
+    async def giphy(self, *args):
         """ returns a random gif matching a query """
         self.q = " ".join(args)
         self.gif = giphypop.Giphy()
@@ -19,7 +20,7 @@ class Giphy():
         return
         
     # Thanks qtbot!
-    @commands.bot.command()
+    @commands.bot.command(aliases = ['ty'])
     async def thanks(self):
         """ Thank your overlord, qtbot """
         self.g = giphypop.Giphy()

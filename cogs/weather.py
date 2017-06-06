@@ -14,8 +14,8 @@ class Weather():
     wunderKey = apiKeys['wunderground']
 
     # Gets weather based on zip
-    @commands.bot.command(pass_context=True)
-    async def wt(self, ctx, zipCode = ""):
+    @commands.bot.command(pass_context=True, aliases=['wt', 'w'])
+    async def weather(self, ctx, zipCode = ""):
         """ 
         search via zip code and qtbot will remember you next time
         """
@@ -58,8 +58,8 @@ class Weather():
         return await self.bot.say("The weather for `{}, {}`: \n`{}` at `{}°F`. Winds `{}`. Relative humidity `{}`.".format(self.city, self.state, self.conditions, self.temp, self.wind.lower(), self.humidity))
 
     # Gets forecast based on zip
-    @commands.bot.command(pass_context = True)
-    async def fc(self, ctx, zipCode = ""):
+    @commands.bot.command(pass_context = True, aliases = ['fc', 'f'])
+    async def forecast(self, ctx, zipCode = ""):
         """ search via zip code """ 
         # Set cache expiry time
         requests_cache.install_cache(expire_after=3600)

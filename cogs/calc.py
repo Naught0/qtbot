@@ -10,8 +10,8 @@ class Calculator():
 
     client = wolframalpha.Client(apiKeys["wolfram"])
 
-    @commands.bot.command()
-    async def calc(self, *args):
+    @commands.bot.command(aliases = ['calc', 'cal', 'c'])
+    async def calculate(self, *args):
         """ Calculate like, anything """
         self.q = " ".join(args)
         self.result = Calculator.client.query(self.q)

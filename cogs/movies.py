@@ -13,8 +13,8 @@ class Movies():
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.bot.command()
-    async def movie(self, *args):
+    @commands.bot.command(aliases = ['movie', 'mov'])
+    async def getMovie(self, *args):
         """ Get basic info about a movie """    
         self.search = tmdb.Search()
 

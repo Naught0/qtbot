@@ -6,31 +6,29 @@ from pathlib import Path
 class OSRS():
     def __init__(self, bot):
         self.bot = bot
+    # Write item file for OSRS price query
+    # If no file, make one
+    if Path("data/item-data.json").is_file():
+        print("Skipping json file download...\nReading file...\n------")        
+    else:
+        self.data = None
+        print("Creating OSRS data file...")
+        self.data = open("data/item-data.json", "w")
+        print("Done")
 
-    def checkOSRSFile(self):
-        # Write item file for OSRS price query
-            # If no file, make one
-        if Path("data/item-data.json").is_file():
-            print("Skipping json file download...\nReading file...\n------")        
-        else:
-            self.data = None
-            print("Creating OSRS data file...")
-            self.data = open("data/item-data.json", "w")
-            print("Done")
+        self.jsonItemData = requests.get("https://raw.githubusercontent.com/Naughtsee/RS/master/item-data.json").json()
+        print("Requesting json file from Github...")
 
-            self.jsonItemData = requests.get("https://raw.githubusercontent.com/Naughtsee/RS/master/item-data.json").json()
-            print("Requesting json file from Github...")
+        self.fstr = json.dumps(jsonItemData)
+        print("Writing file...")
 
-            self.fstr = json.dumps(jsonItemData)
-            print("Writing file...")
-
-            self.data.write(fstr)
-            print("Write complete\nInitializing bot...\n------")
-            self.data.close()
+        self.data.write(fstr)
+        print("Write complete\nInitializing bot...\n------")
+        self.data.close()
 
     # Get GE Prices
-    @commands.bot.command()
-    async def ge(self, *args):
+    @commands.bot.command(aliases = ['ge'])
+    async def grandExchange(self, *args):
         """ Get the buying/selling price and quantity of an OSRS item """
         # relevant API calls & formatted    
         with open("data/item-data.json", "r") as f:
