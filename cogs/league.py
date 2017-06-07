@@ -1,7 +1,6 @@
 import discord, requests, json
 from discord.ext import commands
 from cogs.utils import UserFileManip as ufm
-from bs4 import BeautifulSoup # Unfortunate I'm using this
 import cassiopeia.riotapi as riot
 
 """
@@ -25,8 +24,6 @@ with open("data/apikeys.json", "r") as f:
 	api_keys = json.load(f)
 riot.set_region("NA")
 riot.set_api_key(api_keys["riot"])
-#headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-path_to_gecko = "/James/GeckoDriver/geckodriver.exe"
 
 class League():
 	def __init__(self, bot):
@@ -67,21 +64,19 @@ class League():
 	@commands.bot.command(pass_context = True, aliases = ['elo', 'mmr'])
 	async def getLeagueElo(self, ctx, summoner = ""):
 		""" Get League of Legends elo / mmr from na.whatismymmr.com """
-		uri = "https://na.whatismymmr.com/{}"
+		uri = "https://na.whatismymmr.com/api/v1/summoner?name={}"
+		header = {'user-agent' : 'qtbot/1.0'}
 		self.member = str(ctx.message.author)
 		if (summoner == ""):
 			try:
 				summoner = ufm.getUserInfo(self.member, "summoner_name")
 			except KeyError:
 				return await self.bot.say("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
+		self.result = requests.get(uri.format(summoner), headers = header)
+		self.result_json = self.result.json()
+		return await self.bot.say("Average MMR for `{}`: `{}+/-{}`\nApproximate ranking: `{}`".format(summoner, self.result_json["ranked"]["avg"], self.result_json["ranked"]["err"], self.result_json["ranked"]["summary"].split('<b>')[1].split('</b>')[0]))
+		#return await self.bot.say("{}".format(self.result.text))
 
-		# Hideous Soup stuff
-		self.req = requests.get(uri.format(summoner), headers = headers)
-		self.soup = BeautifulSoup(self.req.text, "lxml")
-		self.mmr = self.soup.findAll('span', {'class' : 'text--main--display'})
-		self.margin = self.soup.findAll('span', {'class' : 'text--error--subscript'})
-
-		return await self.bot.say("URL: `{}`\nI found the following for `{}`:\nMMR:`{}`\nMargin of error: `{}`".format(uri.format(summoner), summoner, self.mmr, self.margin))
 
 def setup(bot):	
 	bot.add_cog(League(bot))
