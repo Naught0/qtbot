@@ -13,7 +13,7 @@ f.close()
 discord_bot_token = apiKeys["discord"]
 
 # Choose default cogs
-startup_extensions = ["cogs.generic", "cogs.weather", "cogs.comics", "cogs.dictionary", "cogs.osrs", "cogs.movies", "cogs.gif", "cogs.calc"]
+startup_extensions = ["cogs.generic", "cogs.weather", "cogs.comics", "cogs.dictionary", "cogs.osrs", "cogs.movies", "cogs.gif", "cogs.calc", "cogs.league"]
 
 # Get current time for uptime
 startTime = datetime.now()
