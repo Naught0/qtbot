@@ -38,7 +38,7 @@ class OSRS():
         self.typesf = ["Buying Price", "Selling Price", "Buying Quantity", "Selling Quantity"]
 
         # Set cache expiry time
-        requests_cache.install_cache(expire_after=300)
+        requests_cache.install_cache(expire_after = 300)
         
         # Condense the item into a string I can actually use
         # All items in DB are lowercase
