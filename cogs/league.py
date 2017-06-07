@@ -70,7 +70,7 @@ class League():
         self.result_json = requests.get(uri.format(summoner), headers = header).json()
         self.estimated_rank = self.result_json["ranked"]["summary"].split('<b>')[1].split('</b')[0]
 
-        return await self.bot.say("Average MMR for `{}`: `{}+/-{}`\nApproximate ranking: `{}`".format(summoner, self.result_json["ranked"]["avg"], self.result_json["ranked"]["err"], self.estimated_rank))
+        return await self.bot.say("Average MMR for `{}`: `{}±{}`\nApproximate ranking: `{}`".format(summoner, self.result_json["ranked"]["avg"], self.result_json["ranked"]["err"], self.estimated_rank))
 
 def setup(bot): 
     bot.add_cog(League(bot))
