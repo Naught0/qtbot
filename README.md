@@ -36,4 +36,5 @@
   * `help`   Shows this message.
   * `load`   Loads an extension
   * `unload` Unloads an extension.
+  * `reload` Reloads an extension.
   * `uptime` Get current uptime 
