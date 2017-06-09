@@ -4,7 +4,7 @@
 #### Uses *a lot* of APIs.
 ---
 * Calculator: 
-  * `calc`   Calculate like, anything 
+  * `calc`   Calculate like, anything (wolfram alpha)
 * Comics: 
   * `xkcd`   Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic.
 * Dictionary: 
@@ -12,7 +12,7 @@
   * `ud`     Consult the world's leading dictionary  
 * Generic:  
   * `akick`  Don't use this 
-  * `ball`  Ask the magic 8ball  
+  * `ball`   Ask the magic 8ball  
   * `love`    
   * `resame` 
   * `same`   
@@ -20,8 +20,11 @@
   * `todo`   
   * `unsame` 
 * Giphy:
-  * `gif`    returns a random gif matching a query 
-  * `thanks` Thank your overlord, qtbot 
+  * `gif`    Returns a random gif matching a query 
+  * `thanks` Thank your overlord, qtbot  
+* League:
+  * `elo`    Get League of Legends elo / mmr from na.whatismymmr.com 
+  * `mmr`    Alias for the above
 * Movies:
   * `movie`  Get basic info about a movie 
 * OSRS:
@@ -33,4 +36,5 @@
   * `help`   Shows this message.
   * `load`   Loads an extension
   * `unload` Unloads an extension.
+  * `reload` Reloads an extension.
   * `uptime` Get current uptime 
