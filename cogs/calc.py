@@ -16,7 +16,12 @@ class Calculator():
         self.q = " ".join(args)
         self.result = Calculator.client.query(self.q)
 
-        return await self.bot.say(next(self.result.results).text)
+        # Try to calculate & except if impossible
+        try:            
+            return await self.bot.say(next(self.result.results).text)
+        except AttributeError:
+            return await self.bot.say("Sorry, I couldn't calculate `{}`.".format(self.q))
+
 
 def setup(bot):
     bot.add_cog(Calculator(bot))

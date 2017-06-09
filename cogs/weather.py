@@ -13,11 +13,30 @@ class Weather():
     wunderZipURL = "http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json"
     wunderKey = apiKeys['wunderground']
 
+    @commands.bot.command(pass_context = True, aliases = ['addzip', 'addz, ''az'])
+    async def addZipCode(self, ctx, zip_code = ""):
+        """ Add your zipcode for qtbot to remember """
+
+        # No zipcode supplied
+        if (zip_code == "" ):
+            return await self.bot.say("Please supply a zipcode.")
+        # Invalid zip supplied
+        if (len(zip_code) != 5 or not zip_code.isnumeric()):
+            return await self.bot.say("Please supply a valid zipcode.")
+
+        # Get user ID
+        self.member = str(ctx.message.author)
+
+        # Add zipcode to file
+        ufm.updateUserInfo(self.member, "zip", zip_code)
+
+        return await self.bot.say("Successfully added zipcode `{}` for user `{}`.".format(zip_code, self.member))
+
     # Gets weather based on zip
     @commands.bot.command(pass_context = True, aliases = ['wt', 'w'])
-    async def weather(self, ctx, zipCode = ""):
+    async def weather(self, ctx, zip_code = ""):
         """ 
-        search via zip code and qtbot will remember you next time
+        Search with zipcode, or not, and qtbot will try to find your zip from the userfile.
         """
         # Set cache expiry time
         requests_cache.install_cache(expire_after=1800)
@@ -25,28 +44,28 @@ class Weather():
         # user's snowflake ID
         self.member = str(ctx.message.author)
 
-        # Inits file if not created yet w/ user info
+        # Inits file if not found
         if not ufm.foundUserFile():
-            ufm.createUserFile(self.member, "zip", zipCode)
-
-        # Find zip in file
-        if zipCode == "":
-            zipCode = ufm.getUserInfo(self.member, "zip")
+            ufm.createUserFile(self.member, "zip", zip_code)
+        elif zip_code == "": # Find zipcode in file
+            zip_code = ufm.getUserInfo(self.member, "zip")
         
-        # Update zip
-        if zipCode == "error":
-            return await self.bot.say("Sorry, you're not in my file!")
-        else:
-            ufm.updateUserInfo(self.member, "zip", zipCode)
+        # getUserInfo returns "error" if user has no zip on file
+        if zip_code == "error":
+            return await self.bot.say("Sorry, you're not in my file!\nPlease use `addzip` `addz` or `az` with a zipcode.")
 
-        # Load wunderAPI info into s and decode to d
-        self.d = requests.get(Weather.wunderZipURL.format(Weather.wunderKey, zipCode)).json()
+        # Load wunderAPI info into d
+        # Sometimes wunderground dies --> handle it
+        try:
+            self.d = requests.get(Weather.wunderZipURL.format(Weather.wunderKey, zip_code)).json()
+        except ConnectionError as e:
+            return await self.bot.say("Sorry, wunderground is having trouble with this request.\n{}".format(e))
         
         # Except KeyError --> city isn't found 
         try:
             self.city = self.d["location"]["city"]
         except KeyError:
-            return await self.bot.say("Sorry, I can't find you :(")
+            return await self.bot.say("Sorry, I'm having trouble finding your location.")
 
         # Store the relevant parts of the call in strings
         self.state = self.d["location"]["state"]
@@ -59,8 +78,10 @@ class Weather():
 
     # Gets forecast based on zip
     @commands.bot.command(pass_context = True, aliases = ['fc', 'f'])
-    async def forecast(self, ctx, zipCode = ""):
-        """ search via zip code """ 
+    async def forecast(self, ctx, zip_code = ""):
+        """ 
+        Search with zipcode, or not, and qtbot will try to find your zip from the userfile.
+        """ 
         # Set cache expiry time
         requests_cache.install_cache(expire_after=3600)
 
@@ -69,38 +90,28 @@ class Weather():
         
         # Inits userfile if not found with given values
         if not ufm.foundUserFile():
-            ufm.createUserFile(self.member, "zip", zipCode)
-
-        # If value isn't entered, check zip against database
-        if zipCode == "":
-            zipCode = ufm.getUserInfo(self.member, "zip")
+            ufm.createUserFile(self.member, "zip", zip_code)
+        elif zip_code == "": # Find zipcode in file
+            zip_code = ufm.getUserInfo(self.member, "zip")
         
-        # Find / update zip
-        if zipCode == "error":
-            return await self.bot.say("Sorry, you're not in my file!")
-        else:
-            ufm.updateUserInfo(self.member, "zip", zipCode)
+        # getUserInfo returns "error" if user has no zip on file
+        if zip_code == "error":
+            return await self.bot.say("Sorry, you're not in my file!\nPlease use `addzip` `addz` or `az` with a zipcode.")
 
-        # json response in string form
-        self.s = requests.get(Weather.wunderZipURL.format(Weather.wunderKey, zipCode)).text
-
-        # Wunderground server overload handling
-        try:
-            self.d = json.loads(self.s)
-        except ValueError:
-            return await self.bot.say("Sorry, there is an issue with the Wunderground API")
+        # Json response in string form
+        self.d = requests.get(Weather.wunderZipURL.format(Weather.wunderKey, zip_code)).json()
         
         # Handling city not found error
         try:
             self.city = self.d["location"]["city"]
         except KeyError:
-            return await self.bot.say("Sorry, I can't find you :(\n City: {}".format(city))
+            return await self.bot.say("Sorry, I'm having trouble finding your location.")
         
         # Load forecasts into strings
         self.foreTom = self.d["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
         self.foreTomNight = self.d["forecast"]["txt_forecast"]["forecastday"][3]["fcttext"]
 
-        return await self.bot.say("Tomorrow: `{0}`\nTomorrow Evening: `{1}`".format(self.foreTom, self.foreTomNight))
+        return await self.bot.say("Tomorrow: `{}`\nTomorrow Evening: `{}`".format(self.foreTom, self.foreTomNight))
 
 def setup(bot):
     bot.add_cog(Weather(bot))

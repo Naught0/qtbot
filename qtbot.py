@@ -49,7 +49,6 @@ async def reload(extension_name : str):
     bot.load_extension(extension_name)
     return await bot.say("Cog `{}` has been reloaded.".format(extension_name))
 
-
 @bot.command()
 async def uptime():
     """ Get current uptime """
