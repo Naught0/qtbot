@@ -66,6 +66,9 @@ class League():
             except KeyError:
                 return await self.bot.say("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
 
+        # Send typing -- sometimes it takes a while
+        await self.bot.type()
+
         # Store results from call
         self.result_json = requests.get(uri.format(summoner), headers = header).json()
         self.estimated_rank = self.result_json["ranked"]["summary"].split('<b>')[1].split('</b')[0]
