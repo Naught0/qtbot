@@ -12,7 +12,7 @@ class Calculator():
 
     @commands.bot.command(aliases = ['calc', 'cal', 'c'])
     async def calculate(self, *args):
-        """ Calculate like, anything. Aliases: calc, cal, c """
+        """ Calculate like, anything. """
 
         self.q = " ".join(args)
         self.result = Calculator.client.query(self.q)

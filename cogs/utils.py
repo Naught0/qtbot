@@ -29,7 +29,7 @@ class UserFileManip():
         else:
             return "error"
 
-    def updateUserInfo( member, key, info):  
+    def updateUserInfo(member, key, info):  
         # Open file
         with open("data/user_data.json", "r") as f:
             user_data = json.load(f)
@@ -59,7 +59,7 @@ class UserFileManip():
             user_file.close()
 
     # Creates user file based on input
-    def createUserFile( member, key, info):
+    def createUserFile(member, key, info):
         new_user = {
             member : 
                 {

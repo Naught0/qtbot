@@ -1,5 +1,6 @@
 import discord, requests, json, requests_cache
 from discord.ext import commands
+from pathlib import Path
 from cogs.utils import UserFileManip as ufm
 
 # Get API key
@@ -43,12 +44,44 @@ class League():
         self.summoner_obj= League.getSummonerObj(self.summoner_name)
         return await self.bot.say("Latest match information for {} ({})\n{}".format(self.member, self.summoner_name, League.getLastTenMatches(self.summoner_obj)))
 
+    @commands.bot.command(aliases = ['ucf'])
+    async def updateChampionFile(self):
+        """ Creates / updates a json file containing champion IDs, names, etc """
+
+        self.uri = "https://na1.api.riotgames.com/lol/static-data/v3/champions?dataById=true&api_key={}"
+        self.league_dict = requests.get(self.uri.format(riot_api_key)).json()
+
+        # If file doesn't exist, create it
+        if not (Path("data/champ_info.json").is_file()):
+            with open("data/champ_info.json", "w") as f:
+                json.dump(self.league_dict, f)
+            return await self.bot.say("Successfully created champion information file.")
+        # File exists...
+        else:
+            with open("data/champ_info.json", "r+") as f:
+                # If there is a json exception, the file is corrupted
+                try:
+                    self.league_file_dict = json.load(f)
+                except:
+                    return await self.bot.say("Corrupted champion information file. Please remove the file and run this command again.")
+
+                # Check length of file & new dict.
+                # If they are the same, the DB does not need to be udpated.
+                if len(self.league_file_dict) == len(self.league_dict):
+                    return await self.bot.say("Champion information file already up to date.")
+
+                # Update file if new champ has been released
+                else:
+                    json.dump(self.league_dict, f)
+                    return await self.bot.say("Champion information file updated sucessfully.")
+
     @commands.bot.command(pass_context = True, aliases = ['elo', 'mmr'])
     async def getLeagueElo(self, ctx, summoner = ""):
         """ Get League of Legends elo / mmr from na.whatismymmr.com """
     
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic
         # More information here: https://creativecommons.org/licenses/by/2.0
+        
         # Requests call information
         uri = "https://na.whatismymmr.com/api/v1/summoner?name={}"
         header = {'user-agent' : 'qtbot/1.0'}
