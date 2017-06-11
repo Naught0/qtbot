@@ -57,7 +57,7 @@ class League():
         self.member = str(ctx.message.author)
 
         # Cache results for 1hr 
-        requests_cache.install_cache(expire_after = 3600)
+        requests_cache.install_cache(expire_after = 7200)
 
         # Try to read summoner from file if none supplied   
         if (summoner == ""):
@@ -65,9 +65,6 @@ class League():
                 summoner = ufm.getUserInfo(self.member, "summoner_name")
             except KeyError:
                 return await self.bot.say("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
-
-        # Send typing -- sometimes it takes a while
-        await self.bot.type()
 
         # Store results from call
         self.result_json = requests.get(uri.format(summoner), headers = header).json()
