@@ -91,11 +91,10 @@ class Weather():
         if not ufm.foundUserFile():
             ufm.createUserFile(self.member, "zip", zip_code)
         elif zip_code == "": # Find zipcode in file
-            zip_code = ufm.getUserInfo(self.member, "zip")
-        
-        # getUserInfo returns "error" if user has no zip on file
-        if zip_code == "error":
-            return await self.bot.say("Sorry, you're not in my file!\nPlease use `addzip` `addz` or `az` with a zipcode.")
+            try:
+                zip_code = ufm.getUserInfo(self.member, "zip")        
+            except KeyError:
+                return await self.bot.say("Sorry, you're not in my file!\nPlease use `addzip||addz||az` with a valid zipcode.")
 
         # Json response in string form
         self.d = requests.get(Weather.wunderZipURL.format(Weather.wunderKey, zip_code)).json()

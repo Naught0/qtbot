@@ -38,11 +38,18 @@ class League():
 
     @commands.bot.command(aliases = ['champ', 'ci'])
     async def getChampInfo(self, *args):
-        self.uri = "api.champion.gg/v2/champions/{}&api_key={}"
-        self.champ = "".join(args)
+        """ Return play, ban, and win rate for a champ """
+        self.uri = "http://api.champion.gg/v2/champions/{}?api_key={}"
+        self.champ = " ".join(args)
         self.champID = lu.getChampID(self.champ)
-        res = requests.get(self.uri.format(self.champID, League.champion_gg_api_key))
-        print(res)
+        self.res = requests.get(self.uri.format(self.champID, League.champion_gg_api_key)).json()
+        self.role = self.res[0]["role"]
+        self.role_rate = self.res[0]["percentRolePlayed"]
+        self.play_rate = self.res[0]["playRate"]
+        self.win_rate = self.res[0]["winRate"]
+        self.ban_rate = self.res[0]["banRate"]
+
+        await self.bot.say("Champion.gg stats for `{} - {} ({:.2%} in role)`:\nPlay Rate: `{:.2%}`\nWin Rate: `{:.2%}`\nBan Rate: `{:.2%}`".format(self.champ.title(), self.role.title(), self.role_rate, self.play_rate, self.win_rate, self.ban_rate))
 
 
     @commands.bot.command(pass_context = True, aliases = ['matches'])
@@ -97,13 +104,13 @@ class League():
         # Get who's calling the function
         self.member = str(ctx.message.author)
 
-        # Cache results for 1hr 
-        requests_cache.install_cache(expire_after = 7200)
+        # Cache results for 2hrs
+        requests_cache.install_cache(expire_after = 3600)
 
         # Try to read summoner from file if none supplied   
         if (summoner == ""):
             try:
-                summoner = getUserInfo(self.member, "summoner_name")
+                summoner = ufm.getUserInfo(self.member, "summoner_name")
             except KeyError:
                 return await self.bot.say("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
 

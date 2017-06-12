@@ -14,15 +14,17 @@ class LeagueUtils():
 
         return True
 
-    def getChampID(champ):
+    def getChampID(champ) -> dict:
         with open("data/champ_data.json", "r") as f:
             champ_dict = json.load(f)            
-        try:
-            if champ in champ_dict["data"]:
-                return champ_dict["data"][champ]["id"]
-        except KeyError:
-            corrected_champ = DictManip.getClosest(champ_dict, champ)
-            return champ_dict["data"]["corrected_champ"]["id"]
+        if champ in champ_dict["data"]:
+            return champ_dict["data"][champ]["id"]
+        else:
+            corrected_champ = DictManip.getClosest(champ_dict["data"], champ)
+            print("Corrected champ: {}".format(corrected_champ))
+            return {"original" : champ, "corrected" : champ_dict["data"][corrected_champ]["id"]}
+
+    def getSummonerID(summoner_name):
 
 class UserFileManip():
     def foundUserFile():
@@ -37,7 +39,7 @@ class UserFileManip():
         if (member in user_data) and (key in user_data[member]):
             return user_data[member][key]
         else:
-            return "error"
+            raise KeyError("User not found.")
 
     def updateUserInfo(member, key, info):  
         # Open file
@@ -113,4 +115,4 @@ class DictManip():
         """ 
         v = list(d.values())
         k = list(d.keys())
-        return k[v.index(min(v))]   
+        return k[v.index(min(v))]
