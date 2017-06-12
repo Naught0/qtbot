@@ -1,5 +1,5 @@
 import discord, json, requests, requests_cache
-from cogs.utils import *
+from cogs.utils import DictManip as dm
 from discord.ext import commands
 from pathlib import Path
 
@@ -49,12 +49,9 @@ class OSRS():
         try:
             self.json_dict = requests.get((url.format(item_data[item]["id"]))).json()
         except:
-            self.item = getClosest(self.item_data, self.item) 
+            self.item = dm.getClosest(self.item_data, self.item) 
             self.json_dict = requests.get((self.url.format(self.item_data[self.item]["id"]))).json()
         
-        # close file    
-        f.close()
-
         # pretty print to discord
         return await self.bot.say("Current data for: `{}`\n{}: `{}`\n{}: `{}`\n{}: `{}`\n{}: `{}`".format(
             self.item,

@@ -1,26 +1,26 @@
 import discord, requests, json, requests_cache
 from discord.ext import commands
 from pathlib import Path
+from riot_observer import RiotObserver as ro
+from cogs.utils import LeagueUtils as lu
 from cogs.utils import UserFileManip as ufm
+from cogs.utils import DictManip as dm
 
-# Get API key
-with open("data/apikeys.json", "r") as f:
-    api_keys = json.load(f)
-riot_api_key = api_keys["riot"]
 
 class League():
     def __init__(self, bot):
-        self.bot = bot
+        self.bot = bot 
+        # Get API key
+    with open("data/apikeys.json", "r") as f:
+        api_keys = json.load(f)
+    
+    riot_api_key = api_keys["riot"]
 
-    def getSummonerObj(summoner_name):
-        return riot.get_summoner_by_name(summoner_name)
+    # Get Champion.gg API key
+    champion_gg_api_key = api_keys["champion.gg"]
 
-    def getLastTenMatches(summoner):
-        """ Do not use """ 
-        game_type_list = []
-        for match in summoner.match_list(num_matches = 10):
-            game_type_list.append(match.Stats.win)
-        return game_type_list
+    # Init RiotObserver
+    rito = ro(riot_api_key)
 
     @commands.bot.command(pass_context = True, aliases = ['aln', 'addl', 'addleague'])
     async def addLeagueName(self, ctx, *args):
@@ -36,11 +36,20 @@ class League():
             ufm.updateUserInfo(self.member, "summoner_name", self.summoner_name)
             return  
 
+    @commands.bot.command(aliases = ['champ', 'ci'])
+    async def getChampInfo(self, *args):
+        self.uri = "api.champion.gg/v2/champions/{}&api_key={}"
+        self.champ = "".join(args)
+        self.champID = lu.getChampID(self.champ)
+        res = requests.get(self.uri.format(self.champID, League.champion_gg_api_key))
+        print(res)
+
+
     @commands.bot.command(pass_context = True, aliases = ['matches'])
     async def matchHistory(self, ctx):
         """ do not use """ 
         self.member = str(ctx.message.author)
-        self.summoner_name = ufm.getUserInfo(self.member, "summoner_name")
+        self.summoner_name = getUserInfo(self.member, "summoner_name")
         self.summoner_obj= League.getSummonerObj(self.summoner_name)
         return await self.bot.say("Latest match information for {} ({})\n{}".format(self.member, self.summoner_name, League.getLastTenMatches(self.summoner_obj)))
 
@@ -48,32 +57,31 @@ class League():
     async def updateChampionFile(self):
         """ Creates / updates a json file containing champion IDs, names, etc """
 
-        self.uri = "https://na1.api.riotgames.com/lol/static-data/v3/champions?dataById=true&api_key={}"
-        self.league_dict = requests.get(self.uri.format(riot_api_key)).json()
+        # Case where champ data found
+        if lu.foundChampFile():
+            with open("data/champ_data.json", "r") as f:
+                self.file_champ_list = json.load(f)
 
-        # If file doesn't exist, create it
-        if not (Path("data/champ_info.json").is_file()):
-            with open("data/champ_info.json", "w") as f:
-                json.dump(self.league_dict, f)
-            return await self.bot.say("Successfully created champion information file.")
-        # File exists...
+            # Get champ list from Riot's API
+            self.champ_list = League.rito.static_get_champion_list()
+
+            # If file is up to date, don't update
+            if len(self.champ_list) == len(self.file_champ_list):
+                return await self.bot.say("Champion information file already up to date.")
+
+            # File needs updating
+            else:
+                with open("data/champ_data.json", "w") as f:
+                    json.dump(self.champ_list, f)
+                return
+
+        # Create champion data file if not found
         else:
-            with open("data/champ_info.json", "r+") as f:
-                # If there is a json exception, the file is corrupted
-                try:
-                    self.league_file_dict = json.load(f)
-                except:
-                    return await self.bot.say("Corrupted champion information file. Please remove the file and run this command again.")
-
-                # Check length of file & new dict.
-                # If they are the same, the DB does not need to be udpated.
-                if len(self.league_file_dict) == len(self.league_dict):
-                    return await self.bot.say("Champion information file already up to date.")
-
-                # Update file if new champ has been released
-                else:
-                    json.dump(self.league_dict, f)
-                    return await self.bot.say("Champion information file updated sucessfully.")
+            self.champ_list = League.rito.static_get_champion_list()
+            await self.bot.say("Creating chamption information file.")
+            with open("data/champ_data.json", "w") as f:
+                json.dump(self.champ_list, f)
+            return
 
     @commands.bot.command(pass_context = True, aliases = ['elo', 'mmr'])
     async def getLeagueElo(self, ctx, summoner = ""):
@@ -81,7 +89,7 @@ class League():
     
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic
         # More information here: https://creativecommons.org/licenses/by/2.0
-        
+
         # Requests call information
         uri = "https://na.whatismymmr.com/api/v1/summoner?name={}"
         header = {'user-agent' : 'qtbot/1.0'}
@@ -95,7 +103,7 @@ class League():
         # Try to read summoner from file if none supplied   
         if (summoner == ""):
             try:
-                summoner = ufm.getUserInfo(self.member, "summoner_name")
+                summoner = getUserInfo(self.member, "summoner_name")
             except KeyError:
                 return await self.bot.say("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
 

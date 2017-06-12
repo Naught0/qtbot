@@ -2,21 +2,31 @@ import json
 from pathlib import Path
 from nltk.metrics import edit_distance as ed
 
-def getClosest(word_dict, word):
-    """ returns the key which matches most closely to 'word' """
 
-    # stores keys and their edit distance values
-    distance_dict = {}
+class LeagueUtils():
+    def foundChampFile():
+        """ Checks for valid league file and returns T/F """
+        try:
+            with open("data/champ_data.json", "r") as f:
+                _ = json.load(f)
+        except:
+            return False
 
-    for key in word_dict:
-        distance_dict[key] = ed(key, word)
+        return True
 
-    # return key w/ least edits
-    return min(distance_dict, key=distance_dict.get)
+    def getChampID(champ):
+        with open("data/champ_data.json", "r") as f:
+            champ_dict = json.load(f)            
+        try:
+            if champ in champ_dict["data"]:
+                return champ_dict["data"][champ]["id"]
+        except KeyError:
+            corrected_champ = DictManip.getClosest(champ_dict, champ)
+            return champ_dict["data"]["corrected_champ"]["id"]
 
 class UserFileManip():
     def foundUserFile():
-        """ Checks for user file and the returns T/F """
+        """ Checks for user file and returns T/F """
         return Path("data/user_data.json").is_file()
 
     def getUserInfo(member, key):
@@ -71,24 +81,36 @@ class UserFileManip():
         f.close()
         return
 
-def keywithmaxval(d):
-    """ 
-    a) create a list of the dict's keys and values; 
-    b) return the key with the max value
-    Shamelessly taken from:
-    http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
-    """ 
-    v = list(d.values())
-    k = list(d.keys())
-    return k[v.index(max(v))]   
+class DictManip():
+    def getClosest(word_dict, word):
+        """ returns the key which matches most closely to 'word' """
+        # stores keys and their edit distance values
+        distance_dict = {}
 
-def keywithminval(d):
-    """ 
-    a) create a list of the dict's keys and values; 
-    b) return the key with the max value
-    Shamelessly taken from:
-    http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
-    """ 
-    v = list(d.values())
-    k = list(d.keys())
-    return k[v.index(min(v))]   
+        for key in word_dict:
+            distance_dict[key] = ed(key, word)
+
+        # return key w/ least edits
+        return min(distance_dict, key=distance_dict.get)
+
+    def keywithmaxval(d):
+        """ 
+        a) create a list of the dict's keys and values; 
+        b) return the key with the max value
+        Shamelessly taken from:
+        http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
+        """ 
+        v = list(d.values())
+        k = list(d.keys())
+        return k[v.index(max(v))]   
+
+    def keywithminval(d):
+        """ 
+        a) create a list of the dict's keys and values; 
+        b) return the key with the max value
+        Shamelessly taken from:
+        http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
+        """ 
+        v = list(d.values())
+        k = list(d.keys())
+        return k[v.index(min(v))]   

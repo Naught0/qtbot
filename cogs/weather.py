@@ -9,7 +9,6 @@ class Weather():
     # Wunderground API info
     with open("data/apikeys.json", "r") as f:
         apiKeys = json.load(f)
-    f.close()
     wunderZipURL = "http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json"
     wunderKey = apiKeys['wunderground']
 

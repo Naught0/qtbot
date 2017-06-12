@@ -1,6 +1,6 @@
 import discord, json
 from discord.ext import commands
-from cogs.utils import *
+from cogs.utils import DictManip as dm
 import xkcd as xklib
 
 """
@@ -41,7 +41,7 @@ class Comics():
                     self.count += 1
             self.matchDict[self.jsonData[key]["num"]] = self.count
 
-        self.n = keywithmaxval(self.matchDict)
+        self.n = dm.keywithmaxval(self.matchDict)
 
         # no matches found --> random comic
         if self.matchDict[self.n] == 0:
