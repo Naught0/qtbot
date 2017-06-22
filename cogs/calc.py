@@ -1,5 +1,8 @@
-import discord, wolframalpha, json
+import discord
+import wolframalpha
+import json
 from discord.ext import commands
+
 
 class Calculator():
     def __init__(self, bot):
@@ -10,7 +13,7 @@ class Calculator():
 
     client = wolframalpha.Client(apiKeys["wolfram"])
 
-    @commands.bot.command(aliases = ['calc', 'cal', 'c'])
+    @commands.bot.command(aliases=['calc', 'cal', 'c'])
     async def calculate(self, *args):
         """ Calculate like, anything. """
 
@@ -20,8 +23,9 @@ class Calculator():
         # Try to calculate
         try:
             return await self.bot.say(next(self.result.results).text)
-        except AttributeError: # Except when no result
+        except AttributeError:  # Except when no result
             return await self.bot.say("Sorry, I couldn't calculate `{}`.".format(self.q))
+
 
 def setup(bot):
     bot.add_cog(Calculator(bot))

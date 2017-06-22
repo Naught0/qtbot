@@ -1,4 +1,5 @@
-import discord, json
+import discord
+import json
 from discord.ext import commands
 from cogs.utils import DictManip as dm
 import xkcd as xklib
@@ -11,11 +12,12 @@ The functions below try to find whole-word matches to this list in the xkcd_blob
 It will return the comic with the most whole-word matches.
 """
 
+
 class Comics():
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.bot.command(aliases = ['xkcd', 'xk', 'x'])
+    @commands.bot.command(aliases=['xkcd', 'xk', 'x'])
     async def getXkcd(self, *args):
         """ Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic """
         # pre-generated blob file
@@ -51,6 +53,7 @@ class Comics():
         self.comic = xklib.getComic(self.n)
 
         return await self.bot.say("I found this comic with {} hits\n**{}**\n{}".format(self.matchDict[self.n], self.comic.getTitle(), self.comic.getImageLink()))
+
 
 def setup(bot):
     bot.add_cog(Comics(bot))

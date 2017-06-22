@@ -1,7 +1,9 @@
-import discord, json
+import discord
+import json
 from discord.ext import commands
 from wordnik import *
 import urbandictionary as urbdic
+
 
 class Dictionary():
     def __init__(self, bot):
@@ -17,7 +19,7 @@ class Dictionary():
     WordClient = swagger.ApiClient(wordnikKey, 'http://api.wordnik.com/v4')
 
     # Returns the most common definition of a word
-    @commands.bot.command(aliases = ['def', 'd'])
+    @commands.bot.command(aliases=['def', 'd'])
     async def define(self, word):
         """ Provides the definition of _a_ word """
         self.wordApi = WordApi.WordApi(Dictionary.WordClient)
@@ -30,15 +32,16 @@ class Dictionary():
         return await self.bot.say("{0}: `{1}`".format(word.title(), self.result[0].text))
 
     # Urban dictionary
-    @commands.bot.command(aliases = ['ud', 'urbdic'])
+    @commands.bot.command(aliases=['ud', 'urbdic'])
     async def urbanDictionary(self, *args):
         """ Consult the world's leading dictionary """
         self.result = urbdic.define(" ".join(args))
 
         if not self.result:
-            return await self.bot.say("Sorry, couldn't find that one.") 
+            return await self.bot.say("Sorry, couldn't find that one.")
 
         return await self.bot.say("{0}: `{1}`".format(" ".join(args).title(), self.result[0].definition))
+
 
 def setup(bot):
     bot.add_cog(Dictionary(bot))

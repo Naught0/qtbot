@@ -16,15 +16,16 @@ class LeagueUtils():
 
     def getChampID(champ) -> dict:
         with open("data/champ_data.json", "r") as f:
-            champ_dict = json.load(f)            
+            champ_dict = json.load(f)
         if champ in champ_dict["data"]:
             return champ_dict["data"][champ]["id"]
         else:
             corrected_champ = DictManip.getClosest(champ_dict["data"], champ)
-            print("Corrected champ: {}".format(corrected_champ))
-            return {"original" : champ, "corrected" : champ_dict["data"][corrected_champ]["id"]}
+            return champ_dict["data"][corrected_champ]["id"]
 
     def getSummonerID(summoner_name):
+        pass
+
 
 class UserFileManip():
     def foundUserFile():
@@ -41,29 +42,29 @@ class UserFileManip():
         else:
             raise KeyError("User not found.")
 
-    def updateUserInfo(member, key, info):  
+    def updateUserInfo(member, key, info):
         # Open file
         with open("data/user_data.json", "r") as f:
             user_data = json.load(f)
-        
+
         # If found user, update
-        if member in user_data: 
+        if member in user_data:
             user_data[member][key] = info
-            
+
             with open("data/user_data.json", "w") as user_file:
                 json.dump(user_data, user_file)
-            
+
             user_file.close()
-        
+
         # Create user if not found
         else:
             with open("data/user_data.json", "r") as user_file:
-                    user_data = json.load(user_file)
-            
+                user_data = json.load(user_file)
+
             user_file = open("data/user_data.json", "r+")
 
             user_data[member] = {
-                key : info
+                key: info
             }
 
             json.dump(user_data, user_file)
@@ -73,15 +74,16 @@ class UserFileManip():
     # Creates user file based on input
     def createUserFile(member, key, info):
         new_user = {
-            member : 
+            member:
                 {
-                    key : info
+                    key: info
                 }
-            }
+        }
         f = open("data/user_data.json", "w+")
         json.dump(new_user, f)
         f.close()
         return
+
 
 class DictManip():
     def getClosest(word_dict, word):
@@ -101,10 +103,10 @@ class DictManip():
         b) return the key with the max value
         Shamelessly taken from:
         http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
-        """ 
+        """
         v = list(d.values())
         k = list(d.keys())
-        return k[v.index(max(v))]   
+        return k[v.index(max(v))]
 
     def keywithminval(d):
         """ 
@@ -112,7 +114,7 @@ class DictManip():
         b) return the key with the max value
         Shamelessly taken from:
         http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
-        """ 
+        """
         v = list(d.values())
         k = list(d.keys())
         return k[v.index(min(v))]
