@@ -1,4 +1,4 @@
-import discordbot.say
+import discord
 import json
 import requests
 import requests_cache

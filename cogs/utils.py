@@ -69,8 +69,6 @@ class UserFileManip():
 
             json.dump(user_data, user_file)
 
-            user_file.close()
-
     # Creates user file based on input
     def createUserFile(member, key, info):
         new_user = {
