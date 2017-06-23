@@ -22,25 +22,25 @@ class Dictionary():
     @commands.bot.command(aliases=['def', 'd'])
     async def define(self, word):
         """ Provides the definition of _a_ word """
-        self.wordApi = WordApi.WordApi(Dictionary.WordClient)
+        wordApi = WordApi.WordApi(Dictionary.WordClient)
 
-        self.result = self.wordApi.getDefinitions(word)
+        result = wordApi.getDefinitions(word)
 
-        if not self.result:
+        if not result:
             return await self.bot.say("Sorry, couldn't find that one.")
 
-        return await self.bot.say("{0}: `{1}`".format(word.title(), self.result[0].text))
+        return await self.bot.say("{0}: `{1}`".format(word.title(), result[0].text))
 
     # Urban dictionary
     @commands.bot.command(aliases=['ud', 'urbdic'])
     async def urbanDictionary(self, *args):
         """ Consult the world's leading dictionary """
-        self.result = urbdic.define(" ".join(args))
+        result = urbdic.define(" ".join(args))
 
-        if not self.result:
+        if not result:
             return await self.bot.say("Sorry, couldn't find that one.")
 
-        return await self.bot.say("{0}: `{1}`".format(" ".join(args).title(), self.result[0].definition))
+        return await self.bot.say("{0}: `{1}`".format(" ".join(args).title(), result[0].definition))
 
 
 def setup(bot):

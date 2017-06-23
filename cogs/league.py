@@ -28,43 +28,43 @@ class League():
 
     @commands.bot.command(pass_context=True, aliases=['aln', 'addl', 'addleague'])
     async def addLeagueName(self, ctx, *args):
-        self.member = str(ctx.message.author)
-        self.summoner_name = " ".join(args)
+        member = str(ctx.message.author)
+        summoner_name = " ".join(args)
 
         if not ufm.foundUserFile():
-            await self.bot.say("No user file found...\nCreated user file and added `{}'s`' summoner name as `{}`.".format(self.member, self.summoner_name))
-            ufm.createUserFile(self.member, "summoner_name",
-                               self.summoner_name)
+            await self.bot.say("No user file found...\nCreated user file and added `{}'s`' summoner name as `{}`.".format(member, summoner_name))
+            ufm.createUserFile(member, "summoner_name",
+                               summoner_name)
             return
         else:
-            await self.bot.say("Added `{}` as summoner name for `{}`.".format(self.summoner_name, self.member))
-            ufm.updateUserInfo(self.member, "summoner_name",
-                               self.summoner_name)
+            await self.bot.say("Added `{}` as summoner name for `{}`.".format(summoner_name, member))
+            ufm.updateUserInfo(member, "summoner_name",
+                               summoner_name)
             return
 
     @commands.bot.command(aliases=['champ', 'ci'])
     async def getChampInfo(self, *args):
         """ Return play, ban, and win rate for a champ """
-        self.uri = "http://api.champion.gg/v2/champions/{}?api_key={}"
-        self.champ = " ".join(args)
-        self.champID = lu.getChampID(self.champ)
-        self.res = requests.get(self.uri.format(
-            self.champID, League.champion_gg_api_key)).json()
-        self.role = self.res[0]["role"]
-        self.role_rate = self.res[0]["percentRolePlayed"]
-        self.play_rate = self.res[0]["playRate"]
-        self.win_rate = self.res[0]["winRate"]
-        self.ban_rate = self.res[0]["banRate"]
+        uri = "http://api.champion.gg/v2/champions/{}?api_key={}"
+        champ = " ".join(args)
+        champID = lu.getChampID(champ)
+        res = requests.get(uri.format(
+            champID, League.champion_gg_api_key)).json()
+        role = res[0]["role"]
+        role_rate = res[0]["percentRolePlayed"]
+        play_rate = res[0]["playRate"]
+        win_rate = res[0]["winRate"]
+        ban_rate = res[0]["banRate"]
 
-        await self.bot.say("Champion.gg stats for `{} - {} ({:.2%} in role)`:\nPlay Rate: `{:.2%}`\nWin Rate: `{:.2%}`\nBan Rate: `{:.2%}`".format(self.champ.title(), self.role.title(), self.role_rate, self.play_rate, self.win_rate, self.ban_rate))
+        await self.bot.say("Champion.gg stats for `{} - {} ({:.2%} in role)`:\nPlay Rate: `{:.2%}`\nWin Rate: `{:.2%}`\nBan Rate: `{:.2%}`".format(champ.title(), role.title(), role_rate, play_rate, win_rate, ban_rate))
 
     @commands.bot.command(pass_context=True, aliases=['matches'])
     async def matchHistory(self, ctx):
         """ do not use """
-        self.member = str(ctx.message.author)
-        self.summoner_name = getUserInfo(self.member, "summoner_name")
-        self.summoner_obj = League.getSummonerObj(self.summoner_name)
-        return await self.bot.say("Latest match information for {} ({})\n{}".format(self.member, self.summoner_name, League.getLastTenMatches(self.summoner_obj)))
+        member = str(ctx.message.author)
+        summoner_name = getUserInfo(member, "summoner_name")
+        summoner_obj = League.getSummonerObj(summoner_name)
+        return await self.bot.say("Latest match information for {} ({})\n{}".format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
 
     @commands.bot.command(aliases=['ucf'])
     async def updateChampionFile(self):
@@ -73,27 +73,27 @@ class League():
         # Case where champ data found
         if lu.foundChampFile():
             with open("data/champ_data.json", "r") as f:
-                self.file_champ_list = json.load(f)
+                file_champ_list = json.load(f)
 
             # Get champ list from Riot's API
-            self.champ_list = League.rito.static_get_champion_list()
+            champ_list = League.rito.static_get_champion_list()
 
             # If file is up to date, don't update
-            if len(self.champ_list) == len(self.file_champ_list):
+            if len(champ_list) == len(file_champ_list):
                 return await self.bot.say("Champion information file already up to date.")
 
             # File needs updating
             else:
                 with open("data/champ_data.json", "w") as f:
-                    json.dump(self.champ_list, f)
+                    json.dump(champ_list, f)
                 return
 
         # Create champion data file if not found
         else:
-            self.champ_list = League.rito.static_get_champion_list()
+            champ_list = League.rito.static_get_champion_list()
             await self.bot.say("Creating chamption information file.")
             with open("data/champ_data.json", "w") as f:
-                json.dump(self.champ_list, f)
+                json.dump(champ_list, f)
             return
 
     @commands.bot.command(pass_context=True, aliases=['elo', 'mmr'])
@@ -108,7 +108,7 @@ class League():
         header = {'user-agent': 'qtbot/1.0'}
 
         # Get who's calling the function
-        self.member = str(ctx.message.author)
+        member = str(ctx.message.author)
 
         # Cache results for 2hrs
         requests_cache.install_cache(expire_after=3600)
@@ -116,22 +116,22 @@ class League():
         # Try to read summoner from file if none supplied
         if (summoner == ""):
             try:
-                summoner = ufm.getUserInfo(self.member, "summoner_name")
+                summoner = ufm.getUserInfo(member, "summoner_name")
             except KeyError:
                 return await self.bot.say("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
 
         # Store results from call
-        self.result_json = requests.get(
+        result_json = requests.get(
             uri.format(summoner), headers=header).json()
 
         # No MMR results found
-        if self.result_json["ranked"]["avg"] == None:
+        if result_json["ranked"]["avg"] == None:
             return await self.bot.say("Sorry, I found no ranked data for `{}`".format(summoner))
 
-        self.estimated_rank = self.result_json["ranked"]["summary"].split('<b>')[
+        estimated_rank = result_json["ranked"]["summary"].split('<b>')[
             1].split('</b')[0]
 
-        return await self.bot.say("Average MMR for `{}`: `{}±{}`\nApproximate ranking: `{}`".format(summoner, self.result_json["ranked"]["avg"], self.result_json["ranked"]["err"], self.estimated_rank))
+        return await self.bot.say("Average MMR for `{}`: `{}±{}`\nApproximate ranking: `{}`".format(summoner, result_json["ranked"]["avg"], result_json["ranked"]["err"], estimated_rank))
 
 
 def setup(bot):

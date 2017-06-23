@@ -17,14 +17,14 @@ class Calculator():
     async def calculate(self, *args):
         """ Calculate like, anything. """
 
-        self.q = " ".join(args)
-        self.result = Calculator.client.query(self.q)
+        q = " ".join(args)
+        result = Calculator.client.query(q)
 
         # Try to calculate
         try:
-            return await self.bot.say(next(self.result.results).text)
+            return await self.bot.say(next(result.results).text)
         except AttributeError:  # Except when no result
-            return await self.bot.say("Sorry, I couldn't calculate `{}`.".format(self.q))
+            return await self.bot.say("Sorry, I couldn't calculate `{}`.".format(q))
 
 
 def setup(bot):

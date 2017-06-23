@@ -22,37 +22,37 @@ class Comics():
         """ Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic """
         # pre-generated blob file
         with open("data/xkcd_blob.json", "r") as f:
-            self.jsonData = json.load(f)
+            jsonData = json.load(f)
 
         # Split query into list and remove nonalpha phrases
-        self.wList = " ".join(args).lower().split()
-        for x in self.wList[:]:
+        wList = " ".join(args).lower().split()
+        for x in wList[:]:
             if not x.isalpha():
-                self.wList.remove(x)
+                wList.remove(x)
 
         # Short circuit upon no alpha input --> rand comic
-        if not self.wList:
-            self.randComic = xklib.getRandomComic()
-            return await self.bot.say("**{}**\n{}".format(self.randComic.getTitle(), self.randComic.getImageLink()))
+        if not wList:
+            randComic = xklib.getRandomComic()
+            return await self.bot.say("**{}**\n{}".format(randComic.getTitle(), randComic.getImageLink()))
 
-        self.matchDict = {}
-        for key, value in self.jsonData.items():
-            self.count = 0
-            for uw in self.wList:
-                if uw in self.jsonData[key]["tfidf_words"]:
-                    self.count += 1
-            self.matchDict[self.jsonData[key]["num"]] = self.count
+        matchDict = {}
+        for key, value in jsonData.items():
+            count = 0
+            for uw in wList:
+                if uw in jsonData[key]["tfidf_words"]:
+                    count += 1
+            matchDict[jsonData[key]["num"]] = count
 
-        self.n = dm.keywithmaxval(self.matchDict)
+        n = dm.keywithmaxval(matchDict)
 
         # no matches found --> random comic
-        if self.matchDict[self.n] == 0:
-            self.randComic = xklib.getRandomComic()
-            return await self.bot.say("**{}**\n{}".format(self.randComic.getTitle(), self.randComic.getImageLink()))
+        if matchDict[n] == 0:
+            randComic = xklib.getRandomComic()
+            return await self.bot.say("**{}**\n{}".format(randComic.getTitle(), randComic.getImageLink()))
 
-        self.comic = xklib.getComic(self.n)
+        comic = xklib.getComic(n)
 
-        return await self.bot.say("I found this comic with {} hits\n**{}**\n{}".format(self.matchDict[self.n], self.comic.getTitle(), self.comic.getImageLink()))
+        return await self.bot.say("I found this comic with {} hits\n**{}**\n{}".format(matchDict[n], comic.getTitle(), comic.getImageLink()))
 
 
 def setup(bot):

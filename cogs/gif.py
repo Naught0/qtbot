@@ -11,25 +11,25 @@ class Giphy():
     @commands.bot.command(aliases=['gif', 'jif', 'jiff'])
     async def giphy(self, *args):
         """ returns a random gif matching a query """
-        self.q = " ".join(args)
-        self.gif = giphypop.Giphy()
-        self.result = self.gif.random_gif(self.q)
+        q = " ".join(args)
+        gif = giphypop.Giphy()
+        result = gif.random_gif(q)
 
         try:
-            await self.bot.say(self.result.media_url)
+            await self.bot.say(result.media_url)
         except:
-            await self.bot.say("Sorry, couldn't find anything for `{}`".format(self.q))
+            await self.bot.say("Sorry, couldn't find anything for `{}`".format(q))
         return
 
     # Thanks qtbot!
     @commands.bot.command(aliases=['ty'])
     async def thanks(self):
         """ Thank your overlord, qtbot """
-        self.g = giphypop.Giphy()
-        self.gif = self.g.random_gif("blushing")
-        self.formGif = self.gif.fixed_width.downsampled.url
+        g = giphypop.Giphy()
+        gif = g.random_gif("blushing")
+        formGif = gif.fixed_width.downsampled.url
 
-        return await self.bot.say(self.formGif)
+        return await self.bot.say(formGif)
 
 
 def setup(bot):

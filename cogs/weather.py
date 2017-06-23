@@ -1,4 +1,4 @@
-import discord
+import discordbot.say
 import json
 import requests
 import requests_cache
@@ -28,12 +28,12 @@ class Weather():
             return await self.bot.say("Please supply a valid zipcode.")
 
         # Get user ID
-        self.member = str(ctx.message.author)
+        member = str(ctx.message.author)
 
         # Add zipcode to file
-        ufm.updateUserInfo(self.member, "zip", zip_code)
+        ufm.updateUserInfo(member, "zip", zip_code)
 
-        return await self.bot.say("Successfully added zipcode `{}` for user `{}`.".format(zip_code, self.member))
+        return await self.bot.say("Successfully added zipcode `{}` for user `{}`.".format(zip_code, member))
 
     # Gets weather based on zip
     @commands.bot.command(pass_context=True, aliases=['wt', 'w'])
@@ -45,13 +45,13 @@ class Weather():
         requests_cache.install_cache(expire_after=1800)
 
         # user's snowflake ID
-        self.member = str(ctx.message.author)
+        member = str(ctx.message.author)
 
         # Inits file if not found
         if not ufm.foundUserFile():
-            ufm.createUserFile(self.member, "zip", zip_code)
+            ufm.createUserFile(member, "zip", zip_code)
         elif zip_code == "":  # Find zipcode in file
-            zip_code = ufm.getUserInfo(self.member, "zip")
+            zip_code = ufm.getUserInfo(member, "zip")
 
         # getUserInfo returns "error" if user has no zip on file
         if zip_code == "error":
@@ -60,25 +60,25 @@ class Weather():
         # Load wunderAPI info into d
         # Sometimes wunderground dies --> handle it
         try:
-            self.d = requests.get(Weather.wunderZipURL.format(
+            d = requests.get(Weather.wunderZipURL.format(
                 Weather.wunderKey, zip_code)).json()
         except ConnectionError as e:
             return await self.bot.say("Sorry, wunderground is having trouble with this request.\n{}".format(e))
 
         # Except KeyError --> city isn't found
         try:
-            self.city = self.d["location"]["city"]
+            city = d["location"]["city"]
         except KeyError:
             return await self.bot.say("Sorry, I'm having trouble finding your location.")
 
         # Store the relevant parts of the call in strings
-        self.state = self.d["location"]["state"]
-        self.temp = self.d["current_observation"]["temp_f"]
-        self.conditions = self.d["current_observation"]["weather"]
-        self.wind = self.d["current_observation"]["wind_string"]
-        self.humidity = self.d["current_observation"]["relative_humidity"]
+        state = d["location"]["state"]
+        temp = d["current_observation"]["temp_f"]
+        conditions = d["current_observation"]["weather"]
+        wind = d["current_observation"]["wind_string"]
+        humidity = d["current_observation"]["relative_humidity"]
 
-        return await self.bot.say("The weather for `{}, {}`: \n`{}` at `{}°F`. Winds `{}`. Relative humidity `{}`.".format(self.city, self.state, self.conditions, self.temp, self.wind.lower(), self.humidity))
+        return await self.bot.say("The weather for `{}, {}`: \n`{}` at `{}°F`. Winds `{}`. Relative humidity `{}`.".format(city, state, conditions, temp, wind.lower(), humidity))
 
     # Gets forecast based on zip
     @commands.bot.command(pass_context=True, aliases=['fc', 'f'])
@@ -90,32 +90,32 @@ class Weather():
         requests_cache.install_cache(expire_after=3600)
 
         # user's snowflake ID
-        self.member = str(ctx.message.author)
+        member = str(ctx.message.author)
 
         # Inits userfile if not found with given values
         if not ufm.foundUserFile():
-            ufm.createUserFile(self.member, "zip", zip_code)
+            ufm.createUserFile(member, "zip", zip_code)
         elif zip_code == "":  # Find zipcode in file
             try:
-                zip_code = ufm.getUserInfo(self.member, "zip")
+                zip_code = ufm.getUserInfo(member, "zip")
             except KeyError:
                 return await self.bot.say("Sorry, you're not in my file!\nPlease use `addzip||addz||az` with a valid zipcode.")
 
         # Json response in string form
-        self.d = requests.get(Weather.wunderZipURL.format(
+        d = requests.get(Weather.wunderZipURL.format(
             Weather.wunderKey, zip_code)).json()
 
         # Handling city not found error
         try:
-            self.city = self.d["location"]["city"]
+            city = d["location"]["city"]
         except KeyError:
             return await self.bot.say("Sorry, I'm having trouble finding your location.")
 
         # Load forecasts into strings
-        self.foreTom = self.d["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
-        self.foreTomNight = self.d["forecast"]["txt_forecast"]["forecastday"][3]["fcttext"]
+        foreTom = d["forecast"]["txt_forecast"]["forecastday"][2]["fcttext"]
+        foreTomNight = d["forecast"]["txt_forecast"]["forecastday"][3]["fcttext"]
 
-        return await self.bot.say("Tomorrow: `{}`\nTomorrow Evening: `{}`".format(self.foreTom, self.foreTomNight))
+        return await self.bot.say("Tomorrow: `{}`\nTomorrow Evening: `{}`".format(foreTom, foreTomNight))
 
 
 def setup(bot):
