@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from nltk.metrics import edit_distance as ed
-
+from bs4 import BeautifulSoup
 
 class LeagueUtils():
     def foundChampFile():
@@ -116,3 +116,20 @@ class DictManip():
         v = list(d.values())
         k = list(d.keys())
         return k[v.index(min(v))]
+
+class GoogleFuncs():
+    def get_google_links(html):
+        soup = BeautifulSoup(html, "html.parser")
+        links = []
+
+        for div in soup.findAll('h3', {'class': 'r'}):
+            a = div.find('a')
+            link = a.attrs['href']
+            links.append(link)
+
+        for link in links:
+            if link.startswith("/"):
+                links.remove(link)
+
+        return links
+        
