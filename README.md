@@ -30,7 +30,7 @@
   * `gif`    Returns a random gif matching a query 
   * `thanks` Thank your overlord, qtbot  
 * Google:
-  * `g`      Returns Google result for a query (thanks to Rapptz)
+  * `g`      Returns Google result for a query
 * League:
   * `elo`    Get League of Legends elo / mmr from na.whatismymmr.com 
   * `mmr`    Alias for the above
