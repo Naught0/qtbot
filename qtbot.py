@@ -31,8 +31,6 @@ startTime = datetime.now()
 startTimeStr = startTime.strftime("%B %d %H:%M:%S")
 
 # Basic information printed via stdout
-
-
 @bot.event
 async def on_ready():
     print("Client logged in at {}".format(startTimeStr))
