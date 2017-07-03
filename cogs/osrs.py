@@ -41,7 +41,7 @@ class OSRS():
 
         types = ["buying", "selling", "buyingQuantity", "sellingQuantity"]
         typesf = ["Buying Price", "Selling Price",
-                       "Buying Quantity", "Selling Quantity"]
+                  "Buying Quantity", "Selling Quantity"]
 
         # Set cache expiry time
         requests_cache.install_cache(expire_after=300)

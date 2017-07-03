@@ -16,7 +16,7 @@ class Generic():
     async def akick(self, *args):
         """Don't use this"""
         phrases = ["I would never!", "That isn't very nice!",
-                        "Maybe we should talk about our feelings.", "Calm down.", "Check your privileges."]
+                   "Maybe we should talk about our feelings.", "Calm down.", "Check your privileges."]
         return await self.bot.say(phrases[random.randint(0, len(phrases) - 1)])
 
     # Returns pseudo-random magic 8-ball result
@@ -24,11 +24,11 @@ class Generic():
     async def ball(self, *args):
         """ Ask the magic 8ball """
         responses = ["It is certain", "It is decidedly so", "Without a doubt",
-                          "Yes definitely", "You may rely on it", "As I see it, yes",
-                          "Most likely", "Outlook good", "Yes", "Signs point to yes",
-                          "Reply hazy try again", "Ask again later", "Better not tell you now",
-                          "Cannot predict now", "Concentrate and ask again", "Don't count on it",
-                          "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"]
+                     "Yes definitely", "You may rely on it", "As I see it, yes",
+                     "Most likely", "Outlook good", "Yes", "Signs point to yes",
+                     "Reply hazy try again", "Ask again later", "Better not tell you now",
+                     "Cannot predict now", "Concentrate and ask again", "Don't count on it",
+                     "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"]
         return await self.bot.say(responses[random.randint(0, len(responses) - 1)])
 
     # Same!
