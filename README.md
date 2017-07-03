@@ -22,6 +22,8 @@
 * Giphy:
   * `gif`    Returns a random gif matching a query 
   * `thanks` Thank your overlord, qtbot  
+* Google:
+  * `g`      Returns Google result for a query (thanks to Rapptz)
 * League:
   * `elo`    Get League of Legends elo / mmr from na.whatismymmr.com 
   * `mmr`    Alias for the above
@@ -30,8 +32,9 @@
 * OSRS:
   * `ge`     Get the buying/selling price and quantity of an OSRS item 
 * Weather:
-  * `fc`     Wunderground weather forecast via zipcode which is remembered the next time
-  * `wt`     Wunderground current weather via zipcode which is remembered the next time
+  * `az`     Add zipcode to userfile
+  * `fc`     Wunderground weather forecast for `zip`
+  * `wt`     Wunderground current weather for `zip`
 * No Category:
   * `help`   Shows this message.
   * `load`   Loads an extension
