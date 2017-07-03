@@ -3,12 +3,12 @@
 ### Mostly modular & inspired by Danny whose project can be found [here](https://github.com/Rapptz/RoboDanny)
 ### Uses *a lot* of APIs.
 #### More specifically:
-* Wordnik: `define`
+* Wordnik: `.define`
 * Wolfram Alpha: `.calc`
 * WeatherUnderground: `.w` and `.fc`
 * TMDb: `.movie`
 * Riot Games: `.ucf` (updateChampFile)
-* Champion.gg: `champ`
+* Champion.gg: `.champ`
 ---
 * Calculator: 
   * `calc`   Calculate like, anything (wolfram alpha)
