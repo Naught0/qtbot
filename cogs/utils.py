@@ -3,6 +3,7 @@ from pathlib import Path
 from nltk.metrics import edit_distance as ed
 from bs4 import BeautifulSoup
 
+
 class LeagueUtils():
     def foundChampFile():
         """ Checks for valid league file and returns T/F """
@@ -116,6 +117,7 @@ class DictManip():
         v = list(d.values())
         k = list(d.keys())
         return k[v.index(min(v))]
+
 
 class GoogleFuncs():
     def get_google_links(html):
