@@ -38,13 +38,17 @@ class Google():
 
         # Gather webpage
         result = requests.get(
-            query_url, headers=self.headers[random.randint(0, len(self.headers))]).text
+            query_url, headers=self.headers[random.randint(0, len(self.headers) - 1)]).text
 
         # Extract links from page
         link_list = gf.get_google_links(result)
 
-        # Say first result
-        return await self.bot.say("{}".format(link_list[0]))
+        if len(link_list) >= 3:
+            # Say top 3 results
+            return await self.bot.say("**Top Result**:\n<{}>\n**See also:**```\n{}\n{}```".format(link_list[0], link_list[1], link_list[2]))
+        else:
+            # Say first result
+            return await self.bot.say("{}".format(link_list[0]))
 
 
 def setup(bot):

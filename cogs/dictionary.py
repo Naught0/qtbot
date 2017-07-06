@@ -12,7 +12,6 @@ class Dictionary():
     # Load API key
     with open("data/apikeys.json", "r") as f:
         apiKeys = json.load(f)
-    f.close()
 
     # Init wordnik objects
     wordnikKey = apiKeys["wordnik"]
@@ -23,13 +22,22 @@ class Dictionary():
     async def define(self, word):
         """ Provides the definition of _a_ word """
         wordApi = WordApi.WordApi(Dictionary.WordClient)
+        
+        parts_of_speech = {'noun': 'n.', 'verb': 'v.', 'adjective': 'adj.', 'adverb': 'adv.', 'interjection': 'interj.', 'conjunction': 'conj.', 'preposition': 'prep.', 'pronoun': 'pron.'}
 
         result = wordApi.getDefinitions(word)
 
         if not result:
             return await self.bot.say("Sorry, couldn't find that one.")
 
-        return await self.bot.say("{0}: `{1}`".format(word.title(), result[0].text))
+        for pos in parts_of_speech:
+            if pos in result[0].partOfSpeech.split("-"):
+                word_pos = parts_of_speech[pos]
+                break
+            else:
+                word_pos = result[0].partOfSpeech
+
+        return await self.bot.say("{} _{}_ `{}`".format(word.title(), word_pos, result[0].text))
 
     # Urban dictionary
     @commands.bot.command(aliases=['ud', 'urbdic'])
@@ -40,7 +48,7 @@ class Dictionary():
         if not result:
             return await self.bot.say("Sorry, couldn't find that one.")
 
-        return await self.bot.say("{0}: `{1}`".format(" ".join(args).title(), result[0].definition))
+        return await self.bot.say("{}: `{}`".format(" ".join(args).title(), result[0].definition))
 
 
 def setup(bot):

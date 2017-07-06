@@ -58,13 +58,13 @@ class League():
 
         await self.bot.say("Champion.gg stats for `{} - {} ({:.2%} in role)`:\nPlay Rate: `{:.2%}`\nWin Rate: `{:.2%}`\nBan Rate: `{:.2%}`".format(champ.title(), role.title(), role_rate, play_rate, win_rate, ban_rate))
 
-    @commands.bot.command(pass_context=True, aliases=['matches'])
-    async def matchHistory(self, ctx):
-        """ do not use """
-        member = str(ctx.message.author)
-        summoner_name = getUserInfo(member, "summoner_name")
-        summoner_obj = League.getSummonerObj(summoner_name)
-        return await self.bot.say("Latest match information for {} ({})\n{}".format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
+    # @commands.bot.command(pass_context=True, aliases=['matches'])
+    # async def matchHistory(self, ctx):
+    #     """ do not use """
+    #     member = str(ctx.message.author)
+    #     summoner_name = ufm.getUserInfo(member, "summoner_name")
+    #     summoner_obj = League.getSummonerObj(summoner_name)
+    #     return await self.bot.say("Latest match information for {} ({})\n{}".format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
 
     @commands.bot.command(aliases=['ucf'])
     async def updateChampionFile(self):
