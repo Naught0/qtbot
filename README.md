@@ -1,7 +1,14 @@
 # qtbot
-#### A Discord bot I wrote to learn some Python. 
-#### Mostly modular & inspired by Danny whose project can be found [here](https://github.com/Rapptz/RoboDanny)
-#### Uses *a lot* of APIs.
+### A Discord bot I wrote to learn some Python. 
+### Mostly modular & inspired by Danny whose project can be found [here](https://github.com/Rapptz/RoboDanny)
+### Uses *a lot* of APIs.
+#### More specifically:
+* Wordnik: `.define`
+* Wolfram Alpha: `.calc`
+* WeatherUnderground: `.w` and `.fc`
+* TMDb: `.movie`
+* Riot Games: `.ucf` (updateChampFile)
+* Champion.gg: `.champ`
 ---
 * Calculator: 
   * `calc`   Calculate like, anything (wolfram alpha)
@@ -23,7 +30,7 @@
   * `gif`    Returns a random gif matching a query 
   * `thanks` Thank your overlord, qtbot  
 * Google:
-  * `g`      Returns Google result for a query (thanks to Rapptz)
+  * `g`      Returns Google result for a query
 * League:
   * `elo`    Get League of Legends elo / mmr from na.whatismymmr.com 
   * `mmr`    Alias for the above
