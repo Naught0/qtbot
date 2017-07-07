@@ -14,13 +14,14 @@ class League():
     def __init__(self, bot):
         self.bot = bot
 
-    # Get API key
+    # Get API keys
     with open("data/apikeys.json", "r") as f:
         api_keys = json.load(f)
 
+    # Riot API key
     riot_api_key = api_keys["riot"]
 
-    # Get Champion.gg API key
+    # Champion.gg API key
     champion_gg_api_key = api_keys["champion.gg"]
 
     # Init RiotObserver
@@ -50,11 +51,11 @@ class League():
         champID = lu.getChampID(champ)
         res = requests.get(uri.format(
             champID, League.champion_gg_api_key)).json()
-        role = res[0]["role"]
-        role_rate = res[0]["percentRolePlayed"]
-        play_rate = res[0]["playRate"]
-        win_rate = res[0]["winRate"]
-        ban_rate = res[0]["banRate"]
+        role = res[-1]["role"]
+        role_rate = res[-1]["percentRolePlayed"]
+        play_rate = res[-1]["playRate"]
+        win_rate = res[-1]["winRate"]
+        ban_rate = res[-1]["banRate"]
 
         await self.bot.say("Champion.gg stats for `{} - {} ({:.2%} in role)`:\nPlay Rate: `{:.2%}`\nWin Rate: `{:.2%}`\nBan Rate: `{:.2%}`".format(champ.title(), role.title(), role_rate, play_rate, win_rate, ban_rate))
 
