@@ -22,8 +22,9 @@ class Dictionary():
     async def define(self, word):
         """ Provides the definition of _a_ word """
         wordApi = WordApi.WordApi(Dictionary.WordClient)
-        
-        parts_of_speech = {'noun': 'n.', 'verb': 'v.', 'adjective': 'adj.', 'adverb': 'adv.', 'interjection': 'interj.', 'conjunction': 'conj.', 'preposition': 'prep.', 'pronoun': 'pron.'}
+
+        parts_of_speech = {'noun': 'n.', 'verb': 'v.', 'adjective': 'adj.', 'adverb': 'adv.',
+                           'interjection': 'interj.', 'conjunction': 'conj.', 'preposition': 'prep.', 'pronoun': 'pron.'}
 
         result = wordApi.getDefinitions(word)
 

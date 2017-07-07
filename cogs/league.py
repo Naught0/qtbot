@@ -67,7 +67,7 @@ class League():
     #     return await self.bot.say("Latest match information for {} ({})\n{}".format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
 
     @commands.bot.command(aliases=['ucf'])
-    async def updateChampionFile(self):
+    async def update_champion_file(self):
         """ Creates / updates a json file containing champion IDs, names, etc """
 
         # Case where champ data found
@@ -97,7 +97,7 @@ class League():
             return
 
     @commands.bot.command(pass_context=True, aliases=['elo', 'mmr'])
-    async def getLeagueElo(self, ctx, summoner=""):
+    async def get_elo(self, ctx, summoner=""):
         """ Get League of Legends elo / mmr from na.whatismymmr.com """
 
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic

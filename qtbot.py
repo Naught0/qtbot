@@ -24,7 +24,8 @@ startup_extensions = [
     "cogs.gif",
     "cogs.calc",
     "cogs.league",
-    "cogs.google"]
+    "cogs.google",
+    "cogs.yt"]
 
 # Get current time for uptime
 startTime = datetime.now()
