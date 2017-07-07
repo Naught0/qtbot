@@ -46,38 +46,18 @@ class League():
     @commands.bot.command(aliases=['champ', 'ci'])
     async def getChampInfo(self, *args):
         """ Return play, ban, and win rate for a champ """
-
         uri = "http://api.champion.gg/v2/champions/{}?api_key={}"
         champ = " ".join(args)
         champID = lu.getChampID(champ)
         res = requests.get(uri.format(
             champID, League.champion_gg_api_key)).json()
+        role = res[-1]["role"]
+        role_rate = res[-1]["percentRolePlayed"]
+        play_rate = res[-1]["playRate"]
+        win_rate = res[-1]["winRate"]
+        ban_rate = res[-1]["banRate"]
 
-        role = []
-        role_rate = []
-        play_rate = []
-        win_rate = []
-        ban_rate = []
-
-        format_str = ""
-
-        for x in range(len(res)):
-            role[x] = res[x]["role"]
-            role_rate[x] = res[x]["percentRolePlayed"]
-            play_rate[x] = res[x]["playRate"]
-            win_rate[x] = res[x]["winRate"]
-            ban_rate[x] = res[x]["banRate"]
-
-        for x in range(len(res)):
-            format_str + "```{} ({:.2%})\nPlay Rate: {:.2%}\nWin Rate: {:.2%}\nBan Rate: {:.2%}\n\n".format(role[x], role_rate[x], play_rate[x], win_rate[x], ban_rate[x])
-
-        return await self.bot.say("**{}**\n{}".format(champ, format_str))
-
-
-
-
-
-
+        await self.bot.say("Champion.gg stats for `{} - {} ({:.2%} in role)`:\nPlay Rate: `{:.2%}`\nWin Rate: `{:.2%}`\nBan Rate: `{:.2%}`".format(champ.title(), role.title(), role_rate, play_rate, win_rate, ban_rate))
 
     # @commands.bot.command(pass_context=True, aliases=['matches'])
     # async def matchHistory(self, ctx):
@@ -88,7 +68,7 @@ class League():
     #     return await self.bot.say("Latest match information for {} ({})\n{}".format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
 
     @commands.bot.command(aliases=['ucf'])
-    async def update_champion_file(self):
+    async def updateChampionFile(self):
         """ Creates / updates a json file containing champion IDs, names, etc """
 
         # Case where champ data found
@@ -118,7 +98,7 @@ class League():
             return
 
     @commands.bot.command(pass_context=True, aliases=['elo', 'mmr'])
-    async def get_elo(self, ctx, summoner=""):
+    async def getLeagueElo(self, ctx, summoner=""):
         """ Get League of Legends elo / mmr from na.whatismymmr.com """
 
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic
