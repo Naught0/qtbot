@@ -4,11 +4,10 @@ from discord.ext import commands
 import tmdbsimple as tmdb
 
 # TMDb info
-with open("data/apikeys.json", "r") as f:
-    apiKeys = json.load(f)
-f.close()
+with open("data/api_keys.json") as f:
+    api_keys = json.load(f)
 
-tmdb.API_KEY = apiKeys["tmdb"]
+tmdb.API_KEY = api_keys["tmdb"]
 
 
 class Movies():
