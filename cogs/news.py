@@ -20,8 +20,8 @@ class News():
     async def get_news(self, num_results=3):
         """ Get the top x articles from Google News (powered by https://newsapi.org/) """
 
-        if num_results > 5:
-            return await self.bot.say("Sorry, please choose a number of results between 0 and 5 inclusive.")
+        if num_results < 1 or num_results > 5:
+            return await self.bot.say("Sorry, please choose a number of results between 1 and 5 inclusive.")
 
         # Call to API
         raw_result = requests.get(uri.format(news_api_key)).json()
