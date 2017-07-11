@@ -4,7 +4,7 @@ from discord.ext import commands
 import tmdbsimple as tmdb
 
 # TMDb info
-with open("data/api_keys.json") as f:
+with open("data/apikeys.json") as f:
     api_keys = json.load(f)
 
 tmdb.API_KEY = api_keys["tmdb"]
