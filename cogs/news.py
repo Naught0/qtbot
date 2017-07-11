@@ -9,7 +9,7 @@ from discord.ext import commands
 with open("data/apikeys.json") as f:
     news_api_key = json.load(f)["news"]
 
-uri = "https://newsapi.org/v1/articles?source=google-news&sortBy={}&apiKey={}"
+uri = "https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey={}"
 
 
 class News():
@@ -17,21 +17,25 @@ class News():
         self.bot = bot
 
     @commands.bot.command(name="news")
-    async def get_news(self, sort_by="top"):
-        """ Get top, latest, or popular news from Google, powered by https://newsapi.org/ """
+    async def get_news(self, num_results=3):
+        """ Get the top x articles from Google News (powered by https://newsapi.org/) """
 
-        # All allowed sorting types
-        sorting_list = ["top", "latest", "popular"]
-
-        # If sort type specified is not allowed
-        if not sort_by.lower() in sorting_list:
-            return await self.bot.say("Sorry, please use `.news` followed by `top` `latest` `popular` or nothing at all to get news.")
+        if num_results > 5:
+            return await self.bot.say("Sorry, please choose a number of results between 0 and 5 inclusive.")
 
         # Call to API
-        raw_result = requests.get(uri.format(sort_by, news_api_key)).json()
+        raw_result = requests.get(uri.format(news_api_key)).json()
 
-        # Hideous, but I can't think of a better way to do it (:
-        return await self.bot.say("`{}`\n<{}>\n`{}`\n<{}>\n`{}`\n<{}>\n`{}`\n<{}>\n`{}`\n<{}>".format(raw_result["articles"][0]["title"], raw_result["articles"][0]["url"], raw_result["articles"][1]["title"], raw_result["articles"][1]["url"], raw_result["articles"][2]["title"], raw_result["articles"][2]["url"], raw_result["articles"][3]["title"], raw_result["articles"][3]["url"], raw_result["articles"][4]["title"], raw_result["articles"][4]["url"]))
+        article_list = []
+
+        for x in range(num_results):
+            article_list.append(
+                "".join(["`", raw_result["articles"][x]["title"], "`"]))
+            article_list.append(
+                "".join(["<", raw_result["articles"][x]["url"], ">"]))
+
+        # Found a better way
+        return await self.bot.say("\n".join(article_list))
 
 
 def setup(bot):
