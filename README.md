@@ -37,7 +37,7 @@
 * Movies:
   * `movie`  Get basic info about a movie 
 * News:
-  * `news`   Get `top`, `latest`, or `popular` news from Google, powered by https://newsapi.org/
+  * `news`   Get the top news from Google News (powered by https://newsapi.org/)
 * OSRS:
   * `ge`     Get the buying/selling price and quantity of an OSRS item 
 * Weather:
