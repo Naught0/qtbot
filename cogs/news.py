@@ -33,8 +33,10 @@ class News():
         article_list = []
 
         for x in range(num_results):
-            article_list.append("".join(["`", raw_result["articles"][x]["title"], "`"]))
-            article_list.append("".join(["<", raw_result["articles"][x]["url"], ">"]))
+            article_list.append(
+                "".join(["`", raw_result["articles"][x]["title"], "`"]))
+            article_list.append(
+                "".join(["<", raw_result["articles"][x]["url"], ">"]))
 
         # Found a better way
         return await self.bot.say("\n".join(article_list))
