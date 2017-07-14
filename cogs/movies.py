@@ -21,18 +21,18 @@ class Movies():
 
         response = search.movie(query=" ".join(args))
 
-        decode = search.results
+        s_results = search.results
 
-        if not decode:
+        if not s_results:
             return await self.bot.say("Sorry, couldn't find that one.")
 
-        rating = float(decode[0]['vote_average'])
+        rating = float(s_results[0]['vote_average'])
         if (rating < 7.0):
             rec = "This is not a qtbot™ recommmended film."
         else:
             rec = "This is a qtbot™ recommended film."
 
-        return await self.bot.say("Title: `{}`\nYear: `{}`\nPlot: `{}`\nTMDb rating: `{}`\n{}".format(decode[0]['title'], (decode[0]['release_date']).split('-')[0], decode[0]['overview'], rating, rec))
+        return await self.bot.say("Title: `{}`\nYear: `{}`\nPlot: `{}`\nTMDb rating: `{}`\n{}".format(s_results[0]['title'], (s_results[0]['release_date']).split('-')[0], s_results[0]['overview'], rating, rec))
 
 
 def setup(bot):

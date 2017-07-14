@@ -17,15 +17,12 @@ class YouTube():
 
         # Get videos from yt API
         try:
-            video_list = yt.get_video_info(query, num_results=3)
+            video_list = yt.get_video_info(query, num_results=1)
         except LookupError:
             return await self.bot.say("Sorry, couldn't find anything for `{}`.".format(query))
 
-        # Good God I'm sorry for this
-        format_str = "**{}**\n<{}>\n```{}```\n**See Also:**\n```{}:\n{}\n\n{}:\n{}```".format(
-            video_list[0]["title"], video_list[0]["video_url"], video_list[0]["description"], video_list[1]["title"], video_list[1]["video_url"], video_list[2]["title"], video_list[2]["video_url"])
-
-        return await self.bot.say(format_str)
+        # Return top hit
+        return await self.bot.say("{}".format(video_list[0]["video_url"]))
 
 
 def setup(bot):

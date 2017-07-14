@@ -18,10 +18,14 @@ class News():
 
     @commands.bot.command(name="news")
     async def get_news(self, num_results=3):
-        """ Get the top x articles from Google News (powered by https://newsapi.org/) """
+        """ Get the top 1 - 5 (default 3) articles from Google News (powered by https://newsapi.org/) """
 
+        # More than 5 is very spammy
         if num_results < 1 or num_results > 5:
             return await self.bot.say("Sorry, please choose a number of results between 1 and 5 inclusive.")
+
+        # Cache those calls
+        requests_cache.install_cache(expire_after=1800)
 
         # Call to API
         raw_result = requests.get(uri.format(news_api_key)).json()

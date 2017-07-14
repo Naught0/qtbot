@@ -69,7 +69,8 @@ def get_video_info(query: str, title_append="", num_results=1, thumb_quality=0) 
             "video_id": call_result["items"][x]["id"]["videoId"],
             "title": call_result["items"][x]["snippet"]["title"] + title_append,
             "description": call_result["items"][x]["snippet"]["description"],
-            "views": _get_video_views(_get_watch_url(call_result["items"][x]["id"]["videoId"])),
+            # This is far too time intensive for a resource I don't use
+            # "views": _get_video_views(_get_watch_url(call_result["items"][x]["id"]["videoId"])),
             "video_url": _get_watch_url(call_result["items"][x]["id"]["videoId"]),
             "thumb_url": call_result["items"][x]["snippet"]["thumbnails"][thumb_quality_list[thumb_quality]]["url"]
         }
