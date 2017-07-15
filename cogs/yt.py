@@ -13,6 +13,9 @@ class YouTube():
     async def get_youtube_video(self, *args):
         """ Returns some matching youtube videos for a query """
 
+        if not args:
+            return await self.bot.say("Go on, search something.")
+
         query = " ".join(args)
 
         # Get videos from yt API

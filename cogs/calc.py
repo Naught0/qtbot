@@ -1,3 +1,5 @@
+#!/bin/env python
+
 import discord
 import wolframalpha
 import json
@@ -16,6 +18,9 @@ class Calculator():
     @commands.bot.command(aliases=['calc', 'cal', 'c'])
     async def calculate(self, *args):
         """ Calculate like, anything. """
+
+        if not args:
+            return await self.bot.say("Please enter something for me to calculate!")
 
         q = " ".join(args)
         result = Calculator.client.query(q)

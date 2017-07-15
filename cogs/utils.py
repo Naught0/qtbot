@@ -15,14 +15,38 @@ class LeagueUtils():
 
         return True
 
-    def getChampID(champ) -> dict:
+    # Note:
+    # Must use get_riot_champ_name to pass `champ`
+    # If the name formatting is in question
+    # i.e. Vel'Koz is formatted to Velkoz
+    # and Lee Sin is LeeSin
+    # Otherwise you will receive a key error
+    def getChampID(champ):
         with open("data/champ_data.json", "r") as f:
             champ_dict = json.load(f)
-        if champ in champ_dict["data"]:
-            return champ_dict["data"][champ]["id"]
-        else:
-            corrected_champ = DictManip.getClosest(champ_dict["data"], champ)
-            return champ_dict["data"][corrected_champ]["id"]
+
+        return champ_dict["data"][champ]["id"]
+
+    def get_fancy_champ_name(champ):
+        with open("data/champ_data.json", "r") as f:
+            champ_dict = json.load(f)
+
+        return champ_dict["data"][champ]["name"]
+
+    def get_riot_champ_name(champ):
+        with open("data/champ_data.json", "r") as f:
+            champ_dict = json.load(f)
+
+        return DictManip.getClosest(champ_dict["data"], champ)
+
+    def get_champ_title(champ):
+        with open("data/champ_data.json", "r") as f:
+            champ_dict = json.load(f)
+
+        return champ_dict["data"][champ]["title"]
+
+    def get_summoner_icon(summoner, region):
+        return "https://avatar.leagueoflegends.com/{}/{}.png".format(region, summoner)
 
     def getSummonerID(summoner_name):
         pass

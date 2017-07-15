@@ -34,7 +34,9 @@ class Wiki():
             return await self.bot.say(embed=em)
 
         # Search for page name
-        page_title = wikipedia.search(query)[0]
+        # I modified the library to return the first result if there is a
+        # disambiguation exception
+        page_title = wikipedia.search(query)
 
         # No pages found
         if not page_title:

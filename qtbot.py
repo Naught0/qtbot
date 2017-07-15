@@ -1,17 +1,17 @@
+#!/bin/env python
+
 import discord
 import json
 from datetime import datetime
 from discord.ext import commands
 
 # Init bot
-des = "qtbot is a big qt written in python3 and _love_"
+des = "qtbot is a big qt written in python3 and love."
 bot = commands.Bot(command_prefix=".", description=des)
 
 # Get bot's token
 with open("data/apikeys.json", "r") as f:
-    apiKeys = json.load(f)
-f.close()
-discord_bot_token = apiKeys["discord"]
+    discord_bot_token = json.load(f)["discord"]
 
 # Choose default cogs
 startup_extensions = [
@@ -26,17 +26,17 @@ startup_extensions = [
     "cogs.league",
     "cogs.google",
     "cogs.yt",
-    "cogs.news"]
+    "cogs.news",
+    "cogs.wiki"]
 
 # Get current time for uptime
 startTime = datetime.now()
 startTimeStr = startTime.strftime("%B %d %H:%M:%S")
 
-# Basic information printed via stdout
-
 
 @bot.event
 async def on_ready():
+    # Basic information printed via stdout
     print("Client logged in at {}".format(startTimeStr))
     print(bot.user.name)
     print(bot.user.id)
@@ -60,7 +60,7 @@ async def unload(extension_name: str):
     return await bot.say("Cog `{}` has been unloaded.".format(extension_name))
 
 
-@bot.command()
+@bot.command(aliases="r")
 async def reload(extension_name: str):
     """ Reloads an extension """
     bot.unload_extension(extension_name)
@@ -68,7 +68,7 @@ async def reload(extension_name: str):
     return await bot.say("Cog `{}` has been reloaded.".format(extension_name))
 
 
-@bot.command()
+@bot.command(aliases=["up"])
 async def uptime():
     """ Get current uptime """
     currentTime = datetime.now()

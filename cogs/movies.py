@@ -1,3 +1,5 @@
+#!/bin/env python
+
 import discord
 import json
 from discord.ext import commands
@@ -5,9 +7,7 @@ import tmdbsimple as tmdb
 
 # TMDb info
 with open("data/apikeys.json") as f:
-    api_keys = json.load(f)
-
-tmdb.API_KEY = api_keys["tmdb"]
+    tmdb.API_KEY = json.load(f)["tmdb"]
 
 
 class Movies():
@@ -32,7 +32,20 @@ class Movies():
         else:
             rec = "This is a qtbot™ recommended film."
 
-        return await self.bot.say("Title: `{}`\nYear: `{}`\nPlot: `{}`\nTMDb rating: `{}`\n{}".format(s_results[0]['title'], (s_results[0]['release_date']).split('-')[0], s_results[0]['overview'], rating, rec))
+        # For getting poster
+        base_image_uri = "https://image.tmdb.org/t/p/w185{}"
+
+        # Create embed
+        em = discord.Embed()
+        em.title = "{} ({})".format(
+            s_results[0]["title"], s_results[0]["release_date"].split('-')[0])
+        em.description = s_results[0]["overview"]
+        em.set_thumbnail(url=base_image_uri.format(
+            s_results[0]["poster_path"]))
+        em.add_field(name="Rating", value=str(rating))
+        em.set_footer(text=rec)
+
+        return await self.bot.say(embed=em)
 
 
 def setup(bot):

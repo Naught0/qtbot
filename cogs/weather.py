@@ -5,16 +5,16 @@ import requests_cache
 from cogs.utils import UserFileManip as ufm
 from discord.ext import commands
 
+# Wunderground API info
+with open("data/apikeys.json", "r") as f:
+    api_key = json.load(f)["wunderground"]
+
+wunderground_url = "http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json"
+
 
 class Weather():
     def __init__(self, bot):
         self.bot = bot
-
-    # Wunderground API info
-    with open("data/apikeys.json", "r") as f:
-        apiKeys = json.load(f)
-    wunderZipURL = "http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json"
-    wunderKey = apiKeys['wunderground']
 
     @commands.bot.command(pass_context=True, aliases=['addzip', 'addz, ''az'])
     async def addZipCode(self, ctx, zip_code=""):
@@ -38,19 +38,16 @@ class Weather():
     # Gets weather based on zip
     @commands.bot.command(pass_context=True, aliases=['wt', 'w'])
     async def weather(self, ctx, zip_code=""):
-        """ 
-        Search with zipcode, or not, and qtbot will try to find your zip from the userfile.
-        """
+        """ Search with zipcode, or not, and qtbot will try to find your zip from the userfile. """
+
         # Set cache expiry time
         requests_cache.install_cache(expire_after=1800)
 
         # user's snowflake ID
         member = str(ctx.message.author)
 
-        # Inits file if not found
-        if not ufm.foundUserFile():
-            ufm.createUserFile(member, "zip", zip_code)
-        elif zip_code == "":  # Find zipcode in file
+        # If no zipcode provided
+        if zip_code == "":  # Find zipcode in file
             zip_code = ufm.getUserInfo(member, "zip")
 
         # getUserInfo returns "error" if user has no zip on file
@@ -60,10 +57,10 @@ class Weather():
         # Load wunderAPI info into d
         # Sometimes wunderground dies --> handle it
         try:
-            d = requests.get(Weather.wunderZipURL.format(
-                Weather.wunderKey, zip_code)).json()
-        except ConnectionError as e:
-            return await self.bot.say("Sorry, wunderground is having trouble with this request.\n{}".format(e))
+            d = requests.get(wunderground_url.format(
+                api_key, zip_code)).json()
+        except ConnectionError:
+            return await self.bot.say("Sorry, wunderground is having trouble with this request. Try again in a bit.")
 
         # Except KeyError --> city isn't found
         try:
@@ -83,27 +80,25 @@ class Weather():
     # Gets forecast based on zip
     @commands.bot.command(pass_context=True, aliases=['fc', 'f'])
     async def forecast(self, ctx, zip_code=""):
-        """ 
-        Search with zipcode, or not, and qtbot will try to find your zip from the userfile.
-        """
+        """ Search with zipcode, or not, and qtbot will try to find your zip from the userfile."""
+
         # Set cache expiry time
         requests_cache.install_cache(expire_after=3600)
 
         # user's snowflake ID
         member = str(ctx.message.author)
 
-        # Inits userfile if not found with given values
-        if not ufm.foundUserFile():
-            ufm.createUserFile(member, "zip", zip_code)
-        elif zip_code == "":  # Find zipcode in file
-            try:
-                zip_code = ufm.getUserInfo(member, "zip")
-            except KeyError:
-                return await self.bot.say("Sorry, you're not in my file!\nPlease use `addzip||addz||az` with a valid zipcode.")
+        # If no zipcode provided
+        if zip_code == "":  # Find zipcode in file
+            zip_code = ufm.getUserInfo(member, "zip")
+
+        # UFM returns str error if no zip found
+        if zip_code == "error":
+            return await self.bot.say("Sorry, you're not in my file!\nPlease use `addzip||addz||az` with a valid zipcode.")
 
         # Json response in string form
-        d = requests.get(Weather.wunderZipURL.format(
-            Weather.wunderKey, zip_code)).json()
+        d = requests.get(wunderground_url.format(
+            api_key, zip_code)).json()
 
         # Handling city not found error
         try:
