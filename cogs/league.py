@@ -1,3 +1,5 @@
+#!/bin/env python
+
 import discord
 import requests
 import json
@@ -155,22 +157,35 @@ class League():
         if "error" in res:
             return await self.bot.say("Sorry, I can't find `{}`".format(summoner))
 
+        # Replace "None" with 0 for error margin
+        for kind in res:
+            if res[kind]["err"] is None:
+                res[kind]["err"] = 0
+
         # Create embed
         em = discord.Embed()
 
         em.title = f_summoner
         em.url = site_uri.format(summoner)
         em.set_thumbnail(url=lu.get_summoner_icon(summoner, "na"))
+
+        # Display ranked MMR
         if res["ranked"]["avg"] is not None:
-            em.add_field(name="Approximate rank", value=res["ranked"]["summary"].split('<b>')[1].split('</b')[0])
+            em.add_field(name="Approximate rank", value=res["ranked"]["summary"].split('<b>')[1].split('</b')[0].title())
             em.add_field(name="Ranked MMR", value="{}±{}".format(
                 res["ranked"]["avg"], res["ranked"]["err"]))
+
+        # Display normal MMR
         if res["normal"]["avg"] is not None:
             em.add_field(name="Normal MMR", value="{}±{}".format(
                 res["normal"]["avg"], res["normal"]["err"]))
+
+        # Display ARAM MMR
         if res["ARAM"]["avg"] is not None:
             em.add_field(name="ARAM MMR", value="{}±{}".format(
                 res["ARAM"]["avg"], res["ARAM"]["err"]))
+
+        em.set_footer(text="Powered by WhatIsMyMMR.com and Riot's API.")
 
         return await self.bot.say(embed=em)
 
