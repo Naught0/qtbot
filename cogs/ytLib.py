@@ -1,7 +1,6 @@
 import requests
 import os
 import json
-import pafy
 
 with open("data/apikeys.json") as f:
     yt_api_key = json.load(f)["youtube"]
@@ -69,8 +68,6 @@ def get_video_info(query: str, title_append="", num_results=1, thumb_quality=0) 
             "video_id": call_result["items"][x]["id"]["videoId"],
             "title": call_result["items"][x]["snippet"]["title"] + title_append,
             "description": call_result["items"][x]["snippet"]["description"],
-            # This is far too time intensive for a resource I don't use
-            # "views": _get_video_views(_get_watch_url(call_result["items"][x]["id"]["videoId"])),
             "video_url": _get_watch_url(call_result["items"][x]["id"]["videoId"]),
             "thumb_url": call_result["items"][x]["snippet"]["thumbnails"][thumb_quality_list[thumb_quality]]["url"]
         }
@@ -82,30 +79,3 @@ def _get_watch_url(video_id: str) -> str:
     """ Creates watchable / downloadable URL from video's ID """
 
     return "https://www.youtube.com/watch?v={}".format(video_id)
-
-
-def _get_video_views(video_url):
-    video = pafy.new(video_url)
-
-    return video.viewcount
-
-# This will get video resolution, extension and size
-# def get_file_info(video_url):
-#     video = pafy.new(video_url)
-#     streams = video.streams
-#     stream_dict = {}
-#     for s in streams:
-#         stream_dict[s.resolution] = {"type": s.extension, "size": s.get_filesize()}
-
-#     return stream_dict
-
-
-def download_video(video_url, video_title, directory=os.getcwd()):
-    """ Uses pafy to download the video """
-
-    video = pafy.new(video_url)
-    hq_video = video.getbest(preftype="mp4")
-
-    # This bit is ugly but it works so ¯\_(ツ)_/¯
-    hq_video.download(filepath=directory + video_title +
-                      "." + hq_video.extension, quiet=False)
