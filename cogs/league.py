@@ -120,8 +120,8 @@ class League():
                 json.dump(new_champ_list, f)
             return await self.bot.say("Creating chamption information file.")
 
-    @commands.bot.command(pass_context=True, aliases=['elo', 'mmr'])
-    async def getLeagueElo(self, ctx, *args):
+    @commands.bot.command(name="LeagueElo", pass_context=True, aliases=['elo', 'mmr'])
+    async def get_league_elo(self, ctx, *args):
         """ Get League of Legends elo / mmr from na.whatismymmr.com """
 
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic
@@ -171,7 +171,13 @@ class League():
 
         # Display ranked MMR
         if res["ranked"]["avg"] is not None:
-            em.add_field(name="Approximate rank", value=res["ranked"]["summary"].split('<b>')[1].split('</b')[0].title())
+            # I'll think of a better way to do this later, but for now, it works
+            rank_str = res["ranked"]["summary"].split('<b>')[1].split('</b')[0]
+            new_str = rank_str.split(" ")
+            new_str[0] = new_str[0].capitalize()
+            rank_str = " ".join(new_str)
+            # Add to embed field  
+            em.add_field(name="Approximate rank", value=rank_str)
             em.add_field(name="Ranked MMR", value="{}±{}".format(
                 res["ranked"]["avg"], res["ranked"]["err"]))
 
