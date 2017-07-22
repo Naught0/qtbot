@@ -29,8 +29,9 @@ class League():
     # Init RiotObserver
     rito = ro(riot_api_key)
 
-    @commands.bot.command(pass_context=True, aliases=['aln', 'addl', 'addleague'])
-    async def addLeagueName(self, ctx, *args):
+    @commands.bot.command(pass_context=True, name="aln", aliases=['addl', 'addleague'])
+    async def add_league_name(self, ctx, *args):
+        """ Add your summoner name to the user file """
         member = str(ctx.message.author)
         summoner_name = " ".join(args)
 
@@ -45,8 +46,8 @@ class League():
                                summoner_name)
             return
 
-    @commands.bot.command(aliases=['champ', 'ci'])
-    async def getChampInfo(self, *args):
+    @commands.bot.command(name="ci", aliases=['champ'])
+    async def get_champ_info(self, *args):
         """ Return play, ban, and win rate for a champ """
         uri = "http://api.champion.gg/v2/champions/{}?api_key={}"
         icon_uri = "https://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/{}.png"
@@ -91,8 +92,8 @@ class League():
     #     summoner_obj = League.getSummonerObj(summoner_name)
     #     return await self.bot.say("Latest match information for {} ({})\n{}".format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
 
-    @commands.bot.command(aliases=['ucf'])
-    async def updateChampionFile(self):
+    @commands.bot.command(name="ucf")
+    async def update_champ_file(self):
         """ Creates / updates a json file containing champion IDs, names, titles, etc. """
 
         # Case where champ data found
@@ -120,7 +121,7 @@ class League():
                 json.dump(new_champ_list, f)
             return await self.bot.say("Creating chamption information file.")
 
-    @commands.bot.command(pass_context=True, aliases=['elo', 'mmr'])
+    @commands.bot.command(pass_context=True, name="elo", aliases=['mmr'])
     async def getLeagueElo(self, ctx, *args):
         """ Get League of Legends elo / mmr from na.whatismymmr.com """
 
@@ -171,7 +172,8 @@ class League():
 
         # Display ranked MMR
         if res["ranked"]["avg"] is not None:
-            em.add_field(name="Approximate rank", value=res["ranked"]["summary"].split('<b>')[1].split('</b')[0].title())
+            em.add_field(name="Approximate rank", value=res["ranked"]["summary"].split(
+                '<b>')[1].split('</b')[0].title())
             em.add_field(name="Ranked MMR", value="{}±{}".format(
                 res["ranked"]["avg"], res["ranked"]["err"]))
 

@@ -9,6 +9,9 @@ from discord.ext import commands
 with open("data/apikeys.json", "r") as f:
     api_key = json.load(f)["wunderground"]
 
+weather_icon_dict = {"storm": "https://u.teknik.io/gXqry.png", "partly_cloudy": "https://u.teknik.io/Va3lK.png", "mostly_cloudy": "https://u.teknik.io/GZVKi.png",
+                     "cloudy": "https://u.teknik.io/xG1R0.png", "clear": "https://u.teknik.io/ddab9.png", "rain": "https://u.teknik.io/HdThS.png"}
+
 wunderground_url = "http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json"
 
 
@@ -16,7 +19,7 @@ class Weather():
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.bot.command(pass_context=True, aliases=['addzip', 'addz, ''az'])
+    @commands.bot.command(pass_context=True, name="az")
     async def addZipCode(self, ctx, zip_code=""):
         """ Add your zipcode for qtbot to remember """
 
@@ -36,7 +39,7 @@ class Weather():
         return await self.bot.say("Successfully added zipcode `{}` for user `{}`.".format(zip_code, member))
 
     # Gets weather based on zip
-    @commands.bot.command(pass_context=True, aliases=['wt', 'w'])
+    @commands.bot.command(pass_context=True, name="wt", aliases=['w'])
     async def weather(self, ctx, zip_code=""):
         """ Search with zipcode, or not, and qtbot will try to find your zip from the userfile. """
 
@@ -72,13 +75,34 @@ class Weather():
         state = d["location"]["state"]
         temp = d["current_observation"]["temp_f"]
         conditions = d["current_observation"]["weather"]
+        print(conditions)
         wind = d["current_observation"]["wind_string"]
         humidity = d["current_observation"]["relative_humidity"]
 
-        return await self.bot.say("The weather for `{}, {}`: \n`{}` at `{}°F`. Winds `{}`. Relative humidity `{}`.".format(city, state, conditions, temp, wind.lower(), humidity))
+        # Create the embed
+        em = discord.Embed()
+        em.title = "Weather for {}, {}".format(city, state)
+        em.add_field(name="Temperature", value="{}°F".format(temp))
+        em.add_field(name="Conditions", value=conditions)
+        em.add_field(name="Relative humidity", value=humidity)
+        em.add_field(name="Winds", value=wind)
+
+        # Conditions to lower
+        cond_lower = conditions.lower()
+        if "rain" in cond_lower:
+            em.set_thumbnail(url=weather_icon_dict["rain"])
+        elif "clear" in cond_lower or "sunny" in cond_lower:
+            em.set_thumbnail(url=weather_icon_dict["clear"])
+        elif "partly" in cond_lower:
+            em.set_thumbnail(url=weather_icon_dict["partly_cloudy"])
+        elif "storm" in cond_lower or "thunderstorm" in cond_lower:
+            em.set_thumbnail(url=weather_icon_dict["storm"])
+
+        return await self.bot.say(embed=em)
+        # return await self.bot.say("The weather for `{}, {}`: \n`{}` at `{}°F`. Winds `{}`. Relative humidity `{}`.".format(city, state, conditions, temp, wind.lower(), humidity))
 
     # Gets forecast based on zip
-    @commands.bot.command(pass_context=True, aliases=['fc', 'f'])
+    @commands.bot.command(pass_context=True, name="fc", aliases=['f'])
     async def forecast(self, ctx, zip_code=""):
         """ Search with zipcode, or not, and qtbot will try to find your zip from the userfile."""
 

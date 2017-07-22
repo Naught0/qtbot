@@ -13,10 +13,12 @@ class Generic():
 
     # No kicking allowed
     @commands.bot.command()
-    async def akick(self, *args):
+    async def kick(self, *args):
         """Don't use this"""
         phrases = ["I would never!", "That isn't very nice!",
-                   "Maybe we should talk about our feelings.", "Calm down.", "Check your privileges."]
+                   "Maybe we should talk about our feelings.",
+                   "Calm down.", "Check your privileges.",
+                   "Make love, not war."]
         return await self.bot.say(phrases[random.randint(0, len(phrases) - 1)])
 
     # Returns pseudo-random magic 8-ball result

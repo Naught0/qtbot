@@ -18,8 +18,8 @@ class Dictionary():
     WordClient = swagger.ApiClient(wordnikKey, 'http://api.wordnik.com/v4')
 
     # Returns the most common definition of a word
-    @commands.bot.command(aliases=['def', 'd'])
-    async def define(self, word):
+    @commands.bot.command(name="define", aliases=['d'])
+    async def wordnik_define(self, word):
         """ Provides the definition of _a_ word """
         wordApi = WordApi.WordApi(Dictionary.WordClient)
 
@@ -41,8 +41,8 @@ class Dictionary():
         return await self.bot.say("{} _{}_ `{}`".format(word.title(), word_pos, result[0].text))
 
     # Urban dictionary
-    @commands.bot.command(aliases=['ud', 'urbdic'])
-    async def urbanDictionary(self, *args):
+    @commands.bot.command(name="ud")
+    async def get_urban_def(self, *args):
         """ Consult the world's leading dictionary """
         result = urbdic.define(" ".join(args))
 

@@ -28,12 +28,12 @@ class OSRS():
         print("Writing file...")
 
         data.write(fstr)
-        print("Write complete\nInitializing bot...\n------")
+        print("Write complete")
         data.close()
 
     # Get GE Prices
-    @commands.bot.command(aliases=['ge'])
-    async def grandExchange(self, *args):
+    @commands.bot.command(name="ge")
+    async def ge_search(self, *args):
         """ Get the buying/selling price and quantity of an OSRS item """
         # relevant API calls & formatted
         with open("data/item-data.json", "r") as f:

@@ -9,7 +9,7 @@ class YouTube():
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.bot.command(name="youtube", aliases=["yt"])
+    @commands.bot.command(name="yt")
     async def get_youtube_video(self, *args):
         """ Returns some matching youtube videos for a query """
 
