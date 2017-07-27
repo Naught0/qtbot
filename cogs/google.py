@@ -47,7 +47,7 @@ class Google():
 
         if len(link_list) >= 3:
             # Say top 3 results
-            return await self.bot.say("**Top Result**:\n<{}>\n**See also:**```\n{}\n{}```".format(link_list[0], link_list[1], link_list[2]))
+            return await self.bot.say("**Top Result**:\n{}\n**See also:**```\n1. {}\n2. {}```".format(link_list[0], link_list[1], link_list[2]))
         else:
             # Say first result
             return await self.bot.say("{}".format(link_list[0]))

@@ -20,7 +20,7 @@ class Weather():
         self.bot = bot
 
     @commands.bot.command(pass_context=True, name="az")
-    async def addZipCode(self, ctx, zip_code=""):
+    async def add_zip(self, ctx, zip_code=""):
         """ Add your zipcode for qtbot to remember """
 
         # No zipcode supplied
@@ -75,7 +75,6 @@ class Weather():
         state = d["location"]["state"]
         temp = d["current_observation"]["temp_f"]
         conditions = d["current_observation"]["weather"]
-        print(conditions)
         wind = d["current_observation"]["wind_string"]
         humidity = d["current_observation"]["relative_humidity"]
 
@@ -93,7 +92,7 @@ class Weather():
             em.set_thumbnail(url=weather_icon_dict["rain"])
         elif "clear" in cond_lower or "sunny" in cond_lower:
             em.set_thumbnail(url=weather_icon_dict["clear"])
-        elif "partly" in cond_lower:
+        elif "cloudy" in cond_lower:
             em.set_thumbnail(url=weather_icon_dict["partly_cloudy"])
         elif "storm" in cond_lower or "thunderstorm" in cond_lower:
             em.set_thumbnail(url=weather_icon_dict["storm"])

@@ -16,7 +16,7 @@ class Movies():
 
     @commands.bot.command(name="movie", aliases=['mov'])
     async def get_movie(self, *args):
-        """ Get basic info about a movie """
+        """ Get movie information """
         search = tmdb.Search()
 
         response = search.movie(query=" ".join(args))
@@ -34,7 +34,6 @@ class Movies():
 
         # For getting poster
         base_image_uri = "https://image.tmdb.org/t/p/w185{}"
-        tomato_uri = "https://www.rottentomatoes.com/m/{}"
 
         # Create embed
         em = discord.Embed()
