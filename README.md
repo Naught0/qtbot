@@ -9,6 +9,8 @@
 * TMDb: `.movie`
 * Riot Games: `.ucf` (updateChampFile)
 * Champion.gg: `.champ`
+* NewsApi.org: `.news`
+* WhatIsMyMMR.com: `.elo` 
 ---
 * Calculator: 
   * `calc`   Calculate like, anything (wolfram alpha)
@@ -32,12 +34,12 @@
 * Google:
   * `g`      Returns Google result for a query
 * League:
-  * `elo`    Get League of Legends elo / mmr from na.whatismymmr.com 
+  * `elo`    Get League of Legends elo
   * `mmr`    Alias for the above
 * Movies:
   * `movie`  Get basic info about a movie 
 * News:
-  * `news`   Get the top news from Google News (powered by https://newsapi.org/)
+  * `news`   Get the top news
 * OSRS:
   * `ge`     Get the buying/selling price and quantity of an OSRS item 
 * Weather:
