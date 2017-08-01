@@ -27,7 +27,8 @@ startup_extensions = [
     "cogs.google",
     "cogs.yt",
     "cogs.news",
-    "cogs.wiki"]
+    "cogs.wiki",
+    "cogs.isup"]
 
 # Get current time for uptime
 startTime = datetime.now()

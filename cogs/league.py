@@ -179,7 +179,7 @@ class League():
             new_str = rank_str.split(" ")
             new_str[0] = new_str[0].capitalize()
             rank_str = " ".join(new_str)
-            # Add to embed field  
+            # Add to embed field
             em.add_field(name="Approximate rank", value=rank_str)
             em.add_field(name="Ranked MMR", value="{}±{}".format(
                 res["ranked"]["avg"], res["ranked"]["err"]))

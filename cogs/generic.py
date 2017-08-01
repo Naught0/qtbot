@@ -16,7 +16,7 @@ class Generic():
     async def kick(self, *args):
         """Don't use this"""
         phrases = ["I would never!", "That isn't very nice!",
-                   "Maybe we should talk about our feelings.", 
+                   "Maybe we should talk about our feelings.",
                    "Calm down.", "Check your privileges.",
                    "Make love, not war."]
         return await self.bot.say(phrases[random.randint(0, len(phrases) - 1)])
