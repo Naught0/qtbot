@@ -9,7 +9,7 @@ class Generic():
 
     @commands.bot.command()
     async def todo(self):
-        return await self.bot.say("[ ] Gambling bot [ ] League Match History [ ] Google")
+        return await self.bot.say("[ ] Gambling bot [ ] League Match History")
 
     # No kicking allowed
     @commands.bot.command()
@@ -23,6 +23,7 @@ class Generic():
 
     @commands.bot.command(pass_context=True)
     async def say(self, ctx, *args):
+        """ Make qtbot say anything ;) """
         await self.bot.delete_message(ctx.message)
         return await self.bot.say(" ".join(args))
 
