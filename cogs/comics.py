@@ -1,3 +1,5 @@
+#!/bin/env python
+
 import discord
 import json
 from discord.ext import commands
@@ -17,7 +19,7 @@ class Comics:
     def __init__(self, bot):
         self.bot = bot
 
-    def sync_get_xkcd(self, word_list=False) -> dict:
+    def sync_get_xkcd(word_list=False) -> dict:
         """ Non a-sync function utilizing xkcd library """
 
         # Short circuit upon no alpha input --> rand comic
@@ -69,7 +71,7 @@ class Comics:
         if comic_dict["random"]:
             await ctx.send("**{}**\n{}".format(comic_dict["title"], comic_dict["image_link"]))
         else:
-            await ctx.send("I found this comic with {} hits\n**{}**\n{}".format(comic_dict["hits"], comic_dict["title"], comic_dict["image_link"]))
+            await ctx.send("I found this comic with {} hit(s):\n**{}**\n{}".format(comic_dict["hits"], comic_dict["title"], comic_dict["image_link"]))
 
 
 def setup(bot):

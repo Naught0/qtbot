@@ -7,7 +7,7 @@ class Giphy:
     def __init__(self, bot):
         self.bot = bot
 
-    def sync_giphy(self, query=None):
+    def sync_giphy(query=None):
         """ Non async giphy library function """
         giphy_instance = giphypop.Giphy()
 
@@ -16,7 +16,7 @@ class Giphy:
 
         gif = giphy_instance.random_gif(query)
 
-        if gif: 
+        if gif:
             return gif
 
         return gif

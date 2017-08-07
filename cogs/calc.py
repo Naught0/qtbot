@@ -10,10 +10,20 @@ class Calculator:
     def __init__(self, bot):
         self.bot = bot
 
-    with open("data/apikeys.json", "r") as f:
-        api_key = json.load(f)["wolfram"]
+    def sync_calc(query):
+        """ Non async wolfrmaalpha lib function """
+        with open("data/apikeys.json", "r") as f:
+            api_key = json.load(f)["wolfram"]
 
-    client = wolframalpha.Client(api_key)
+        client = wolframalpha.Client(api_key)
+
+        # Attempt calculation
+        result = client.query(query)
+
+        if hasattr(result, "results"):
+            return next(result.results).text
+        else:
+            return None
 
     @commands.command(aliases=['calc', 'cal', 'c'])
     async def calculate(self, ctx, *args):
@@ -23,13 +33,13 @@ class Calculator:
             return await ctx.send("Please enter something for me to calculate!")
 
         q = " ".join(args)
-        result = Calculator.client.query(q)
 
-        # Try to calculate
-        try:
-            await ctx.send(next(result.results).text)
-        except AttributeError:  # Except when no result
-            await ctx.send("Sorry, I couldn't calculate `{}`.".format(q))
+        result = await self.bot.loop.run_in_executor(None, Calculator.sync_calc, q)
+
+        if result is not None:
+            await ctx.send(result)
+        else:
+            await ctx.send("Sorry, I couldn't calculate `{}`.")
 
 
 def setup(bot):
