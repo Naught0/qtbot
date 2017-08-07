@@ -17,43 +17,59 @@ class Comics:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="xkcd", aliases=["xk", "x"])
-    async def get_xkcd(self, ctx, *args):
-        """ Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic """
+    def sync_get_xkcd(self, word_list=False) -> dict:
+        """ Non a-sync function utilizing xkcd library """ 
+
+        # Short circuit upon no alpha input --> rand comic
+        if not word_list:
+            comic_obj = xklib.getRandomComic()
+            return {"title": comic_obj.getTitle(), "image_link": comic_obj.getImageLink(), "random": True, "hits": 0}
 
         # pre-generated blob file
         with open("data/xkcd_blob.json") as f:
             json_blob_data = json.load(f)
 
-        # Split query into list and remove nonalpha phrases
-        wList = " ".join(args).lower().split()
-        for x in wList[:]:
+        # Remove nonalpha phrases
+        for x in word_list[:]:
             if not x.isalpha():
-                wList.remove(x)
+                word_list.remove(x)
 
-        # Short circuit upon no alpha input --> rand comic
-        if not wList:
-            randComic = xklib.getRandomComic()
-            return await ctx.send("**{}**\n{}".format(randComic.getTitle(), randComic.getImageLink()))
-
-        matchDict = {}
+        # Store the keys of matching comics as well as how many hits we got on each
+        match_dict = {}
         for key, value in json_blob_data.items():
             count = 0
-            for uw in wList:
+            for uw in word_list:
                 if uw in json_blob_data[key]["tfidf_words"]:
                     count += 1
-            matchDict[json_blob_data[key]["num"]] = count
 
-        n = dm.keywithmaxval(matchDict)
+            match_dict[json_blob_data[key]["num"]] = count
 
-        # no matches found --> random comic
-        if matchDict[n] == 0:
-            randComic = xklib.getRandomComic()
-            return await ctx.send("**{}**\n{}".format(randComic.getTitle(), randComic.getImageLink()))
+        # Get comic with max number of hits
+        n = dm.keywithmaxval(match_dict)
 
-        comic = xklib.getComic(n)
+        # Max hits == 0 --> random comic
+        if not match_dict[n]:
+            comic_obj = xklib.getRandomComic()
+            return {"title": comic_obj.getTitle(), "image_link": comic_obj.getImageLink(), "random": True, "hits": 0}
+            
+        else: # It actually worked? Nice
+            comic_obj = xklib.getComic(n)
+            return {"title": comic_obj.getTitle(), "image_link": comic_obj.getImageLink(), "random": False, "hits": match_dict[n]}
 
-        await ctx.send("I found this comic with {} hits\n**{}**\n{}".format(matchDict[n], comic.getTitle(), comic.getImageLink()))
+    @commands.command(name="xkcd", aliases=["xk", "x"])
+    async def get_xkcd(self, ctx, *args):
+        """ Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic. """
+        if args:
+            word_list = " ".join(args).lower().split()
+        else:
+            word_list = False
+        
+        comic_dict = await self.bot.loop.run_in_executor(None, Comics.sync_get_xkcd, word_list)
+
+        if comic_dict["random"]:
+            await ctx.send("**{}**\n{}".format(comic_dict["title"], comic_dict["image_link"]))
+        else:
+            await ctx.send("I found this comic with {} hits\n**{}**\n{}".format(comic_dict["hits"], comic_dict["title"], comic_dict["image_link"]))
 
 
 def setup(bot):
