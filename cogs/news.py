@@ -7,40 +7,40 @@ from discord.ext import commands
 
 
 with open("data/apikeys.json") as f:
-  news_api_key = json.load(f)["news"]
+    news_api_key = json.load(f)["news"]
 
 uri = "https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey={}"
 
 
 class News:
-  def __init__(self, bot):
-    self.bot = bot
+    def __init__(self, bot):
+        self.bot = bot
 
-  @commands.command(name="news")
-  async def get_news(self, ctx, num_results=3):
-    """ Get the top 1 - 5 (default 3) articles from Google News (powered by https://newsapi.org/) """
+    @commands.command(name="news")
+    async def get_news(self, ctx, num_results=3):
+        """ Get the top 1 - 5 (default 3) articles from Google News (powered by https://newsapi.org/) """
 
-    # More than 5 is very spammy
-    if num_results < 1 or num_results > 5:
-      return await ctx.send("Sorry, please choose a number of results between 1 and 5 inclusive.")
+        # More than 5 is very spammy
+        if num_results < 1 or num_results > 5:
+            return await ctx.send("Sorry, please choose a number of results between 1 and 5 inclusive.")
 
-    # Cache those calls
-    requests_cache.install_cache(expire_after=1800)
+        # Cache those calls
+        requests_cache.install_cache(expire_after=1800)
 
-    # Call to API
-    raw_result = requests.get(uri.format(news_api_key)).json()
+        # Call to API
+        raw_result = requests.get(uri.format(news_api_key)).json()
 
-    article_list = []
+        article_list = []
 
-    for x in range(num_results):
-      article_list.append(
-        "".join(["`", raw_result["articles"][x]["title"], "`"]))
-      article_list.append(
-        "".join(["<", raw_result["articles"][x]["url"], ">"]))
+        for x in range(num_results):
+            article_list.append(
+                "".join(["`", raw_result["articles"][x]["title"], "`"]))
+            article_list.append(
+                "".join(["<", raw_result["articles"][x]["url"], ">"]))
 
-    # Found a better way
-    await ctx.send("\n".join(article_list))
+        # Found a better way
+        await ctx.send("\n".join(article_list))
 
 
 def setup(bot):
-  bot.add_cog(News(bot))
+    bot.add_cog(News(bot))

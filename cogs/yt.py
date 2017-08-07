@@ -6,27 +6,27 @@ from discord.ext import commands
 
 
 class YouTube:
-  def __init__(self, bot):
-    self.bot = bot
+    def __init__(self, bot):
+        self.bot = bot
 
-  @commands.command(name="yt")
-  async def get_youtube_video(self, ctx, *args):
-    """ Returns some matching youtube videos for a query """
+    @commands.command(name="yt")
+    async def get_youtube_video(self, ctx, *args):
+        """ Returns some matching youtube videos for a query """
 
-    if not args:
-      return await ctx.send("Go on, search something.")
+        if not args:
+            return await ctx.send("Go on, search something.")
 
-    query = " ".join(args)
+        query = " ".join(args)
 
-    # Get videos from yt API
-    try:
-      video_list = yt.get_video_info(query, num_results=1)
-    except LookupError:
-      return await ctx.send("Sorry, couldn't find anything for `{}`.".format(query))
+        # Get videos from yt API
+        try:
+            video_list = yt.get_video_info(query, num_results=1)
+        except LookupError:
+            return await ctx.send("Sorry, couldn't find anything for `{}`.".format(query))
 
-    # Return top hit
-    await ctx.send("{}".format(video_list[0]["video_url"]))
+        # Return top hit
+        await ctx.send("{}".format(video_list[0]["video_url"]))
 
 
 def setup(bot):
-  bot.add_cog(YouTube(bot))
+    bot.add_cog(YouTube(bot))

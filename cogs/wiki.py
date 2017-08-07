@@ -7,52 +7,52 @@ from discord.ext import commands
 
 
 class Wiki:
-  def __init__(self, bot):
-    self.bot = bot
+    def __init__(self, bot):
+        self.bot = bot
 
-  @commands.command(name="wiki", aliases=['wi'])
-  async def wiki_search(self, ctx, *args):
-    """ Get the closest matching Wikipedia article for query """
+    @commands.command(name="wiki", aliases=['wi'])
+    async def wiki_search(self, ctx, *args):
+        """ Get the closest matching Wikipedia article for query """
 
-    query = " ".join(args)
+        query = " ".join(args)
 
-    # Create initial embed
-    em = discord.Embed()
+        # Create initial embed
+        em = discord.Embed()
 
-    # Neat wiki icon
-    em.set_thumbnail(
-      url="https://lh5.ggpht.com/1Erjb8gyF0RCc9uhnlfUdbU603IgMm-G-Y3aJuFcfQpno0N4HQIVkTZERCTo65Iz2II=w300")
+        # Neat wiki icon
+        em.set_thumbnail(
+            url="https://lh5.ggpht.com/1Erjb8gyF0RCc9uhnlfUdbU603IgMm-G-Y3aJuFcfQpno0N4HQIVkTZERCTo65Iz2II=w300")
 
-    # No query input
-    # Returns random article
-    if not args:
-      em.title = wikipedia.random(pages=1)
-      page = wikipedia.page(title=em.title)
-      em.description = textwrap.shorten(
-        page.summary, width=240, placeholder="...")
-      em.url = page.url
-      return await ctx.send(embed=em)
+        # No query input
+        # Returns random article
+        if not args:
+            em.title = wikipedia.random(pages=1)
+            page = wikipedia.page(title=em.title)
+            em.description = textwrap.shorten(
+                page.summary, width=240, placeholder="...")
+            em.url = page.url
+            return await ctx.send(embed=em)
 
-    # Search for page name
-    # I modified the library to return the first result if there is a
-    # disambiguation exception
-    page_title = wikipedia.search(query)
+        # Search for page name
+        # I modified the library to return the first result if there is a
+        # disambiguation exception
+        page_title = wikipedia.search(query)
 
-    # No pages found
-    if not page_title:
-      return await ctx.send("Sorry, couldn't find anything for `{}`".format(query))
+        # No pages found
+        if not page_title:
+            return await ctx.send("Sorry, couldn't find anything for `{}`".format(query))
 
-    # Page object
-    page = wikipedia.page(title=page_title)
+        # Page object
+        page = wikipedia.page(title=page_title)
 
-    # Create embed
-    em.title = page.title
-    em.description = textwrap.shorten(
-      page.summary, width=240, placeholder="...")
-    em.url = page.url
+        # Create embed
+        em.title = page.title
+        em.description = textwrap.shorten(
+            page.summary, width=240, placeholder="...")
+        em.url = page.url
 
-    await ctx.send(embed=em)
+        await ctx.send(embed=em)
 
 
 def setup(bot):
-  bot.add_cog(Wiki(bot))
+    bot.add_cog(Wiki(bot))

@@ -14,46 +14,47 @@ It will return the comic with the most whole-word matches.
 
 
 class Comics:
-  def __init__(self, bot):
-    self.bot = bot
+    def __init__(self, bot):
+        self.bot = bot
 
-  @commands.command(name="xkcd", aliases=["xk", "x"])
-  async def get_xkcd(self, ctx, *args):
-    """ Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic """
-    # pre-generated blob file
-    with open("data/xkcd_blob.json", "r") as f:
-      jsonData = json.load(f)
+    @commands.command(name="xkcd", aliases=["xk", "x"])
+    async def get_xkcd(self, ctx, *args):
+        """ Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic """
 
-    # Split query into list and remove nonalpha phrases
-    wList = " ".join(args).lower().split()
-    for x in wList[:]:
-      if not x.isalpha():
-        wList.remove(x)
+        # pre-generated blob file
+        with open("data/xkcd_blob.json") as f:
+            json_blob_data = json.load(f)
 
-    # Short circuit upon no alpha input --> rand comic
-    if not wList:
-      randComic = xklib.getRandomComic()
-      return await ctx.send("**{}**\n{}".format(randComic.getTitle(), randComic.getImageLink()))
+        # Split query into list and remove nonalpha phrases
+        wList = " ".join(args).lower().split()
+        for x in wList[:]:
+            if not x.isalpha():
+                wList.remove(x)
 
-    matchDict = {}
-    for key, value in jsonData.items():
-      count = 0
-      for uw in wList:
-        if uw in jsonData[key]["tfidf_words"]:
-          count += 1
-      matchDict[jsonData[key]["num"]] = count
+        # Short circuit upon no alpha input --> rand comic
+        if not wList:
+            randComic = xklib.getRandomComic()
+            return await ctx.send("**{}**\n{}".format(randComic.getTitle(), randComic.getImageLink()))
 
-    n = dm.keywithmaxval(matchDict)
+        matchDict = {}
+        for key, value in json_blob_data.items():
+            count = 0
+            for uw in wList:
+                if uw in json_blob_data[key]["tfidf_words"]:
+                    count += 1
+            matchDict[json_blob_data[key]["num"]] = count
 
-    # no matches found --> random comic
-    if matchDict[n] == 0:
-      randComic = xklib.getRandomComic()
-      return await ctx.send("**{}**\n{}".format(randComic.getTitle(), randComic.getImageLink()))
+        n = dm.keywithmaxval(matchDict)
 
-    comic = xklib.getComic(n)
+        # no matches found --> random comic
+        if matchDict[n] == 0:
+            randComic = xklib.getRandomComic()
+            return await ctx.send("**{}**\n{}".format(randComic.getTitle(), randComic.getImageLink()))
 
-    await ctx.send("I found this comic with {} hits\n**{}**\n{}".format(matchDict[n], comic.getTitle(), comic.getImageLink()))
+        comic = xklib.getComic(n)
+
+        await ctx.send("I found this comic with {} hits\n**{}**\n{}".format(matchDict[n], comic.getTitle(), comic.getImageLink()))
 
 
 def setup(bot):
-  bot.add_cog(Comics(bot))
+    bot.add_cog(Comics(bot))

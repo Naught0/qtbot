@@ -5,162 +5,162 @@ from bs4 import BeautifulSoup
 
 
 class LeagueUtils:
-  def foundChampFile():
-    """ Checks for valid league file and returns T/F """
-    try:
-      with open("data/champ_data.json", "r") as f:
-        _ = json.load(f)
-    except:
-      return False
+    def foundChampFile():
+        """ Checks for valid league file and returns T/F """
+        try:
+            with open("data/champ_data.json", "r") as f:
+                _ = json.load(f)
+        except:
+            return False
 
-    return True
+        return True
 
-  # Note:
-  # Must use get_riot_champ_name to pass `champ`
-  # If the name formatting is in question
-  # i.e. Vel'Koz is formatted to Velkoz
-  # and Lee Sin is LeeSin
-  # Otherwise you will receive a key error
-  def getChampID(champ):
-    with open("data/champ_data.json", "r") as f:
-      champ_dict = json.load(f)
+    # Note:
+    # Must use get_riot_champ_name to pass `champ`
+    # If the name formatting is in question
+    # i.e. Vel'Koz is formatted to Velkoz
+    # and Lee Sin is LeeSin
+    # Otherwise you will receive a key error
+    def getChampID(champ):
+        with open("data/champ_data.json", "r") as f:
+            champ_dict = json.load(f)
 
-    return champ_dict["data"][champ]["id"]
+        return champ_dict["data"][champ]["id"]
 
-  def get_fancy_champ_name(champ):
-    with open("data/champ_data.json", "r") as f:
-      champ_dict = json.load(f)
+    def get_fancy_champ_name(champ):
+        with open("data/champ_data.json", "r") as f:
+            champ_dict = json.load(f)
 
-    return champ_dict["data"][champ]["name"]
+        return champ_dict["data"][champ]["name"]
 
-  def get_riot_champ_name(champ):
-    with open("data/champ_data.json", "r") as f:
-      champ_dict = json.load(f)
+    def get_riot_champ_name(champ):
+        with open("data/champ_data.json", "r") as f:
+            champ_dict = json.load(f)
 
-    return DictManip.getClosest(champ_dict["data"], champ)
+        return DictManip.getClosest(champ_dict["data"], champ)
 
-  def get_champ_title(champ):
-    with open("data/champ_data.json", "r") as f:
-      champ_dict = json.load(f)
+    def get_champ_title(champ):
+        with open("data/champ_data.json", "r") as f:
+            champ_dict = json.load(f)
 
-    return champ_dict["data"][champ]["title"]
+        return champ_dict["data"][champ]["title"]
 
-  def get_summoner_icon(summoner, region):
-    return "https://avatar.leagueoflegends.com/{}/{}.png".format(region, summoner)
+    def get_summoner_icon(summoner, region):
+        return "https://avatar.leagueoflegends.com/{}/{}.png".format(region, summoner)
 
-  def getSummonerID(summoner_name):
-    pass
+    def getSummonerID(summoner_name):
+        pass
 
 
 class UserFileManip:
-  def foundUserFile():
-    """ Checks for user file and returns T/F """
-    return Path("data/user_data.json").is_file()
+    def foundUserFile():
+        """ Checks for user file and returns T/F """
+        return Path("data/user_data.json").is_file()
 
-  def getUserInfo(member, key):
-    """ Finds user and prints value of key """
-    with open("data/user_data.json", "r") as user_file:
-      user_data = json.load(user_file)
+    def getUserInfo(member, key):
+        """ Finds user and prints value of key """
+        with open("data/user_data.json", "r") as user_file:
+            user_data = json.load(user_file)
 
-    if (member in user_data) and (key in user_data[member]):
-      return user_data[member][key]
-    else:
-      raise KeyError("User not found.")
+        if (member in user_data) and (key in user_data[member]):
+            return user_data[member][key]
+        else:
+            raise KeyError("User not found.")
 
-  def updateUserInfo(member, key, info):
-    # Open file
-    with open("data/user_data.json", "r") as f:
-      user_data = json.load(f)
+    def updateUserInfo(member, key, info):
+        # Open file
+        with open("data/user_data.json", "r") as f:
+            user_data = json.load(f)
 
-    # If found user, update
-    if member in user_data:
-      user_data[member][key] = info
+        # If found user, update
+        if member in user_data:
+            user_data[member][key] = info
 
-      with open("data/user_data.json", "w") as user_file:
-        json.dump(user_data, user_file)
+            with open("data/user_data.json", "w") as user_file:
+                json.dump(user_data, user_file)
 
-      user_file.close()
+            user_file.close()
 
-    # Create user if not found
-    else:
-      with open("data/user_data.json", "r") as user_file:
-        user_data = json.load(user_file)
+        # Create user if not found
+        else:
+            with open("data/user_data.json", "r") as user_file:
+                user_data = json.load(user_file)
 
-      user_file = open("data/user_data.json", "r+")
+            user_file = open("data/user_data.json", "r+")
 
-      user_data[member] = {
-        key: info
-      }
+            user_data[member] = {
+                key: info
+            }
 
-      json.dump(user_data, user_file)
+            json.dump(user_data, user_file)
 
-  # Creates user file based on input
-  def createUserFile(member, key, info):
-    new_user = {
-      member:
-        {
-          key: info
+    # Creates user file based on input
+    def createUserFile(member, key, info):
+        new_user = {
+            member:
+            {
+                key: info
+            }
         }
-    }
-    f = open("data/user_data.json", "w+")
-    json.dump(new_user, f)
-    f.close()
-    return
+        f = open("data/user_data.json", "w+")
+        json.dump(new_user, f)
+        f.close()
+        return
 
 
 class DictManip:
-  def getClosest(word_dict, word):
-    """ returns the key which matches most closely to 'word' """
-    # stores keys and their edit distance values
-    distance_dict = {}
+    def getClosest(word_dict, word):
+        """ returns the key which matches most closely to 'word' """
+        # stores keys and their edit distance values
+        distance_dict = {}
 
-    for key in word_dict:
-      distance_dict[key] = ed(key, word)
+        for key in word_dict:
+            distance_dict[key] = ed(key, word)
 
-    # return key w/ least edits
-    return min(distance_dict, key=distance_dict.get)
+        # return key w/ least edits
+        return min(distance_dict, key=distance_dict.get)
 
-  def keywithmaxval(d):
-    """ 
-    a) create a list of the dict's keys and values; 
-    b) return the key with the max value
-    Shamelessly taken from:
-    http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
-    """
-    v = list(d.values())
-    k = list(d.keys())
-    return k[v.index(max(v))]
+    def keywithmaxval(d):
+        """ 
+        a) create a list of the dict's keys and values; 
+        b) return the key with the max value
+        Shamelessly taken from:
+        http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
+        """
+        v = list(d.values())
+        k = list(d.keys())
+        return k[v.index(max(v))]
 
-  def keywithminval(d):
-    """ 
-    a) create a list of the dict's keys and values; 
-    b) return the key with the max value
-    Shamelessly taken from:
-    http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
-    """
-    v = list(d.values())
-    k = list(d.keys())
-    return k[v.index(min(v))]
+    def keywithminval(d):
+        """ 
+        a) create a list of the dict's keys and values; 
+        b) return the key with the max value
+        Shamelessly taken from:
+        http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
+        """
+        v = list(d.values())
+        k = list(d.keys())
+        return k[v.index(min(v))]
 
 
 class GoogleFuncs:
-  def get_google_links(html):
-    """ Uses bs4 to extract links from google """
-    # Note, this only works with chromium headers
+    def get_google_links(html):
+        """ Uses bs4 to extract links from google """
+        # Note, this only works with chromium headers
 
-    soup = BeautifulSoup(html, "html.parser")
-    links = []
+        soup = BeautifulSoup(html, "html.parser")
+        links = []
 
-    # Finds the links
-    for div in soup.findAll('h3', {'class': 'r'}):
-      a = div.find('a')
-      link = a.attrs['href']
-      links.append(link)
+        # Finds the links
+        for div in soup.findAll('h3', {'class': 'r'}):
+            a = div.find('a')
+            link = a.attrs['href']
+            links.append(link)
 
-    # Some links are self-referencing the google search
-    # Remove them
-    for link in links:
-      if link.startswith("/"):
-        links.remove(link)
+        # Some links are self-referencing the google search
+        # Remove them
+        for link in links:
+            if link.startswith("/"):
+                links.remove(link)
 
-    return links
+        return links
