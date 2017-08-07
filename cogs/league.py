@@ -93,7 +93,7 @@ class League:
     #         return await ctx.send("Latest match information for {} ({})\n{}".format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
 
     @commands.command(name="ucf")
-    async def update_champ_file(ctx, self):
+    async def update_champ_file(self, ctx):
         """ Creates / updates a json file containing champion IDs, names, titles, etc. """
 
         # Case where champ data found

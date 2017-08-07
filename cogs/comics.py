@@ -18,7 +18,7 @@ class Comics:
         self.bot = bot
 
     def sync_get_xkcd(self, word_list=False) -> dict:
-        """ Non a-sync function utilizing xkcd library """ 
+        """ Non a-sync function utilizing xkcd library """
 
         # Short circuit upon no alpha input --> rand comic
         if not word_list:
@@ -51,8 +51,8 @@ class Comics:
         if not match_dict[n]:
             comic_obj = xklib.getRandomComic()
             return {"title": comic_obj.getTitle(), "image_link": comic_obj.getImageLink(), "random": True, "hits": 0}
-            
-        else: # It actually worked? Nice
+
+        else:  # It actually worked? Nice
             comic_obj = xklib.getComic(n)
             return {"title": comic_obj.getTitle(), "image_link": comic_obj.getImageLink(), "random": False, "hits": match_dict[n]}
 
@@ -63,7 +63,7 @@ class Comics:
             word_list = " ".join(args).lower().split()
         else:
             word_list = False
-        
+
         comic_dict = await self.bot.loop.run_in_executor(None, Comics.sync_get_xkcd, word_list)
 
         if comic_dict["random"]:
