@@ -8,7 +8,7 @@ class Generic:
     self.bot = bot
 
   @commands.command()
-  async def todo(ctx, self):
+  async def todo(self, ctx):
     await ctx.send("[ ] Gambling bot [ ] League Match History")
 
   # No kicking allowed
@@ -22,7 +22,7 @@ class Generic:
     await ctx.send(phrases[random.randint(0, len(phrases) - 1)])
 
   @commands.command()
-  async def say(self, ctx,*args):
+  async def say(self, ctx, *args):
     """ Make qtbot say anything ;) """
     await ctx.message.delete()
     await ctx.send(" ".join(args))
@@ -41,21 +41,21 @@ class Generic:
 
   # Same!
   @commands.command()
-  async def same(ctx, self):
+  async def same(self, ctx):
     await ctx.send("\n[✓] same\n[ ] unsame")
 
   # Unsame!
   @commands.command()
-  async def unsame(ctx, self):
+  async def unsame(self, ctx):
     await ctx.send("\n[ ] same\n[✓] unsame")
 
   # Resame!
   @commands.command()
-  async def resame(ctx, self):
+  async def resame(self, ctx):
     await ctx.send("\n[✓] same\n [✓] re:same\n [ ] unsame")
 
   @commands.command()
-  async def slap(self, ctx,*args):
+  async def slap(self, ctx, *args):
     if not args:
       return await ctx.send("You can't slap nothing.")
 
@@ -63,7 +63,7 @@ class Generic:
     await ctx.send("{} slaps {} around a bit with a large trout.".format(member[0], args[0]))
 
   @commands.command()
-  async def love(self, ctx,*args):
+  async def love(self, ctx, *args):
     member = str(ctx.message.author).split("#")
 
     if not args:
