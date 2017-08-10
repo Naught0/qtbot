@@ -39,10 +39,6 @@ class OSRS:
         with open("data/item-data.json") as f:
             item_data = json.load(f)
 
-        types = ["buying", "selling", "buyingQuantity", "sellingQuantity"]
-        typesf = ["Buying Price", "Selling Price",
-                  "Buying Quantity", "Selling Quantity"]
-
         # Set cache expiry time
         requests_cache.install_cache(expire_after=300)
 
@@ -51,31 +47,31 @@ class OSRS:
 
         # Load json file & get price
         url = "https://api.rsbuddy.com/grandExchange?a=guidePrice&i={}"
-        try:
+
+        # Spell correct to get the closest match on the item if not found immediately in the item_data
+        if item in item_data:
             item_id = item_data[item]["id"]
             item_pricing_dict = requests.get(
                 (url.format(item_id))).json()
-        except:
+        else:
             item = dm.getClosest(item_data, item)
             item_id = item_data[item]["id"]
             item_pricing_dict = requests.get(
                 (url.format(item_id))).json()
 
-        # Get item icon
-        icon_url = "https://services.runescape.com/m=itemdb_oldschool/1502360694249_obj_big.gif?id={}".format(item_id)
-
         # Create pretty embed
         em = discord.Embed()
+        em.color = discord.Colour.dark_gold()
         em.title = item.title()
         em.url = "https://rsbuddy.com/exchange?id={}".format(item_id)
-        em.set_thumbnail(url=icon_url)
+        em.set_thumbnail(url="https://services.runescape.com/m=itemdb_oldschool/1502360694249_obj_big.gif?id={}".format(item_id))
         em.add_field(name="Buying Price", value="{:,}gp".format(item_pricing_dict["buying"]))
         em.add_field(name="Selling Price", value="{:,}gp".format(item_pricing_dict["selling"]))
         em.add_field(name="Buying Quantity", value="{:,}/hr".format(item_pricing_dict["buyingQuantity"]))
         em.add_field(name="Selling Quantity", value="{:,}/hr".format(item_pricing_dict["sellingQuantity"]))
 
         await ctx.send(embed=em)
-        
+
 
 def setup(bot):
     bot.add_cog(OSRS(bot))
