@@ -65,7 +65,7 @@ class UserFileManip:
         if (member in user_data) and (key in user_data[member]):
             return user_data[member][key]
         else:
-            raise KeyError("User not found.")
+            return None
 
     def updateUserInfo(member, key, info):
         # Open file

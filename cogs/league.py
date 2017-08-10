@@ -47,12 +47,12 @@ class League:
             return
 
     @commands.command(name="ci", aliases=['champ'])
-    async def get_champ_info(self, ctx, *args):
+    async def get_champ_info(self, ctx, *, champ):
         """ Return play, ban, and win rate for a champ """
         uri = "http://api.champion.gg/v2/champions/{}?api_key={}"
         icon_uri = "https://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/{}.png"
 
-        champ = "".join(args)
+        champ = champ.replace(" ", "")
         riot_champ_name = lu.get_riot_champ_name(champ)
         fancy_champ_name = lu.get_fancy_champ_name(riot_champ_name)
         champ_title = lu.get_champ_title(riot_champ_name)
@@ -123,14 +123,14 @@ class League:
         await ctx.send("Creating chamption information file.")
 
     @commands.command(name="elo", aliases=['mmr'])
-    async def getLeagueElo(self, ctx, *args):
+    async def getLeagueElo(self, ctx, *, in_summoner=""):
         """ Get League of Legends elo / mmr from na.whatismymmr.com """
 
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic
         # More information here: https://creativecommons.org/licenses/by/2.0
 
-        summoner = "%20".join(args)
-        f_summoner = " ".join(args).title()
+        summoner = in_summoner.replace(" ", "%20")
+        f_summoner = in_summoner.title()
 
         # Requests call information
         site_uri = "https://na.whatismymmr.com/{}"
@@ -144,12 +144,15 @@ class League:
         requests_cache.install_cache(expire_after=3600)
 
         # Try to read summoner from file if none supplied
-        if (summoner == ""):
+        if not summoner:
             try:
                 summoner = f_summoner = ufm.getUserInfo(
                     member, "summoner_name")
             except KeyError:
                 return await ctx.send("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
+
+        # Send typing b/c this can take some time
+        await ctx.trigger_typing()
 
         # Store results from call
         res = requests.get(
@@ -173,8 +176,6 @@ class League:
 
         # Display ranked MMR
         if res["ranked"]["avg"] is not None:
-            em.add_field(name="Approximate rank", value=res["ranked"]["summary"].split(
-                '<b>')[1].split('</b')[0].title())
             # I'll think of a better way to do this later, but for now, it works
             rank_str = res["ranked"]["summary"].split('<b>')[1].split('</b')[0]
             new_str = rank_str.split(" ")

@@ -11,10 +11,8 @@ class Wiki:
         self.bot = bot
 
     @commands.command(name="wiki", aliases=['wi'])
-    async def wiki_search(self, ctx, *args):
+    async def wiki_search(self, ctx, *, query=None):
         """ Get the closest matching Wikipedia article for query """
-
-        query = " ".join(args)
 
         # Create initial embed
         em = discord.Embed()
@@ -25,7 +23,7 @@ class Wiki:
 
         # No query input
         # Returns random article
-        if not args:
+        if not query:
             em.title = wikipedia.random(pages=1)
             page = wikipedia.page(title=em.title)
             em.description = textwrap.shorten(

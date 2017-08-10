@@ -19,37 +19,37 @@ class Dictionary:
 
     # Returns the most common definition of a word
     @commands.command(name="define", aliases=['d'])
-    async def wordnik_define(self, ctx, word):
+    async def wordnik_define(self, ctx, *, word):
         """ Provides the definition of _a_ word """
         wordApi = WordApi.WordApi(Dictionary.WordClient)
 
         parts_of_speech = {'noun': 'n.', 'verb': 'v.', 'adjective': 'adj.', 'adverb': 'adv.',
                            'interjection': 'interj.', 'conjunction': 'conj.', 'preposition': 'prep.', 'pronoun': 'pron.'}
 
-        result = wordApi.getDefinitions(word)
+        result = wordApi.getDefinitions(word)[0]
 
         if not result:
             return await ctx.send("Sorry, couldn't find that one.")
 
         for pos in parts_of_speech:
-            if pos in result[0].partOfSpeech.split("-"):
+            if pos in result.partOfSpeech.split("-"):
                 word_pos = parts_of_speech[pos]
                 break
             else:
-                word_pos = result[0].partOfSpeech
+                word_pos = result.partOfSpeech
 
-        await ctx.send("{} _{}_ `{}`".format(word.title(), word_pos, result[0].text))
+        await ctx.send("{} _{}_ `{}`".format(word.title(), word_pos, result.text))
 
     # Urban dictionary
     @commands.command(name="ud")
-    async def get_urban_def(self, ctx, *args):
+    async def get_urban_def(self, ctx, *, word):
         """ Consult the world's leading dictionary """
-        result = urbdic.define(" ".join(args))
+        result = urbdic.define(word)
 
         if not result:
             return await ctx.send("Sorry, couldn't find that one.")
 
-        await ctx.send("{}: `{}`".format(" ".join(args).title(), result[0].definition))
+        await ctx.send("{}: `{}`".format(word.title(), result[0].definition))
 
 
 def setup(bot):

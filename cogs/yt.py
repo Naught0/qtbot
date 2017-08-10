@@ -10,13 +10,11 @@ class YouTube:
         self.bot = bot
 
     @commands.command(name="yt")
-    async def get_youtube_video(self, ctx, *args):
+    async def get_youtube_video(self, ctx, *, query):
         """ Returns some matching youtube videos for a query """
 
-        if not args:
+        if not query:
             return await ctx.send("Go on, search something.")
-
-        query = " ".join(args)
 
         # Get videos from yt API
         try:

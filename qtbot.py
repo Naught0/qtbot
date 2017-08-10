@@ -20,7 +20,7 @@ startup_extensions = (
     "cogs.comics",
     "cogs.dictionary",
     "cogs.osrs",
-    "cogs.movies",
+    "cogs.tmdb",
     "cogs.gif",
     "cogs.calc",
     "cogs.league",
@@ -50,6 +50,9 @@ async def on_ready():
 @bot.command()
 async def load(ctx, extension_name: str):
     """ Loads an extension """
+    if not bot.is_owner(ctx.author):
+        await ctx.send(not_owner_message)
+
     try:
         bot.load_extension(extension_name)
     except (AttributeError, ImportError) as e:
@@ -60,7 +63,7 @@ async def load(ctx, extension_name: str):
 @bot.command()
 async def unload(ctx, extension_name: str):
     """ Unloads an extension. """
-    if not ctx.author.is_owner():
+    if not bot.is_owner(ctx.author):
         await ctx.send(not_owner_message)
 
     bot.unload_extension(extension_name)
@@ -70,6 +73,9 @@ async def unload(ctx, extension_name: str):
 @bot.command(aliases="r")
 async def reload(ctx, extension_name: str):
     """ Reloads an extension """
+    if not bot.is_owner(ctx.author):
+        await ctx.send(not_owner_message)
+
     bot.unload_extension(extension_name)
     bot.load_extension(extension_name)
     await ctx.send("Cog `{}` has been reloaded.".format(extension_name))

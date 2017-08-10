@@ -21,17 +21,15 @@ class Giphy:
 
         return gif
 
-    # Giphy
     @commands.command(name="gif", aliases=['jif', 'jiff'])
-    async def giphy(self, ctx, *args):
+    async def giphy(self, ctx, *, query):
         """ returns a random gif matching a query """
-        q = " ".join(args)
-        gif_result = await self.bot.loop.run_in_executor(None, Giphy.sync_giphy, q)
+        gif_result = await self.bot.loop.run_in_executor(None, Giphy.sync_giphy, query)
 
         if gif_result:
             await ctx.send(gif_result.media_url)
         else:
-            await ctx.send("Sorry, I couldn't find anything for `{}`.".format(q))
+            await ctx.send("Sorry, I couldn't find anything for `{}`.".format(query))
 
     # Thanks qtbot!
     @commands.command(aliases=['ty', 'thank'])

@@ -33,7 +33,7 @@ class OSRS:
 
     # Get GE Prices
     @commands.command(name="ge")
-    async def ge_search(self, ctx, *args):
+    async def ge_search(self, ctx, *, query):
         """ Get the buying/selling price and quantity of an OSRS item """
         # relevant API calls & formatted
         with open("data/item-data.json") as f:
@@ -48,7 +48,7 @@ class OSRS:
 
         # Condense the item into a string I can actually use
         # All items in DB are lowercase
-        item = " ".join(args).lower()
+        item = query.lower()
 
         # Load json file & get price
         url = "https://api.rsbuddy.com/grandExchange?a=guidePrice&i={}"

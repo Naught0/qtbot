@@ -35,10 +35,11 @@ class MyTMDb:
         return response
 
     @commands.command(name="show", aliases=["ss", "tv"])
-    async def get_show(self, ctx, *args):
+    async def get_show(self, ctx, *, query):
         """ Get TV show information """
 
-        result = await self.bot.loop.run_in_executor(None, MyTMDb.sync_get_tmdb, " ".join(args), "tv")
+        # Must run_in_executor for blocking libraries
+        result = await self.bot.loop.run_in_executor(None, MyTMDb.sync_get_tmdb, query, "tv")
 
         # If no result are found
         if not result:
@@ -68,10 +69,11 @@ class MyTMDb:
         await ctx.send(embed=em)
 
     @commands.command(name="movie", aliases=['mov'])
-    async def get_movie(self, ctx, *args):
+    async def get_movie(self, ctx, *, query):
         """ Get movie information """
 
-        result = await self.bot.loop.run_in_executor(None, MyTMDb.sync_get_tmdb, " ".join(args), "movie")
+        # Must run_in_executor for blocking libraries
+        result = await self.bot.loop.run_in_executor(None, MyTMDb.sync_get_tmdb, query, "movie")
 
         if not result:
             return await ctx.send("Sorry, couldn't find that one.")

@@ -31,7 +31,7 @@ class Weather:
             return await ctx.send("Please supply a valid zipcode.")
 
         # Get user ID
-        member = str(ctx.message.author)
+        member = ctx.message.author
 
         # Add zipcode to file
         ufm.updateUserInfo(member, "zip", zip_code)

@@ -22,10 +22,10 @@ class Generic:
         await ctx.send(phrases[random.randint(0, len(phrases) - 1)])
 
     @commands.command()
-    async def say(self, ctx, *args):
+    async def say(self, ctx, *, message):
         """ Make qtbot say anything ;) """
         await ctx.message.delete()
-        await ctx.send(" ".join(args))
+        await ctx.send(message)
 
     # Returns pseudo-random magic 8-ball result
     @commands.command()
@@ -55,21 +55,21 @@ class Generic:
         await ctx.send("\n[✓] same\n [✓] re:same\n [ ] unsame")
 
     @commands.command()
-    async def slap(self, ctx, *args):
-        if not args:
+    async def slap(self, ctx, *, target):
+        if not target:
             return await ctx.send("You can't slap nothing.")
 
-        member = str(ctx.author.nick)
-        await ctx.send("{} slaps {} around a bit with a large trout.".format(member, args[0]))
+        member = ctx.author.nick
+        await ctx.send("{} slaps {} around a bit with a large trout.".format(member, target))
 
     @commands.command()
-    async def love(self, ctx, *args):
-        member = str(ctx.author.nick)
+    async def love(self, ctx, *, target):
+        member = ctx.author.nick
 
-        if not args:
+        if not target:
             return await ctx.send("{} loves ... nothing".format(member))
 
-        await ctx.send("{} gives {} some good ol' fashioned lovin'". format(member, args[0]))
+        await ctx.send("{} gives {} some good ol' fashioned lovin'". format(member, target))
 
 
 def setup(bot):

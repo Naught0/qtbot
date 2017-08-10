@@ -22,14 +22,14 @@ class Google:
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36"}]
 
     @commands.command(name="google", aliases=["g", "goog"])
-    async def new_google(self, ctx, *args):
+    async def new_google(self, ctx, *, query):
         """ Get the first Google result for a query """
 
         # Cache results for a half hour
         requests_cache.install_cache(expire_after=1800)
 
         # Queries must be '+' delimited
-        query = "+".join(args)
+        query = query.replace(" ", "+")
 
         # Why would you google for numbers / symbols?
         if not re.search("[a-z]", query, re.IGNORECASE):
@@ -47,7 +47,7 @@ class Google:
 
         if len(link_list) >= 3:
             # Say top 3 results
-            await ctx.send("**Top Result**:\n{}\n**See also:**```\n1. {}\n2. {}```".format(link_list[0], link_list[1], link_list[2]))
+            await ctx.send("**Top Result**:\n{}\n**See also:**\n1. <{}>\n2. <{}>".format(link_list[0], link_list[1], link_list[2]))
         else:
             # Say first result
             await ctx.send("{}".format(link_list[0]))

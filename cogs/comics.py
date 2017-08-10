@@ -19,7 +19,7 @@ class Comics:
     def __init__(self, bot):
         self.bot = bot
 
-    def sync_get_xkcd(word_list=False) -> dict:
+    def sync_get_xkcd(word_list=None) -> dict:
         """ Non a-sync function utilizing xkcd library """
 
         # Short circuit upon no alpha input --> rand comic
@@ -59,12 +59,12 @@ class Comics:
             return {"title": comic_obj.getTitle(), "image_link": comic_obj.getImageLink(), "random": False, "hits": match_dict[n]}
 
     @commands.command(name="xkcd", aliases=["xk", "x"])
-    async def get_xkcd(self, ctx, *args):
+    async def get_xkcd(self, ctx, *, query):
         """ Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic. """
         if args:
-            word_list = " ".join(args).lower().split()
+            word_list = query.split(" ")
         else:
-            word_list = False
+            word_list = None
 
         comic_dict = await self.bot.loop.run_in_executor(None, Comics.sync_get_xkcd, word_list)
 

@@ -26,20 +26,21 @@ class Calculator:
             return None
 
     @commands.command(aliases=['calc', 'cal', 'c'])
-    async def calculate(self, ctx, *args):
+    async def calculate(self, ctx, *, query):
         """ Calculate like, anything. """
 
-        if not args:
+        if not query:
             return await ctx.send("Please enter something for me to calculate!")
 
-        q = " ".join(args)
+        # Send typing b/c this can take some time
+        await ctx.trigger_typing()
 
-        result = await self.bot.loop.run_in_executor(None, Calculator.sync_calc, q)
+        result = await self.bot.loop.run_in_executor(None, Calculator.sync_calc, query)
 
         if result is not None:
             await ctx.send(result)
         else:
-            await ctx.send("Sorry, I couldn't calculate `{}`.")
+            await ctx.send("Sorry, I couldn't calculate `{}`.".format(query))
 
 
 def setup(bot):
