@@ -10,26 +10,12 @@ from pathlib import Path
 class OSRS:
     def __init__(self, bot):
         self.bot = bot
-        # Write item file for OSRS price query
-        # If no file, make one
-        if Path("data/item-data.json").is_file():
-            print("Skipping json file download...\nReading file...\n------")
-        else:
-            data = None
-            print("Creating OSRS data file...")
-            data = open("data/item-data.json", "w")
-            print("Done")
-
-            item_data_json = requests.get(
-                "https://raw.githubusercontent.com/Naughtsee/RS/master/item-data.json").json()
-            print("Requesting json file from Github...")
-
-            print("Writing file...")
-
-            with open("data/item-data.json", "w") as f:
-                json.dump(item_data_json, f)
-
-            print("Write complete")
+        # I'm going to add a check for this later...
+        # Determine whether necessary data is in place
+        # if Path("data/item-data.json").is_file():
+        #     self.item_file_exists = True
+        # else:
+        #     self.item_file_exists = False
 
     # Get GE Prices
     @commands.command(name="ge", aliases=["exchange"])
@@ -74,4 +60,9 @@ class OSRS:
 
 
 def setup(bot):
+    # if OSRS.item_file_exists:
+    #     bot.add_cog(OSRS(bot))
+    # else:
+    #     print("Please download the item-data.json file from github to the data folder.")
+    #     print("https://raw.githubusercontent.com/Naught0/qtbot/master/data/item-data.json")
     bot.add_cog(OSRS(bot))

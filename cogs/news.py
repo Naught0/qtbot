@@ -6,15 +6,12 @@ import requests_cache
 from discord.ext import commands
 
 
-with open("data/apikeys.json") as f:
-    news_api_key = json.load(f)["news"]
-
-uri = "https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey={}"
-
-
 class News:
     def __init__(self, bot):
         self.bot = bot
+        with open("data/apikeys.json") as f:
+            self.api_key = json.load(f)["news"]
+        self.uri = "https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey={}"
 
     @commands.command(name="news")
     async def get_news(self, ctx, num_results=3):
@@ -28,7 +25,7 @@ class News:
         requests_cache.install_cache(expire_after=1800)
 
         # Call to API
-        raw_result = requests.get(uri.format(news_api_key)).json()
+        raw_result = requests.get(self.uri.format(self.api_key)).json()
 
         article_list = []
 

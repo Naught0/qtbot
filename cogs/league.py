@@ -49,7 +49,7 @@ class League:
     @commands.command(name="ci", aliases=['champ'])
     async def get_champ_info(self, ctx, *, champ):
         """ Return play, ban, and win rate for a champ """
-        uri = "http://api.champion.gg/v2/champions/{}?api_key={}"
+        uri = "http://api.champion.gg/v2/champions/{}?sort=playRate-desc&api_key={}"
         icon_uri = "https://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/{}.png"
 
         champ = champ.replace(" ", "")
@@ -71,13 +71,13 @@ class League:
         em.description = None
         em.add_field(name="Role",
                      value="{} ({:.2%})".format(
-                         res[-1]["role"].split("_")[0].title(), res[-1]["percentRolePlayed"]))
+                         res[0]["role"].split("_")[0].title(), res[0]["percentRolePlayed"]))
         em.add_field(name="Play rate",
-                     value="{:.2%}".format(res[-1]["playRate"]))
+                     value="{:.2%}".format(res[0]["playRate"]))
         em.add_field(name="Win rate",
-                     value="{:.2%}".format(res[-1]["winRate"]))
+                     value="{:.2%}".format(res[0]["winRate"]))
         em.add_field(name="Ban rate",
-                     value="{:.2%}".format(res[-1]["banRate"]))
+                     value="{:.2%}".format(res[0]["banRate"]))
         em.set_thumbnail(url=icon_uri.format(riot_champ_name))
         em.url = "http://champion.gg/champion/{}".format(riot_champ_name)
         em.set_footer(text="Powered by Champion.gg and Riot's API.")
@@ -145,11 +145,10 @@ class League:
 
         # Try to read summoner from file if none supplied
         if not summoner:
-            try:
-                summoner = f_summoner = ufm.getUserInfo(
-                    member, "summoner_name")
-            except KeyError:
-                return await ctx.send("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
+            summoner = f_summoner = ufm.getUserInfo(
+                member, "summoner_name")
+        if summoner is None:
+            return await ctx.send("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
 
         # Send typing b/c this can take some time
         await ctx.trigger_typing()

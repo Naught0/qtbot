@@ -15,6 +15,7 @@ with open("data/apikeys.json", "r") as f:
 
 # Choose default cogs
 startup_extensions = (
+    "cogs.admin",
     "cogs.generic",
     "cogs.weather",
     "cogs.comics",
@@ -30,13 +31,9 @@ startup_extensions = (
     "cogs.wiki",
     "cogs.isup")
 
-# Default message to save me some typing for user is not owner
-not_owner_message = "Sorry, you have to be supreme overlord to run this command."
-
 # Get current time for uptime
 startTime = datetime.now()
 startTimeStr = startTime.strftime("%B %d %H:%M:%S")
-
 
 @bot.event
 async def on_ready():
@@ -46,47 +43,13 @@ async def on_ready():
     print(bot.user.id)
     print('------')
 
-
-@bot.command()
-async def load(ctx, extension_name: str):
-    """ Loads an extension """
-    if not bot.is_owner(ctx.author):
-        await ctx.send(not_owner_message)
-
-    try:
-        bot.load_extension(extension_name)
-    except (AttributeError, ImportError) as e:
-        return await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
-    await ctx.send("Cog `{}` loaded successfully.".format(extension_name))
-
-
-@bot.command()
-async def unload(ctx, extension_name: str):
-    """ Unloads an extension. """
-    if not bot.is_owner(ctx.author):
-        await ctx.send(not_owner_message)
-
-    bot.unload_extension(extension_name)
-    await ctx.send("Cog `{}` has been unloaded.".format(extension_name))
-
-
-@bot.command(aliases="r")
-async def reload(ctx, extension_name: str):
-    """ Reloads an extension """
-    if not bot.is_owner(ctx.author):
-        await ctx.send(not_owner_message)
-
-    bot.unload_extension(extension_name)
-    bot.load_extension(extension_name)
-    await ctx.send("Cog `{}` has been reloaded.".format(extension_name))
-
-
 @bot.command(aliases=["up"])
 async def uptime(ctx):
     """ Get current uptime """
     currentTime = datetime.now()
     currentTimeStr = currentTime.strftime("%B %d %H:%M:%S")
     await ctx.send("Initialized: `{}`\nCurrent Time: `{}`\nUptime: `{}`".format(startTimeStr, currentTimeStr, str(currentTime - startTime).split(".")[0]))
+
 
 if __name__ == "__main__":
     for ext in startup_extensions:

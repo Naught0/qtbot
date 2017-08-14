@@ -9,8 +9,7 @@ from discord.ext import commands
 with open("data/apikeys.json", "r") as f:
     api_key = json.load(f)["wunderground"]
 
-weather_icon_dict = {"storm": "https://u.teknik.io/gXqry.png", "partly_cloudy": "https://u.teknik.io/Va3lK.png", "mostly_cloudy": "https://u.teknik.io/GZVKi.png",
-                     "cloudy": "https://u.teknik.io/xG1R0.png", "clear": "https://u.teknik.io/ddab9.png", "rain": "https://u.teknik.io/HdThS.png"}
+weather_icon_dict = {"storm": "https://ssl.gstatic.com/onebox/weather/128/thunderstorms.png", "partly_cloudy": "https://ssl.gstatic.com/onebox/weather/128/partly_cloudy.png", "mostly_cloudy": "https://ssl.gstatic.com/onebox/weather/128/cloudy.png", "clear": "https://ssl.gstatic.com/onebox/weather/128/sunny.png", "rain": "https://ssl.gstatic.com/onebox/weather/128/rain.png"}
 
 wunderground_url = "http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json"
 
@@ -54,7 +53,7 @@ class Weather:
             zip_code = ufm.getUserInfo(member, "zip")
 
         # getUserInfo returns "error" if user has no zip on file
-        if zip_code == "error":
+        if zip_code is None:
             return await ctx.send("Sorry, you're not in my file!\nPlease use `addzip` `addz` or `az` with a zipcode.")
 
         # Load wunderAPI info into d
@@ -92,8 +91,10 @@ class Weather:
             em.set_thumbnail(url=weather_icon_dict["rain"])
         elif "clear" in cond_lower or "sunny" in cond_lower:
             em.set_thumbnail(url=weather_icon_dict["clear"])
-        elif "cloudy" in cond_lower:
+        elif "partly" in cond_lower:
             em.set_thumbnail(url=weather_icon_dict["partly_cloudy"])
+        elif "cloudy" in cond_lower or "overcast" in cond_lower:
+            em.set_thumbnail(url=weather_icon_dict["mostly_cloudy"])
         elif "storm" in cond_lower or "thunderstorm" in cond_lower:
             em.set_thumbnail(url=weather_icon_dict["storm"])
 
