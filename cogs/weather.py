@@ -19,18 +19,18 @@ class Weather:
         self.bot = bot
 
     @commands.command(name="az")
-    async def add_zip(self, ctx, zip_code=""):
+    async def add_zip(self, ctx, zip_code=None):
         """ Add your zipcode for qtbot to remember """
 
         # No zipcode supplied
-        if (zip_code == ""):
+        if (zip_code is None):
             return await ctx.send("Please supply a zipcode.")
         # Invalid zip supplied
         if (len(zip_code) != 5 or not zip_code.isnumeric()):
             return await ctx.send("Please supply a valid zipcode.")
 
         # Get user ID
-        member = ctx.message.author
+        member = str(ctx.message.author)
 
         # Add zipcode to file
         ufm.updateUserInfo(member, "zip", zip_code)

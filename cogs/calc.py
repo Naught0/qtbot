@@ -25,7 +25,7 @@ class Calculator:
         else:
             return None
 
-    @commands.command(aliases=['calc', 'cal', 'c'])
+    @commands.command(name="calc", aliases=['cal', 'c'])
     async def calculate(self, ctx, *, query):
         """ Calculate like, anything. """
 

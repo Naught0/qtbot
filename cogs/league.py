@@ -93,6 +93,7 @@ class League:
     #         return await ctx.send("Latest match information for {} ({})\n{}".format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
 
     @commands.command(name="ucf")
+    @commands.is_owner()
     async def update_champ_file(self, ctx):
         """ Creates / updates a json file containing champion IDs, names, titles, etc. """
 
@@ -123,7 +124,7 @@ class League:
         await ctx.send("Creating chamption information file.")
 
     @commands.command(name="elo", aliases=['mmr'])
-    async def getLeagueElo(self, ctx, *, in_summoner=""):
+    async def get_league_elo(self, ctx, *, in_summoner=""):
         """ Get League of Legends elo / mmr from na.whatismymmr.com """
 
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic

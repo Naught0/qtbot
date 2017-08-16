@@ -10,15 +10,13 @@ from pathlib import Path
 class OSRS:
     def __init__(self, bot):
         self.bot = bot
-        # I'm going to add a check for this later...
-        # Determine whether necessary data is in place
-        # if Path("data/item-data.json").is_file():
-        #     self.item_file_exists = True
-        # else:
-        #     self.item_file_exists = False
+
+    def check_osrs_json_file(ctx):
+        return Path("data/item-data.json").is_file()
 
     # Get GE Prices
     @commands.command(name="ge", aliases=["exchange"])
+    @commands.check(check_osrs_json_file)
     async def ge_search(self, ctx, *, query):
         """ Get the buying/selling price and quantity of an OSRS item """
         # relevant API calls & formatted
