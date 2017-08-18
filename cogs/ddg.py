@@ -20,13 +20,13 @@ class DuckDuckGo:
     async def duckduckgo_search(self, ctx, *, query):
     """ Scrape DDG since Google hates me """
 
-        # Space delimited query
-        query = query.replace(' ', '+')
+    # Space delimited query
+    query = query.replace(' ', '+')
 
-        # Make request
-        resp = awp.aio_get_json(self.base_uri.format(query))
+    # Make request
+    resp = awp.aio_get_json(self.base_uri.format(query))
 
-        # Testing --> print to stdout to determine best way to get results
-        print(resp)
+    # Testing --> print to stdout to determine best way to get results
+    print(resp)
 
-        return
+    return
