@@ -1,8 +1,8 @@
 import discord
 import json
-import requests
-import requests_cache
-from cogs.utils import DictManip as dm
+# import requests
+# import requests_cache
+from utils import dict_manip as dm
 from discord.ext import commands
 from pathlib import Path
 
@@ -24,7 +24,7 @@ class OSRS:
             item_data = json.load(f)
 
         # Set cache expiry time
-        requests_cache.install_cache(expire_after=300)
+        # requests_cache.install_cache(expire_after=300)
 
         # All items in DB are lowercase
         item = query.lower()
@@ -35,13 +35,11 @@ class OSRS:
         # Spell correct to get the closest match on the item if not found immediately in the item_data
         if item in item_data:
             item_id = item_data[item]["id"]
-            item_pricing_dict = requests.get(
-                (url.format(item_id))).json()
+            item_pricing_dict = utils.get_async_response((url.format(item_id))).json()
         else:
-            item = dm.getClosest(item_data, item)
+            item = dm.get_closest(item_data, item)
             item_id = item_data[item]["id"]
-            item_pricing_dict = requests.get(
-                (url.format(item_id))).json()
+            item_pricing_dict = utils.get_async_response((url.format(item_id))).json()
 
         # Create pretty embed
         em = discord.Embed()
@@ -58,9 +56,4 @@ class OSRS:
 
 
 def setup(bot):
-    # if OSRS.item_file_exists:
-    #     bot.add_cog(OSRS(bot))
-    # else:
-    #     print("Please download the item-data.json file from github to the data folder.")
-    #     print("https://raw.githubusercontent.com/Naught0/qtbot/master/data/item-data.json")
     bot.add_cog(OSRS(bot))

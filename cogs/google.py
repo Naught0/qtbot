@@ -5,7 +5,7 @@ import requests
 import re
 import requests_cache
 import random
-from cogs.utils import GoogleFuncs as gf
+from utils import google_funcs as gf
 from discord.ext import commands
 
 

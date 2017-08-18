@@ -3,7 +3,7 @@
 import discord
 import json
 from discord.ext import commands
-from cogs.utils import DictManip as dm
+from utils import dict_manip as dm
 import xkcd as xklib
 
 """
@@ -47,7 +47,7 @@ class Comics:
             match_dict[json_blob_data[key]["num"]] = count
 
         # Get comic with max number of hits
-        n = dm.keywithmaxval(match_dict)
+        n = dm.key_with_max_value(match_dict)
 
         # Max hits == 0 --> random comic
         if not match_dict[n]:
@@ -59,9 +59,9 @@ class Comics:
             return {"title": comic_obj.getTitle(), "image_link": comic_obj.getImageLink(), "random": False, "hits": match_dict[n]}
 
     @commands.command(name="xkcd", aliases=["xk", "x"])
-    async def get_xkcd(self, ctx, *, query):
+    async def get_xkcd(self, ctx, *, query=None):
         """ Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic. """
-        if args:
+        if query:
             word_list = query.split(" ")
         else:
             word_list = None

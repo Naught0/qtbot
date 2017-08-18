@@ -2,7 +2,7 @@ import discord
 import json
 import requests
 import requests_cache
-from cogs.utils import UserFileManip as ufm
+from utils import user_funcs as ufm
 from discord.ext import commands
 
 # Wunderground API info
@@ -33,7 +33,7 @@ class Weather:
         member = str(ctx.message.author)
 
         # Add zipcode to file
-        ufm.updateUserInfo(member, "zip", zip_code)
+        ufm.update_user_info(member, "zip", zip_code)
 
         await ctx.send("Successfully added zipcode `{}` for user `{}`.".format(zip_code, member))
 
@@ -50,9 +50,9 @@ class Weather:
 
         # If no zipcode provided
         if zip_code == "":  # Find zipcode in file
-            zip_code = ufm.getUserInfo(member, "zip")
+            zip_code = ufm.get_user_info(member, "zip")
 
-        # getUserInfo returns "error" if user has no zip on file
+        # get_user_info returns "error" if user has no zip on file
         if zip_code is None:
             return await ctx.send("Sorry, you're not in my file!\nPlease use `addzip` `addz` or `az` with a zipcode.")
 
@@ -113,7 +113,7 @@ class Weather:
 
         # If no zipcode provided
         if zip_code == "":  # Find zipcode in file
-            zip_code = ufm.getUserInfo(member, "zip")
+            zip_code = ufm.get_user_info(member, "zip")
 
         # UFM returns str error if no zip found
         if zip_code == "error":

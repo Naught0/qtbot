@@ -22,7 +22,7 @@ class Giphy:
         return gif
 
     @commands.command(name="gif", aliases=['jif', 'jiff'])
-    async def giphy(self, ctx, *, query):
+    async def giphy(self, ctx, *, query=None):
         """ returns a random gif matching a query """
         gif_result = await self.bot.loop.run_in_executor(None, Giphy.sync_giphy, query)
 

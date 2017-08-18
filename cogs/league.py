@@ -7,9 +7,9 @@ import requests_cache
 from discord.ext import commands
 from pathlib import Path
 from riot_observer import RiotObserver as ro
-from cogs.utils import LeagueUtils as lu
-from cogs.utils import UserFileManip as ufm
-from cogs.utils import DictManip as dm
+from utils import user_funcs as ufm
+from utils import league as lu
+from utils import dict_manip as dm
 
 
 class League:
@@ -30,20 +30,17 @@ class League:
     rito = ro(riot_api_key)
 
     @commands.command(name="aln", aliases=['addl', 'addleague'])
-    async def add_league_name(self, ctx, *args):
+    async def add_league_name(self, ctx, *, summoner_name):
         """ Add your summoner name to the user file """
-        member = str(ctx.message.author)
-        summoner_name = " ".join(args)
+        member = str(ctx.author)
 
-        if not ufm.foundUserFile():
+        if not ufm.found_user_file():
             await ctx.send("No user file found...\nCreated user file and added `{}'s`' summoner name as `{}`.".format(member, summoner_name))
-            ufm.createUserFile(member, "summoner_name",
-                               summoner_name)
+            ufm.create_user_file(member, "summoner_name", summoner_name)
             return
         else:
             await ctx.send("Added `{}` as summoner name for `{}`.".format(summoner_name, member))
-            ufm.updateUserInfo(member, "summoner_name",
-                               summoner_name)
+            ufm.update_user_info(member, "summoner_name", summoner_name)
             return
 
     @commands.command(name="ci", aliases=['champ'])
@@ -56,7 +53,7 @@ class League:
         riot_champ_name = lu.get_riot_champ_name(champ)
         fancy_champ_name = lu.get_fancy_champ_name(riot_champ_name)
         champ_title = lu.get_champ_title(riot_champ_name)
-        champID = lu.getChampID(riot_champ_name)
+        champID = lu.get_champ_id(riot_champ_name)
 
         res = requests.get(uri.format(
             champID, League.champion_gg_api_key)).json()
@@ -88,7 +85,7 @@ class League:
     # async def matchHistory(self, ctx, ):
     #         """ do not use """
     #         member = str(ctx.message.author)
-    #         summoner_name = ufm.getUserInfo(member, "summoner_name")
+    #         summoner_name = ufm.get_user_info(member, "summoner_name")
     #         summoner_obj = League.getSummonerObj(summoner_name)
     #         return await ctx.send("Latest match information for {} ({})\n{}".format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
 
@@ -98,7 +95,7 @@ class League:
         """ Creates / updates a json file containing champion IDs, names, titles, etc. """
 
         # Case where champ data found
-        if lu.foundChampFile():
+        if lu.found_champ_file():
             with open("data/champ_data.json", "r") as f:
                 file_champ_list = json.load(f)
 
@@ -146,7 +143,7 @@ class League:
 
         # Try to read summoner from file if none supplied
         if not summoner:
-            summoner = f_summoner = ufm.getUserInfo(
+            summoner = f_summoner = ufm.get_user_info(
                 member, "summoner_name")
         if summoner is None:
             return await ctx.send("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
