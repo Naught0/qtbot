@@ -18,7 +18,7 @@ class DuckDuckGo:
 
     @commands.command(name="ddg", aliases=["dg"])
     async def duckduckgo_search(self, ctx, *, query):
-    """ Scrape DDG since Google hates me """
+        """ Scrape DDG since Google hates me """
 
         # Space delimited query
         query = query.replace(' ', '+')
