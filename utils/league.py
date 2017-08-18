@@ -1,6 +1,9 @@
+#!/bin/env python
+
 import json
 from pathlib import Path
 from utils import dict_manip as dm
+
 
 def found_champ_file():
     """ checks for valid league file and returns t/f """

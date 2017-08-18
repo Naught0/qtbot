@@ -1,5 +1,8 @@
+#!/bin/env python
+
 import json
 from nltk.metrics import edit_distance as ed
+
 
 def get_closest(word_dict, word):
     """ returns the key which matches most closely to 'word' """

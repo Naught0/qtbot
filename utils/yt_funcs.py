@@ -1,6 +1,9 @@
+#!/bin/env python
+
 import requests
 import os
 import json
+
 
 with open("data/apikeys.json") as f:
     yt_api_key = json.load(f)["youtube"]
