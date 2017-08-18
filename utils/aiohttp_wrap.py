@@ -1,6 +1,7 @@
 #!/bin/env python
 
 import aiohttp
+import json
 
 
 async def aio_get_text(url, headers=None):

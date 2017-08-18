@@ -23,4 +23,10 @@ class DuckDuckGo:
     # Space delimited query
     query = query.replace(' ', '+')
 
+    # Make request
+    resp = awp.aio_get_json(self.base_uri.format(query))
+
+    # Testing --> print to stdout to determine best way to get results
+    print(resp)
+
     return
