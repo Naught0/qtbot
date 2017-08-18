@@ -30,3 +30,6 @@ class DuckDuckGo:
         print(resp)
 
         return
+
+def setup(bot):
+    bot.add_cog(DuckDuckGo(bot))
