@@ -27,7 +27,7 @@ class DuckDuckGo:
         resp = await awp.aio_get_json(self.base_uri.format(query))
 
         # Testing --> print to stdout to determine best way to get results
-        print(resp)
+        print(str(resp))
 
         return
 
