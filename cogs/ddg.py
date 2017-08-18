@@ -24,5 +24,3 @@ class DuckDuckGo:
     query = query.replace(' ', '+')
 
     return
-
-    @commands.command(name="ddg", )
