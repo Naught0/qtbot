@@ -18,7 +18,9 @@ with open("data/apikeys.json", "r") as f:
 bot.aio_session = aiohttp.ClientSession()
 
 # Temporary proof of concept for testing [dev only]
-print(bot.aio_session.get("http://www.wikipedia.com").text())
+async with bot.aio_session as session:
+    async with session.get("http://wikipedia.com/") as resp:
+        await bot.send(resp)
 
 # Choose default cogs
 startup_extensions = (
