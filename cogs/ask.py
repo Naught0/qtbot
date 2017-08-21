@@ -48,3 +48,7 @@ class AskAsk:
             return await ctx.send("Sorry, I couldn't find anything for `{}.".format(query))
 
         await ctx.send('**Top result:**\n{}\n**See Also:**\n1. <{}>\n2. <{}>'.format(link_list[0], link_list[1], link_list[2]))
+
+
+def setup(bot):
+    bot.add_cog(AskAsk(bot))
