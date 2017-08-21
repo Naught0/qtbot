@@ -28,7 +28,7 @@ def get_champ_id(champ):
     return champ_dict["data"][champ]["id"]
 
 def get_fancy_champ_name(champ):
-    with open("data/champ_data.json", "r") as f:
+    with open("data/champ_data.json") as f:
         champ_dict = json.load(f)
 
     return champ_dict["data"][champ]["name"]

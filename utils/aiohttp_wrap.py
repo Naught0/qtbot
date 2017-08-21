@@ -2,6 +2,7 @@
 
 import aiohttp
 
+
 async def aio_get_text(aio_session, url, headers=None):
     async with aio_session() as s:
         async with s.get(url, headers=headers) as r:
