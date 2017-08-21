@@ -16,8 +16,8 @@ def get_closest(word_dict, word):
     return min(distance_dict, key=distance_dict.get)
 
 def key_with_max_value(d):
-    """ 
-    a) create a list of the dict's keys and values; 
+    """
+    a) create a list of the dict's keys and values;
     b) return the key with the max value
     Shamelessly taken from:
     http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
@@ -27,8 +27,8 @@ def key_with_max_value(d):
     return k[v.index(max(v))]
 
 def key_with_min_value(d):
-    """ 
-    a) create a list of the dict's keys and values; 
+    """
+    a) create a list of the dict's keys and values;
     b) return the key with the max value
     Shamelessly taken from:
     http://stackoverflow.com/questions/268272/getting-key-with-maximum-value-in-dictionary
