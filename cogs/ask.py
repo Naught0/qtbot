@@ -13,7 +13,7 @@ class AskAsk:
         self.aio_session = bot.aio_session
         self.scrape_uri = 'http://www.ask.com/web?q={}&o=0&qo=homepageSearchBox'
 
-    def get_ask_links(html):
+    def _get_ask_links(html):
         """ Gets all result links from [REDACTED] """
         soup = BeautifulSoup(html, 'lxml')
 
@@ -42,7 +42,7 @@ class AskAsk:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
         resp_html = await aw.aio_get(self.aio_session, self.scrape_uri.format(search_query), headers=headers)
 
-        link_list = get_ask_links(resp_html)
+        link_list = AskAsk._get_ask_links(resp_html)
 
         if link_list is None:
             return await ctx.send("Sorry, I couldn't find anything for `{}.".format(query))
