@@ -16,7 +16,7 @@ def found_champ_file():
     return True
 
 def get_champ_id(champ):
-    """ 
+    """
     note:
     must use get_riot_champ_name to pass `champ`
     if the name formatting is in question.
@@ -28,7 +28,7 @@ def get_champ_id(champ):
     return champ_dict["data"][champ]["id"]
 
 def get_fancy_champ_name(champ):
-    with open("data/champ_data.json", "r") as f:
+    with open("data/champ_data.json") as f:
         champ_dict = json.load(f)
 
     return champ_dict["data"][champ]["name"]
@@ -38,7 +38,7 @@ def get_riot_champ_name(champ):
         champ_dict = json.load(f)
 
     if champ in champ_dict["data"]:
-        return champ_dict["data"][champ]
+        return champ_dict["data"][champ]["name"]
 
     return dm.get_closest(champ_dict["data"], champ)
 
