@@ -2,6 +2,7 @@
 
 import discord
 import json
+import aiohttp
 from datetime import datetime
 from discord.ext import commands
 
@@ -12,6 +13,12 @@ bot = commands.Bot(command_prefix=".", description=des, pm_help=True)
 # Get bot's token
 with open("data/apikeys.json", "r") as f:
     discord_bot_token = json.load(f)["discord"]
+
+# Create bot aiohttp session
+bot.aio_session = aiohttp.ClientSession()
+
+# Temporary proof of concept for testing [dev only]
+print(bot.aio_session.get("http://www.wikipedia.com").text())
 
 # Choose default cogs
 startup_extensions = (
@@ -48,7 +55,9 @@ async def uptime(ctx):
     """ Get current uptime """
     currentTime = datetime.now()
     currentTimeStr = currentTime.strftime("%B %d %H:%M:%S")
-    await ctx.send("Initialized: `{}`\nCurrent Time: `{}`\nUptime: `{}`".format(startTimeStr, currentTimeStr, str(currentTime - startTime).split(".")[0]))
+
+    await ctx.send("Initialized: `{}`\nCurrent Time: `{}`\nUptime: `{}`".format(
+    startTimeStr, currentTimeStr, str(currentTime - startTime).split(".")[0]))
 
 
 if __name__ == "__main__":
