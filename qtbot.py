@@ -17,11 +17,6 @@ with open("data/apikeys.json", "r") as f:
 # Create bot aiohttp session
 bot.aio_session = aiohttp.ClientSession()
 
-# Temporary proof of concept for testing [dev only]
-async with bot.aio_session as session:
-    async with session.get("http://wikipedia.com/") as resp:
-        await bot.send(resp)
-
 # Choose default cogs
 startup_extensions = (
     "cogs.admin",
@@ -34,7 +29,7 @@ startup_extensions = (
     "cogs.gif",
     "cogs.calc",
     "cogs.league",
-    "cogs.google",
+    "cogs.ask",
     "cogs.yt",
     "cogs.news",
     "cogs.wiki",
