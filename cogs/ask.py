@@ -1,6 +1,8 @@
 #!/bin/env python
 
 import aiohttp
+import discord
+from discord.ext import commands
 from bs4 import BeautifulSoup
 from utils import aiohttp_wrap as aw
 
