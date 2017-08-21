@@ -15,7 +15,7 @@ with open("data/apikeys.json", "r") as f:
     discord_bot_token = json.load(f)["discord"]
 
 # Create bot aiohttp session
-bot.aio_session = aiohttp.ClientSession()
+bot.aio_session = aiohttp.ClientSession
 
 # Choose default cogs
 startup_extensions = (
