@@ -40,7 +40,7 @@ class AskAsk:
 
         # Get response and store links
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
-        resp_html = aw.aio_get(self.aio_session, self.scrape_uri.format(search_query), headers=headers).text()
+        resp_html = await aw.aio_get(self.aio_session, self.scrape_uri.format(search_query), headers=headers).text()
 
         link_list = AskAsk._get_ask_links(resp_html)
 
