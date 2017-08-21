@@ -9,12 +9,12 @@ class YouTube:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="yt")
+    @commands.command(name='yt')
     async def get_youtube_video(self, ctx, *, query):
         """ Returns some matching youtube videos for a query """
 
         if not query:
-            return await ctx.send("Go on, search something.")
+            return await ctx.send('Go on, search something.')
 
         # Get videos from yt API
         try:
@@ -23,7 +23,7 @@ class YouTube:
             return await ctx.send("Sorry, couldn't find anything for `{}`.".format(query))
 
         # Return top hit
-        await ctx.send("{}".format(video_list[0]["video_url"]))
+        await ctx.send('{}'.format(video_list[0]['video_url']))
 
 
 def setup(bot):

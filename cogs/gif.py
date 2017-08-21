@@ -21,7 +21,7 @@ class Giphy:
 
         return gif
 
-    @commands.command(name="gif", aliases=['jif', 'jiff'])
+    @commands.command(name='gif', aliases=['jif', 'jiff'])
     async def giphy(self, ctx, *, query=None):
         """ returns a random gif matching a query """
         gif_result = await self.bot.loop.run_in_executor(None, Giphy.sync_giphy, query)
@@ -35,7 +35,7 @@ class Giphy:
     @commands.command(aliases=['ty', 'thank'])
     async def thanks(self, ctx):
         """ Thank your overlord, qtbot """
-        gif_result = await self.bot.loop.run_in_executor(None, Giphy.sync_giphy, "blush")
+        gif_result = await self.bot.loop.run_in_executor(None, Giphy.sync_giphy, 'blush')
 
         await ctx.send(gif_result.fixed_width.downsampled.url)
 

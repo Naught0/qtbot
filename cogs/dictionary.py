@@ -10,17 +10,17 @@ class Dictionary:
         self.bot = bot
 
     # Load API key
-    with open("data/apikeys.json", "r") as f:
+    with open('data/apikeys.json') as f:
         apiKeys = json.load(f)
 
     # Init wordnik objects
-    wordnikKey = apiKeys["wordnik"]
+    wordnikKey = apiKeys['wordnik']
     WordClient = swagger.ApiClient(wordnikKey, 'http://api.wordnik.com/v4')
 
     # Returns the most common definition of a word
-    @commands.command(name="define", aliases=['d'])
+    @commands.command(name='define', aliases=['d'])
     async def wordnik_define(self, ctx, *, word):
-        """ Provides the definition of _a_ word """
+        """ Provides the definition of a word """
         wordApi = WordApi.WordApi(Dictionary.WordClient)
 
         parts_of_speech = {'noun': 'n.', 'verb': 'v.', 'adjective': 'adj.', 'adverb': 'adv.',
@@ -32,16 +32,16 @@ class Dictionary:
             return await ctx.send("Sorry, couldn't find that one.")
 
         for pos in parts_of_speech:
-            if pos in result.partOfSpeech.split("-"):
+            if pos in result.partOfSpeech.split('-'):
                 word_pos = parts_of_speech[pos]
                 break
             else:
                 word_pos = result.partOfSpeech
 
-        await ctx.send("{} _{}_ `{}`".format(word.title(), word_pos, result.text))
+        await ctx.send('{} _{}_ `{}`'.format(word.title(), word_pos, result.text))
 
     # Urban dictionary
-    @commands.command(name="ud")
+    @commands.command(name='ud')
     async def get_urban_def(self, ctx, *, word):
         """ Consult the world's leading dictionary """
         result = urbdic.define(word)
@@ -49,7 +49,7 @@ class Dictionary:
         if not result:
             return await ctx.send("Sorry, couldn't find that one.")
 
-        await ctx.send("{}: `{}`".format(word.title(), result[0].definition))
+        await ctx.send('{}: `{}`'.format(word.title(), result[0].definition))
 
 
 def setup(bot):
