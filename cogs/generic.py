@@ -57,7 +57,7 @@ class Generic:
     @commands.command()
     async def slap(self, ctx, *, target):
         if not target:
-            return await ctx.send('You can't slap nothing.')
+            return await ctx.send("You can't slap nothing.")
 
         member = ctx.author.nick
         await ctx.send('{} slaps {} around a bit with a large trout.'.format(member, target))
