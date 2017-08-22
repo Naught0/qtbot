@@ -25,6 +25,14 @@ class AskAsk:
         if not link_list:
             return None
 
+        # Filter some ask specific links
+        # i.e. //www.ask.com/youtube?q=scroopy+noopers&v=CIAXKuxtTsc
+        for link in link_list:
+            print(link)
+            if link.startswith('//'):
+                print(f'Popped: {link}')
+                link_list.pop(link_list.index(link))
+
         return link_list
 
     @commands.command(name='ask', aliases=['g'])
