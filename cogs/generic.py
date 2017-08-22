@@ -55,7 +55,7 @@ class Generic:
         await ctx.send('\n[✓] same\n [✓] re:same\n [ ] unsame')
 
     @commands.command()
-    async def slap(self, ctx, *, target):
+    async def slap(self, ctx, *, target=None):
         if not target:
             return await ctx.send("You can't slap nothing.")
 
@@ -63,7 +63,7 @@ class Generic:
         await ctx.send('{} slaps {} around a bit with a large trout.'.format(member, target))
 
     @commands.command()
-    async def love(self, ctx, *, target):
+    async def love(self, ctx, *, target=None):
         member = ctx.author.nick
 
         if not target:
