@@ -9,6 +9,10 @@ class YouTube:
     def __init__(self, bot):
         self.bot = bot
 
+    def sync_get_youtube_video(query):
+        """ Sync youtube function (lib uses requests) """
+        return yt.get_youtube_video(query, num_results=1)
+
     @commands.command(name='yt')
     async def get_youtube_video(self, ctx, *, query):
         """ Returns some matching youtube videos for a query """
@@ -16,11 +20,11 @@ class YouTube:
         if not query:
             return await ctx.send('Go on, search something.')
 
-        # Get videos from yt API
-        try:
-            video_list = yt.get_video_info(query, num_results=1)
-        except LookupError:
-            return await ctx.send("Sorry, couldn't find anything for `{}`.".format(query))
+        # Executor for sync function
+        video_dict = await self.bot.loop.run_in_executor(None, YouTube.sync_get_youtube_video, query)
+
+        if not video_dict:
+            return await ctx.say("Sorry, couldn't find anything for `{}`".format(query))
 
         # Return top hit
         await ctx.send('{}'.format(video_list[0]['video_url']))

@@ -48,7 +48,7 @@ def get_video_info(query: str, title_append='', num_results=1, thumb_quality=0) 
     call_result = requests.get(api_uri.format(query, yt_api_key)).json()
 
     if call_result['pageInfo']['totalResults'] == 0:
-        raise LookupError('No results found matching query.')
+        return None
 
     if call_result['pageInfo']['totalResults'] < num_results:
         num_results = call_result['pageInfo']['totalResults']
