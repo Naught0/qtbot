@@ -18,7 +18,7 @@ with open('data/apikeys.json') as f:
 bot.aio_session = aiohttp.ClientSession
 
 # Choose default cogs
-startup_extensions = (
+bot.startup_extensions = (
     'cogs.admin',
     'cogs.generic',
     'cogs.weather',
@@ -58,7 +58,7 @@ async def uptime(ctx):
 
 
 if __name__ == '__main__':
-    for ext in startup_extensions:
+    for ext in bot.startup_extensions:
         try:
             bot.load_extension(ext)
         except Exception as e:
