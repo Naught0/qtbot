@@ -11,7 +11,7 @@ class YouTube:
 
     def sync_get_youtube_video(query):
         """ Sync youtube function (lib uses requests) """
-        return yt.get_youtube_video(query, num_results=1)
+        return yt.get_video_info(query, num_results=1)
 
     @commands.command(name='yt')
     async def get_youtube_video(self, ctx, *, query):
