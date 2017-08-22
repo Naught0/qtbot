@@ -9,6 +9,7 @@ class Generic:
 
     @commands.command()
     async def todo(self, ctx):
+        """ A to-do list for myself """
         await ctx.send('[ ] Gambling bot [ ] League Match History')
 
     # No kicking allowed
@@ -56,6 +57,7 @@ class Generic:
 
     @commands.command()
     async def slap(self, ctx, *, target=None):
+        """ Teach someone a lesson """
         if not target:
             return await ctx.send("You can't slap nothing.")
 
@@ -64,6 +66,7 @@ class Generic:
 
     @commands.command()
     async def love(self, ctx, *, target=None):
+        """ Give someone some lovin' """
         if ctx.author.nick is None:
             member = ctx.author
         else:
