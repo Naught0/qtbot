@@ -1,5 +1,6 @@
 import discord
 import json
+from utils import aiohttp_wrap as aw
 from utils import dict_manip as dm
 from discord.ext import commands
 from pathlib import Path
