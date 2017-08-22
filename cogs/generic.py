@@ -64,7 +64,10 @@ class Generic:
 
     @commands.command()
     async def love(self, ctx, *, target=None):
-        member = ctx.author.nick
+        if ctx.author.nick is None:
+            member = ctx.author
+        else:
+            member = ctx.author.nick
 
         if not target:
             return await ctx.send('{} loves ... nothing'.format(member))
