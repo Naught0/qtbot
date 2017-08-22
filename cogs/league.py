@@ -17,39 +17,39 @@ class League:
         self.bot = bot
 
     # Get API keys
-    with open("data/apikeys.json", "r") as f:
+    with open('data/apikeys.json') as f:
         api_keys = json.load(f)
 
     # Riot API key
-    riot_api_key = api_keys["riot"]
+    riot_api_key = api_keys['riot']
 
     # Champion.gg API key
-    champion_gg_api_key = api_keys["champion.gg"]
+    champion_gg_api_key = api_keys['champion.gg']
 
     # Init RiotObserver
     rito = ro(riot_api_key)
 
-    @commands.command(name="aln", aliases=['addl', 'addleague'])
+    @commands.command(name='aln', aliases=['addl', 'addleague'])
     async def add_league_name(self, ctx, *, summoner_name):
         """ Add your summoner name to the user file """
         member = str(ctx.author)
 
         if not ufm.found_user_file():
             await ctx.send("No user file found...\nCreated user file and added `{}'s`' summoner name as `{}`.".format(member, summoner_name))
-            ufm.create_user_file(member, "summoner_name", summoner_name)
+            ufm.create_user_file(member, 'summoner_name', summoner_name)
             return
         else:
-            await ctx.send("Added `{}` as summoner name for `{}`.".format(summoner_name, member))
-            ufm.update_user_info(member, "summoner_name", summoner_name)
+            await ctx.send('Added `{}` as summoner name for `{}`.'.format(summoner_name, member))
+            ufm.update_user_info(member, 'summoner_name', summoner_name)
             return
 
-    @commands.command(name="ci", aliases=['champ'])
+    @commands.command(name='ci', aliases=['champ'])
     async def get_champ_info(self, ctx, *, champ):
         """ Return play, ban, and win rate for a champ """
-        uri = "http://api.champion.gg/v2/champions/{}?sort=playRate-desc&api_key={}"
-        icon_uri = "https://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/{}.png"
+        uri = 'http://api.champion.gg/v2/champions/{}?sort=playRate-desc&api_key={}'
+        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/{}.png'
 
-        champ = champ.replace(" ", "")
+        champ = champ.replace(' ', '')
         riot_champ_name = lu.get_riot_champ_name(champ)
         fancy_champ_name = lu.get_fancy_champ_name(riot_champ_name)
         champ_title = lu.get_champ_title(riot_champ_name)
@@ -60,23 +60,23 @@ class League:
 
         # New champs have no data
         if not res:
-            return await ctx.send("Sorry, no data for `{}`, yet.".format(fancy_champ_name))
+            return await ctx.send('Sorry, no data for `{}`, yet.'.format(fancy_champ_name))
 
         # Create embed
         em = discord.Embed()
         em.title = '{} "{}"'.format(fancy_champ_name, champ_title)
         em.description = None
-        em.add_field(name="Role",
-                     value="{} ({:.2%})".format(
-                         res[0]["role"].split("_")[0].title(), res[0]["percentRolePlayed"]))
-        em.add_field(name="Play rate",
-                     value="{:.2%}".format(res[0]["playRate"]))
-        em.add_field(name="Win rate",
-                     value="{:.2%}".format(res[0]["winRate"]))
-        em.add_field(name="Ban rate",
-                     value="{:.2%}".format(res[0]["banRate"]))
+        em.add_field(name='Role',
+                     value='{} ({:.2%})'.format(
+                         res[0]['role'].split('_')[0].title(), res[0]['percentRolePlayed']))
+        em.add_field(name='Play rate',
+                     value='{:.2%}'.format(res[0]['playRate']))
+        em.add_field(name='Win rate',
+                     value='{:.2%}'.format(res[0]['winRate']))
+        em.add_field(name='Ban rate',
+                     value='{:.2%}'.format(res[0]['banRate']))
         em.set_thumbnail(url=icon_uri.format(riot_champ_name))
-        em.url = "http://champion.gg/champion/{}".format(riot_champ_name)
+        em.url = 'http://champion.gg/champion/{}'.format(riot_champ_name)
         em.set_footer(text="Powered by Champion.gg and Riot's API.")
 
         return await ctx.send(embed=em)
@@ -85,54 +85,54 @@ class League:
     # async def matchHistory(self, ctx, ):
     #         """ do not use """
     #         member = str(ctx.message.author)
-    #         summoner_name = ufm.get_user_info(member, "summoner_name")
+    #         summoner_name = ufm.get_user_info(member, 'summoner_name')
     #         summoner_obj = League.getSummonerObj(summoner_name)
-    #         return await ctx.send("Latest match information for {} ({})\n{}".format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
+    #         return await ctx.send('Latest match information for {} ({})\n{}'.format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
 
-    @commands.command(name="ucf")
+    @commands.command(name='ucf')
     @commands.is_owner()
     async def update_champ_file(self, ctx):
         """ Creates / updates a json file containing champion IDs, names, titles, etc. """
 
         # Case where champ data found
         if lu.found_champ_file():
-            with open("data/champ_data.json", "r") as f:
+            with open('data/champ_data.json') as f:
                 file_champ_list = json.load(f)
 
             # Get champ list from Riot's API
             new_champ_list = League.rito.static_get_champion_list()
 
             # If file is up to date, don't update
-            if len(new_champ_list["data"]) == len(file_champ_list["data"]):
-                return await ctx.send("Champion information file already up to date.")
+            if len(new_champ_list['data']) == len(file_champ_list['data']):
+                return await ctx.send('Champion information file already up to date.')
 
             # File needs updating
             else:
-                with open("data/champ_data.json", "w") as f:
+                with open('data/champ_data.json', 'w') as f:
                     json.dump(new_champ_list, f)
-                return await ctx.send("Champion file updated.")
+                return await ctx.send('Champion file updated.')
 
         # Create champion data file if not found
         else:
             new_champ_list = League.rito.static_get_champion_list()
-            with open("data/champ_data.json", "w") as f:
+            with open('data/champ_data.json', 'w') as f:
                 json.dump(new_champ_list, f)
 
-        await ctx.send("Creating chamption information file.")
+        await ctx.send('Creating chamption information file.')
 
-    @commands.command(name="elo", aliases=['mmr'])
-    async def get_league_elo(self, ctx, *, in_summoner=""):
+    @commands.command(name='elo', aliases=['mmr'])
+    async def get_league_elo(self, ctx, *, in_summoner=''):
         """ Get League of Legends elo / mmr from na.whatismymmr.com """
 
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic
         # More information here: https://creativecommons.org/licenses/by/2.0
 
-        summoner = in_summoner.replace(" ", "%20")
+        summoner = in_summoner.replace(' ', '%20')
         f_summoner = in_summoner.title()
 
         # Requests call information
-        site_uri = "https://na.whatismymmr.com/{}"
-        uri = "https://na.whatismymmr.com/api/v1/summoner?name={}"
+        site_uri = 'https://na.whatismymmr.com/{}'
+        uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
         header = {'user-agent': 'qtbot/1.0'}
 
         # Get who's calling the function
@@ -144,7 +144,7 @@ class League:
         # Try to read summoner from file if none supplied
         if not summoner:
             summoner = f_summoner = ufm.get_user_info(
-                member, "summoner_name")
+                member, 'summoner_name')
         if summoner is None:
             return await ctx.send("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
 
@@ -156,42 +156,42 @@ class League:
             uri.format(summoner), headers=header).json()
 
         # No data found
-        if "error" in res:
+        if 'error' in res:
             return await ctx.send("Sorry, I can't find `{}`".format(summoner))
 
-        # Replace "None" with 0 for error margin
+        # Replace 'None' with 0 for error margin
         for kind in res:
-            if res[kind]["err"] is None:
-                res[kind]["err"] = 0
+            if res[kind]['err'] is None:
+                res[kind]['err'] = 0
 
         # Create embed
         em = discord.Embed()
 
         em.title = f_summoner
         em.url = site_uri.format(summoner)
-        em.set_thumbnail(url=lu.get_summoner_icon(summoner, "na"))
+        em.set_thumbnail(url=lu.get_summoner_icon(summoner, 'na'))
 
         # Display ranked MMR
-        if res["ranked"]["avg"] is not None:
+        if res['ranked']['avg'] is not None:
             # I'll think of a better way to do this later, but for now, it works
-            rank_str = res["ranked"]["summary"].split('<b>')[1].split('</b')[0]
-            new_str = rank_str.split(" ")
+            rank_str = res['ranked']['summary'].split('<b>')[1].split('</b')[0]
+            new_str = rank_str.split(' ')
             new_str[0] = new_str[0].capitalize()
-            rank_str = " ".join(new_str)
+            rank_str = ' '.join(new_str)
             # Add to embed field
-            em.add_field(name="Approximate rank", value=rank_str)
-            em.add_field(name="Ranked MMR", value="{}±{}".format(
-                res["ranked"]["avg"], res["ranked"]["err"]))
+            em.add_field(name='Approximate rank', value=rank_str)
+            em.add_field(name='Ranked MMR', value='{}±{}'.format(
+                res['ranked']['avg'], res['ranked']['err']))
 
         # Display normal MMR
-        if res["normal"]["avg"] is not None:
-            em.add_field(name="Normal MMR", value="{}±{}".format(
-                res["normal"]["avg"], res["normal"]["err"]))
+        if res['normal']['avg'] is not None:
+            em.add_field(name='Normal MMR', value='{}±{}'.format(
+                res['normal']['avg'], res['normal']['err']))
 
         # Display ARAM MMR
-        if res["ARAM"]["avg"] is not None:
-            em.add_field(name="ARAM MMR", value="{}±{}".format(
-                res["ARAM"]["avg"], res["ARAM"]["err"]))
+        if res['ARAM']['avg'] is not None:
+            em.add_field(name='ARAM MMR', value='{}±{}'.format(
+                res['ARAM']['avg'], res['ARAM']['err']))
 
         em.set_footer(text="Powered by WhatIsMyMMR.com and Riot's API.")
 
