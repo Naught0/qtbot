@@ -57,15 +57,16 @@ def get_video_info(query: str, title_append='', num_results=1, thumb_quality=0) 
 
     # Store gathered information in a dict
     result_dict = {}
-
-    # The Dictionary format is as follows:
-    # video_index :
-    #        video_id -> video's youtube ID
-    #        title -> title + appended string (optional)
-    #        description -> video description
-    #        views -> video views
-    #        video_url -> url to youtube video
-    #        thumb_url -> url of thumbnail of selected quality
+    """
+    The Dictionary format is as follows:
+    video_index :
+           video_id -> video's youtube ID
+           title -> title + appended string (optional)
+           description -> video description
+           views -> video views
+           video_url -> url to youtube video
+           thumb_url -> url of thumbnail of selected quality
+    """
     for x in range(num_results):
         result_dict[x] = {
             'video_id': call_result['items'][x]['id']['videoId'],
@@ -76,7 +77,6 @@ def get_video_info(query: str, title_append='', num_results=1, thumb_quality=0) 
         }
 
     return result_dict
-
 
 def _get_watch_url(video_id: str) -> str:
     """ Creates watchable / downloadable URL from video's ID """
