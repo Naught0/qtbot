@@ -30,13 +30,23 @@ class Admin:
         await ctx.send('Cog `{}` has been unloaded.'.format(extension_name))
 
 
-    @commands.command(aliases='r')
+    @commands.command(name='reload', aliases='r')
     @commands.is_owner()
-    async def reload(self, ctx, extension_name: str):
+    async def _reload(self, ctx, extension_name: str):
         """ Reloads an extension """
         self.bot.unload_extension(extension_name)
         self.bot.load_extension(extension_name)
         await ctx.send('Cog `{}` has been reloaded.'.format(extension_name))
+
+    @commands.command(name='reload all', aliases='ra')
+    @commands.is_owner()
+    async def _reload_all(self, ctx):
+        """ Reloads all extensions """
+        for extension in self.bot.startup_extensions:
+            self.bot.unload_extension(extension)
+            self.bot.load_extension(extension)
+
+        await ctx.send('All cogs have been reloaded.')
 
 
 def setup(bot):
