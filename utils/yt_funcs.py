@@ -1,14 +1,7 @@
 #!/bin/env python
 
 import requests
-import os
 import json
-
-
-with open('data/apikeys.json') as f:
-    yt_api_key = json.load(f)['youtube']
-
-api_uri = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q={}&type=video&key={}'
 
 
 def get_video_info(query: str, title_append='', num_results=1, thumb_quality=0) -> dict:
@@ -25,6 +18,13 @@ def get_video_info(query: str, title_append='', num_results=1, thumb_quality=0) 
 
     thumb_quality: 0 - 2 (highest to lowest quality)
     """
+
+    # Initial setup -> API key
+    with open('data/apikeys.json') as f:
+        yt_api_key = json.load(f)['youtube']
+
+    # Base URL
+    api_uri = 'https://www.googleapis.com/youtube/v3/search?part=snippet&q={}&type=video&key={}'
 
     # Youtube API returns 5 results per page
     if not isinstance(num_results, int) or (1 < num_results > 5):
