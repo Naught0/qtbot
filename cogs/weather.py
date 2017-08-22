@@ -24,7 +24,7 @@ class Weather:
             return await ctx.send('Please supply a zipcode.')
 
         # Invalid zip supplied
-        if (len(zip_code) != 5 or not zip_code.isnumeric()):
+        if len(zip_code) != 5 or not zip_code.isnumeric():
             return await ctx.send('Please supply a valid zipcode.')
 
         # Get user ID
@@ -41,6 +41,7 @@ class Weather:
     async def weather(self, ctx, zip_code=''):
         """ Search with zipcode, or not, and qtbot will try to find your zip from the userfile. """
 
+        # Get discord member 
         member = str(ctx.author)
 
         # If no zipcode provided
@@ -101,7 +102,7 @@ class Weather:
     async def forecast(self, ctx, zip_code=''):
         """ Search with zipcode, or not, and qtbot will try to find your zip from the userfile."""
 
-        # user's snowflake ID
+        # Get Discord user
         member = str(ctx.author)
 
         # If no zipcode provided
@@ -123,10 +124,10 @@ class Weather:
             return await ctx.send("Sorry, I'm having trouble finding your location.")
 
         # Load forecasts into strings
-        foreTom = d['forecast']['txt_forecast']['forecastday'][2]['fcttext']
-        foreTomNight = d['forecast']['txt_forecast']['forecastday'][3]['fcttext']
+        fc_tomorrow = d['forecast']['txt_forecast']['forecastday'][2]['fcttext']
+        fc_tomorrow_night = d['forecast']['txt_forecast']['forecastday'][3]['fcttext']
 
-        await ctx.send('Tomorrow: `{}`\nTomorrow Evening: `{}`'.format(foreTom, foreTomNight))
+        await ctx.send('Tomorrow: `{}`\nTomorrow Evening: `{}`'.format(fc_tomorrow, fc_tomorrow_night))
 
 
 def setup(bot):
