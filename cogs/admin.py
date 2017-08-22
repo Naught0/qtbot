@@ -42,6 +42,7 @@ class Admin:
     @commands.is_owner()
     async def _reload_all(self, ctx):
         """ Reloads all extensions """
+        ext_list = []
         for extension in self.bot.startup_extensions:
             ext_list.append(extension)
         ext_list.pop('cogs.admin')
