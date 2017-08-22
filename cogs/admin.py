@@ -38,7 +38,7 @@ class Admin:
         self.bot.load_extension(extension_name)
         await ctx.send('Cog `{}` has been reloaded.'.format(extension_name))
 
-    @commands.command(name='reload all', aliases='ra')
+    @commands.command(name='reload all', aliases=['ra'])
     @commands.is_owner()
     async def _reload_all(self, ctx):
         """ Reloads all extensions """
