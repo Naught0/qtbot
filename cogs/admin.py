@@ -46,6 +46,8 @@ class Admin:
             self.bot.unload_extension(extension)
             self.bot.load_extension(extension)
 
+        await ctx.send('All cogs have been reloaded.')
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))
