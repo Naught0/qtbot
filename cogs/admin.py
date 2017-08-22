@@ -45,7 +45,7 @@ class Admin:
         ext_list = []
         for extension in self.bot.startup_extensions:
             ext_list.append(extension)
-        ext_list.pop('cogs.admin')
+        ext_list.pop(ext_list.index('cogs.admin'))
 
         for extension in self.bot.startup_extensions:
             self.bot.unload_extension(extension)
