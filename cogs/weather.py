@@ -54,7 +54,7 @@ class Weather:
         # Load wunderAPI info into d
         # Sometimes wunderground dies --> handle it
         try:
-            d = aw.aio_get_json(self.aio_session, self.api_url.format(
+            d = await aw.aio_get_json(self.aio_session, self.api_url.format(
                 self.api_key, zip_code))
         except ConnectionError:
             return await ctx.send('Sorry, wunderground is having trouble with this request. Try again in a bit.')
@@ -113,7 +113,7 @@ class Weather:
             return await ctx.send("Sorry, you're not in my file!\nPlease use `az` with a valid zipcode.")
 
         # Json response in string form
-        d = aw.aio_get_json(self.aio_session, self.api_url.format(
+        d = await aw.aio_get_json(self.aio_session, self.api_url.format(
             self.api_key, zip_code))
 
         # Handling city not found error
