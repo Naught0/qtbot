@@ -17,7 +17,7 @@ class DownDetect:
     async def down_detector(self, ctx, check_url):
         """ Check whether a website is down or up """
 
-        request_html = await aw.aio_get_text(self.uri.format(check_url))
+        request_html = await aw.aio_get_text(self.aio_session, self.uri.format(check_url))
 
         # Get soupy
         soup = BeautifulSoup(request_html, 'html.parser')
