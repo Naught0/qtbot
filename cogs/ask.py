@@ -20,18 +20,11 @@ class AskAsk:
         link_list = []
 
         for link in soup.find_all('a', {'class': 'result-link'}, href=True):
-            link_list.append(link['href'])
+            if not link.startswith('//'):
+                link_list.append(link['href'])
 
         if not link_list:
             return None
-
-        # Filter some ask specific links
-        # i.e. //www.ask.com/youtube?q=scroopy+noopers&v=CIAXKuxtTsc
-        for link in link_list:
-            print(link)
-            if link.startswith('//'):
-                print(f'Popped: {link}')
-                link_list.pop(link_list.index(link))
 
         return link_list
 
@@ -52,10 +45,15 @@ class AskAsk:
 
         link_list = AskAsk._get_ask_links(resp_html)
 
-        if link_list is None:
+        if not link_list:
             return await ctx.send("Sorry, I couldn't find anything for `{}.".format(query))
 
-        await ctx.send('**Top result:**\n{}\n**See Also:**\n1. <{}>\n2. <{}>'.format(link_list[0], link_list[1], link_list[2]))
+        if len(link_list) >= 3:
+            await ctx.send(f'**Top result:**\n{link_list[0]}\n**See Also:**\n1. <{link_list[1]}>\n2. <{link_list[2]}>')'
+        elif len(link_list) >= 2:
+            await ctx.send(f'**Top result:**\n{link_list[0]}\n**See Also:**\n1. <{link_list[1]}>')
+        else:
+            await ctx.send(f'**Top result:**\n{link_list[0]}')
 
 
 def setup(bot):
