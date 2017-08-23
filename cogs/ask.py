@@ -20,8 +20,9 @@ class AskAsk:
         link_list = []
 
         for link in soup.find_all('a', {'class': 'result-link'}, href=True):
-            if not link.startswith('//'):
-                link_list.append(link['href'])
+            if type(link) is str:
+                if not link.startswith('//'):
+                    link_list.append(link['href'])
 
         if not link_list:
             return None
