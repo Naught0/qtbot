@@ -49,7 +49,7 @@ class AskAsk:
             return await ctx.send("Sorry, I couldn't find anything for `{}.".format(query))
 
         if len(link_list) >= 3:
-            await ctx.send(f'**Top result:**\n{link_list[0]}\n**See Also:**\n1. <{link_list[1]}>\n2. <{link_list[2]}>')'
+            await ctx.send(f'**Top result:**\n{link_list[0]}\n**See Also:**\n1. <{link_list[1]}>\n2. <{link_list[2]}>')
         elif len(link_list) >= 2:
             await ctx.send(f'**Top result:**\n{link_list[0]}\n**See Also:**\n1. <{link_list[1]}>')
         else:
