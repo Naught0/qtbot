@@ -24,6 +24,9 @@ class AskAsk:
                 if not link.startswith('//'):
                     link_list.append(link['href'])
 
+        print(html)
+        print(link_list)
+
         if not link_list:
             return None
 
@@ -47,7 +50,7 @@ class AskAsk:
         link_list = AskAsk._get_ask_links(resp_html)
 
         if not link_list:
-            return await ctx.send("Sorry, I couldn't find anything for `{}.".format(query))
+            return await ctx.send("Sorry, I couldn't find anything for `{}``.".format(query))
 
         if len(link_list) >= 3:
             await ctx.send(f'**Top result:**\n{link_list[0]}\n**See Also:**\n1. <{link_list[1]}>\n2. <{link_list[2]}>')
