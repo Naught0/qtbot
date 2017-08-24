@@ -13,7 +13,7 @@ class Admin:
         await ctx.send('Welcome to the server! For a complete list of commands, type `.help`.')
 
     @commands.command(name='exec')
-    @commands.isowner()
+    @commands.is_owner()
     async def shell_access(self, ctx, *args):
         """ Lets me access the VPS command line via the bot """
         process = await asyncio.create_subprocess_exec(*args, stdout=asyncio.subprocess.PIPE)
