@@ -25,17 +25,21 @@ class Wiki:
         formatted_query = query.replace(' ', '+')
 
         # Get wiki page
-        resp = await aw.aio_get_json(self.aio_session, self.search_uri.format(formatted_query), headers=self.headers)
+        wiki_info = await aw.aio_get_json(self.aio_session, self.search_uri.format(formatted_query), headers=self.headers)
 
         # No result found
+<<<<<<< HEAD
+        if not wiki_info[1]:
+=======
         if not resp[1]:
+>>>>>>> 43dff571f5b32cebe11ac8c874c51c778c3c14cb
             return await ctx.send(f'Sorry, I couldn\'t find anything for {query}')
 
         # Create embed
         em = discord.Embed()
-        em.title = wiki_info['title']
-        em.description = wiki_info['description']
-        em.url = wiki_info['link']
+        em.title = wiki_info[1][0]
+        em.description = wiki_info[2][0]
+        em.url = wiki_info[3][0]
         em.set_thumbnail(url='https://lh5.ggpht.com/1Erjb8gyF0RCc9uhnlfUdbU603IgMm-G-Y3aJuFcfQpno0N4HQIVkTZERCTo65Iz2II=w300')
 
         await ctx.send(embed=em)
