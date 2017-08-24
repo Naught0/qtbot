@@ -12,7 +12,7 @@ class Admin:
     async def on_member_join(self, ctx):
         await ctx.send('Welcome to the server! For a complete list of commands, type `.help`.')
 
-    @commands.command(name='exec')
+    @commands.command(name='eval')
     @commands.is_owner()
     async def shell_access(self, ctx, *args):
         """ Lets me access the VPS command line via the bot """
