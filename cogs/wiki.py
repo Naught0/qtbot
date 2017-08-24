@@ -13,7 +13,7 @@ class Wiki:
         self.headers = {'user-agent': 'qtbot/1.0 - A friendly discord bot (https://github.com/Naught0/qtbot)'}
         self.aio_session = bot.aio_session
 
-    async def get_wiki_data(self, ctx, query=None):
+    async def get_wiki_data(query=None):
         """ Wrapper that returns wikipedia data in an easily digestible format """
 
         # Determine whether we want a random article
