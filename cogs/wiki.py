@@ -52,3 +52,4 @@ class Wiki:
 
 
 def setup(bot):
+    bot.add_cog(Wiki(bot))
