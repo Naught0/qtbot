@@ -28,7 +28,11 @@ class Wiki:
         wiki_info = await aw.aio_get_json(self.aio_session, self.search_uri.format(formatted_query), headers=self.headers)
 
         # No result found
+<<<<<<< HEAD
         if not wiki_info[1]:
+=======
+        if not resp[1]:
+>>>>>>> 43dff571f5b32cebe11ac8c874c51c778c3c14cb
             return await ctx.send(f'Sorry, I couldn\'t find anything for {query}')
 
         # Create embed
