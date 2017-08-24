@@ -19,7 +19,7 @@ class Admin:
         process = await asyncio.create_subprocess_exec(*args, stdout=asyncio.subprocess.PIPE)
         stdout, stderr = await process.communicate()
 
-        await ctx.send(f'`{" ".join(args)}`\n```{stdout}')
+        await ctx.send(f'`{" ".join(args)}`\n```{stdout.decode().strip()}```')
 
     @commands.command()
     @commands.is_owner()
