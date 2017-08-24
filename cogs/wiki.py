@@ -36,7 +36,7 @@ class Wiki:
     async def wiki_seearch(self, ctx, *, query=None):
         """ Get the closest matching Wikipedia article for a given query """
 
-        wiki_info = Wiki.get_wiki_data(query)
+        wiki_info = await Wiki.get_wiki_data(query)
 
         if not wiki_info:
             return await ctx.send(f'Sorry, I couldn\'t find anything for {query}')
