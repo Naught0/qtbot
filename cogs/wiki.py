@@ -13,7 +13,7 @@ class Wiki:
         self.headers = {'user-agent': 'qtbot/1.0 - A friendly discord bot (https://github.com/Naught0/qtbot)'}
         self.aio_session = bot.aio_session
 
-    async def get_wiki_data(query=None):
+    async def get_wiki_data(self, query=None):
         """ Wrapper that returns wikipedia data in an easily digestible format """
 
         # Determine whether we want a random article
@@ -36,7 +36,7 @@ class Wiki:
     async def wiki_seearch(self, ctx, *, query=None):
         """ Get the closest matching Wikipedia article for a given query """
 
-        wiki_info = await Wiki.get_wiki_data(query)
+        wiki_info = await Wiki.get_wiki_data(query=query)
 
         if not wiki_info:
             return await ctx.send(f'Sorry, I couldn\'t find anything for {query}')
