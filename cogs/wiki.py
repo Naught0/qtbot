@@ -10,7 +10,8 @@ class Wiki:
         self.bot = bot
         self.search_uri = 'http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search={}'
         self.random_uri = 'https://en.wikipedia.org/w/api.php?action=query&list=random&format=json&rnnamespace=0&rnlimit=1'
-        self.headers = {'user-agent': 'qtbot/1.0 - A friendly discord bot (https://github.com/Naught0/qtbot)'}        self.aio_session = bot.aio_session
+        self.headers = {'user-agent': 'qtbot/1.0 - A friendly discord bot (https://github.com/Naught0/qtbot)'}
+        self.aio_session = bot.aio_session
 
     async def get_wiki_data(self, query=None):
         """ Wrapper that returns wikipedia data in an easily digestible format """
