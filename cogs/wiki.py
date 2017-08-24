@@ -1,50 +1,43 @@
 #!/bin/env python
 
 import discord
-import wikipedia
-import textwrap
 from discord.ext import commands
-
-""" TODO: Modify wikipedia library to return first article entry when a
-disambiguation exception ocurrs """
+from utils import aiohttp_wrap as aw
 
 
 class Wiki:
     def __init__(self, bot):
         self.bot = bot
-
-    def sync_wiki_search(query=None):
-        """ Non async wiki search """
-        if not query:
-            article_title = wikipedia.random(pages=1)
-            article_obj = wikipedia.page(title=article_title)
-            return {'title': article_title, 'description': texwrap.shorten(article_obj.summary, width=240, placeholder='...'), 'url': article_obj.url}
-
-        article_title = wikipedia.search(query)
-        if not article_title:
-            return None
-        else:
-            article_obj = wikipedia.page(title=article_title)
-            return {'title': article_title, 'description': texwrap.shorten(article_obj.summary, width=240, placeholder='...'), 'url': article_obj.url}
+        self.search_uri = 'http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search={}'
+        self.random_uri = 'https://en.wikipedia.org/w/api.php?action=query&list=random&format=json&rnnamespace=0&rnlimit=1'
+        self.headers = {'user-agent': 'qtbot/1.0 - A friendly discord bot (https://github.com/Naught0/qtbot)'}
+        self.aio_session = bot.aio_session
 
     @commands.command(name='wiki', aliases=['wi'])
-    async def wiki_search(self, ctx, *, query=None):
-        """ Get the closest matching Wikipedia article for query """
+    async def wiki_seearch(self, ctx, *, query=None):
+        """ Get the closest matching Wikipedia article for a given query """
 
-        # Run sync function
-        wiki_dict = await self.bot.loop.run_in_executor(None, Wiki.sync_wiki_search, query)
+        # Determine whether we want a random article
+        if not query:
+            random_response = await aw.aio_get_json(self.aio_session, self.random_uri, headers=self.headers)
+            query = random_response['query']['random'][0]['title']
 
-        # No pages found
-        if not wiki_dict:
-            return await ctx.send("Sorry, couldn't find anything for `{}`".format(query))
+        # Spaces -> +
+        formatted_query = query.replace(' ', '+')
+
+        # Get wiki page
+        wiki_info = await aw.aio_get_json(self.aio_session, self.search_uri.format(formatted_query), headers=self.headers)
+
+        # No result found
+        if not wiki_info[1]:
+            return await ctx.send(f'Sorry, I couldn\'t find anything for {query}')
 
         # Create embed
         em = discord.Embed()
-        em.title = wiki_dict['title']
-        em.description = wiki_dict['description']
-        em.url = wiki_dict['url']
-        em.set_thumbnail(
-            url='https://lh5.ggpht.com/1Erjb8gyF0RCc9uhnlfUdbU603IgMm-G-Y3aJuFcfQpno0N4HQIVkTZERCTo65Iz2II=w300')
+        em.title = wiki_info[1][0]
+        em.description = wiki_info[2][0]
+        em.url = wiki_info[3][0]
+        em.set_thumbnail(url='https://lh5.ggpht.com/1Erjb8gyF0RCc9uhnlfUdbU603IgMm-G-Y3aJuFcfQpno0N4HQIVkTZERCTo65Iz2II=w300')
 
         await ctx.send(embed=em)
 
