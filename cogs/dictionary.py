@@ -26,19 +26,21 @@ class Dictionary:
         parts_of_speech = {'noun': 'n.', 'verb': 'v.', 'adjective': 'adj.', 'adverb': 'adv.',
                            'interjection': 'interj.', 'conjunction': 'conj.', 'preposition': 'prep.', 'pronoun': 'pron.'}
 
-        result = wordApi.getDefinitions(word)[0]
+        result = wordApi.getDefinitions(word)
 
         if not result:
             return await ctx.send("Sorry, couldn't find that one.")
 
+        final_result = result[0]
+
         for pos in parts_of_speech:
-            if pos in result.partOfSpeech.split('-'):
+            if pos in final_result.partOfSpeech.split('-'):
                 word_pos = parts_of_speech[pos]
                 break
             else:
-                word_pos = result.partOfSpeech
+                word_pos = final_result.partOfSpeech
 
-        await ctx.send('{} _{}_ `{}`'.format(word.title(), word_pos, result.text))
+        await ctx.send('{} _{}_ `{}`'.format(word.title(), word_pos, final_result.text))
 
     # Urban dictionary
     @commands.command(name='ud')
