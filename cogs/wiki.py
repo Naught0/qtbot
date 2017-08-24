@@ -19,7 +19,8 @@ class Wiki:
 
         # Determine whether we want a random article
         if not query:
-            formatted_query = await aw.aio_get_json(self.aio_session, self.random_uri, headers=self.headers)['query']['random'][0]['title'].replace(' ', '+')
+            random_response = await aw.aio_get_json(self.aio_session, self.random_uri, headers=self.headers)
+            query = random_response['query']['random'][0]['title']
 
         # Spaces -> +
         formatted_query = query.replace(' ', '+')
