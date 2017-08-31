@@ -22,11 +22,16 @@ class FindMeme:
 
         soup = BeautifulSoup(request_html, 'lxml')
 
+        # Create a list in case I want to make my own embed with some
+        # 'See also' stuff at some point
         link_list = []
+
+        # Yeah this site uses tables...
         for tr in soup.find_all('tr'):
             if hasattr(tr.h2, 'a'):
                 link_list.append(self.base_uri.format(tr.h2.a['href']))
 
+        # First link is most relevant
         if link_list:
             await ctx.send(f'{link_list[0]}')
         else:
