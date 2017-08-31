@@ -18,7 +18,9 @@ class FindMeme:
     async def get_meme_info(self, ctx, *, search):
         """ Search for some dank meme information """
 
-        request_html = await aw.aio_get_text(self.aio_session, self.request_uri.format(search.replace(' ', '+')), headers=self.headers)
+        request_html = await aw.aio_get_text(self.aio_session,
+            self.request_uri.format(search.replace(' ', '+')),
+            headers=self.headers)
 
         soup = BeautifulSoup(request_html, 'lxml')
 
