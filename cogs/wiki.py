@@ -35,7 +35,10 @@ class Wiki:
         # Create embed
         em = discord.Embed()
         em.title = wiki_info[1][0]
-        em.description = wiki_info[2][0]
+        if wiki_info[2][0] == '':
+            em.description = 'Disambiguation / Redirect Page'
+        else:
+            em.description = wiki_info[2][0]
         em.url = wiki_info[3][0]
         em.set_thumbnail(url='https://lh5.ggpht.com/1Erjb8gyF0RCc9uhnlfUdbU603IgMm-G-Y3aJuFcfQpno0N4HQIVkTZERCTo65Iz2II=w300')
 
