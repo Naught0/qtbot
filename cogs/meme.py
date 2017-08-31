@@ -26,7 +26,10 @@ class FindMeme:
             if hasattr(tr.h2, 'a'):
                 link_list.append(self.base_uri.format(tr.h2.a['href']))
 
-        await ctx.send(f'{link_list[0]}')
+        if link_list:
+            await ctx.send(f'{link_list[0]}')
+        else:
+            await ctx.send(f'Sorry, I couldn\'t find anything for {search}')
 
 
 def setup(bot):
