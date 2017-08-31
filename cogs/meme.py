@@ -23,7 +23,7 @@ class FindMeme:
 
         link_list = []
         for tr in soup.find_all('tr'):
-            if hasattr(tr.h2, a):
+            if hasattr(tr.h2, 'a'):
                 link_list.append(self.base_uri.format(tr.h2.a))
 
         await ctx.send(f'{link_list[0]}')
