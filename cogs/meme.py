@@ -29,7 +29,7 @@ class FindMeme:
         if link_list:
             await ctx.send(f'{link_list[0]}')
         else:
-            await ctx.send(f'Sorry, I couldn\'t find anything for {search}')
+            await ctx.send(f'Sorry, I couldn\'t find anything for `{search}`.')
 
 
 def setup(bot):
