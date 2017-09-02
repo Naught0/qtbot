@@ -121,54 +121,52 @@ class League:
         await ctx.send('Creating chamption information file.')
 
     @commands.command(name='elo', aliases=['mmr'])
-    async def get_league_elo(self, ctx, *, in_summoner=''):
+    async def get_league_elo(self, ctx, *, summoner=''):
         """ Get League of Legends elo / mmr from na.whatismymmr.com """
-
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic
         # More information here: https://creativecommons.org/licenses/by/2.0
-
-        summoner = in_summoner.replace(' ', '%20')
-        f_summoner = in_summoner.title()
-
-        # Requests call information
-        site_uri = 'https://na.whatismymmr.com/{}'
-        uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
-        header = {'user-agent': 'qtbot/1.0'}
 
         # Get who's calling the function
         member = str(ctx.message.author)
 
-        # Cache results for 2hrs
-        requests_cache.install_cache(expire_after=3600)
-
         # Try to read summoner from file if none supplied
         if not summoner:
-            summoner = f_summoner = ufm.get_user_info(
-                member, 'summoner_name')
+            summoner = ufm.get_user_info(member, 'summoner_name')
+
+        # get_user_info() will return None if there is no summoner found
         if summoner is None:
-            return await ctx.send("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply the name to this command.")
+            return await ctx.send("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply a name to this command.")
+
+        # TODO: remove this final instance of requests
+        # Cache results for 2hrs
+        requests_cache.install_cache(expire_after=3600)
 
         # Send typing b/c this can take some time
         await ctx.trigger_typing()
 
+        # Requests call information
+        site_uri = 'https://na.whatismymmr.com/{}'
+        api_uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
+        headers = {'user-agent': 'qtbot/1.0'}
+
         # Store results from call
+        f_summoner = in_summoner.replace(' ', '%20')
         res = requests.get(
-            uri.format(summoner), headers=header).json()
+            api_uri.format(f_summoner), headers=headers).json()
 
         # No data found
         if 'error' in res:
-            return await ctx.send("Sorry, I can't find `{}`".format(summoner))
+            return await ctx.send(f"Sorry, I can't find `{}`")
 
-        # Replace 'None' with 0 for error margin
+        # Replace 'None' with 0 for error margin because "+/- None" looks bad
         for kind in res:
             if res[kind]['err'] is None:
                 res[kind]['err'] = 0
 
         # Create embed
         em = discord.Embed()
-
-        em.title = f_summoner
-        em.url = site_uri.format(summoner)
+        em.title = summoner
+        em.url = site_uri.format(f_summoner)
         em.set_thumbnail(url=lu.get_summoner_icon(summoner, 'na'))
 
         # Display ranked MMR
@@ -178,20 +176,20 @@ class League:
             new_str = rank_str.split(' ')
             new_str[0] = new_str[0].capitalize()
             rank_str = ' '.join(new_str)
+
             # Add to embed field
             em.add_field(name='Approximate rank', value=rank_str)
-            em.add_field(name='Ranked MMR', value='{}±{}'.format(
-                res['ranked']['avg'], res['ranked']['err']))
+            em.add_field(name='Ranked MMR',
+                value=f"{res['ranked']['avg']}±{res['ranked']['err']}")
 
         # Display normal MMR
         if res['normal']['avg'] is not None:
-            em.add_field(name='Normal MMR', value='{}±{}'.format(
-                res['normal']['avg'], res['normal']['err']))
+            em.add_field(name='Normal MMR',
+                value=f"{res['normal']['avg']}±{res['normal']['err']}")
 
         # Display ARAM MMR
         if res['ARAM']['avg'] is not None:
-            em.add_field(name='ARAM MMR', value='{}±{}'.format(
-                res['ARAM']['avg'], res['ARAM']['err']))
+            em.add_field(name='ARAM MMR', value=f"{res['ARAM']['avg']}±{res['ARAM']['err']}")
 
         em.set_footer(text="Powered by WhatIsMyMMR.com and Riot's API.")
 
