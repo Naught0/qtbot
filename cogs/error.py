@@ -17,13 +17,13 @@ class ErrorHandler:
             return await ctx.send('Sorry, only the owner of qtbot may run this command.')
 
         if isinstance(error, discord.ext.commands.CommandOnCooldown):
-            return await ctx.send(f'This command is on cooldown. Please retry in {error.retry_after} second(s).')
+            return await ctx.send(f'This command is on cooldown. Please retry in `{error.retry_after:.0f}` second(s).')
 
         if isinstance(error, discord.ext.commands.BotMissingPermissions):
             return await ctx.send(f'I can\'t do that! I\'m missing permissions: ```{error.missing_perms}```')
 
         if isinstance(error, discord.ext.commands.MissingRequiredArgument):
-            return await ctx.send(f'Command missing required argument `{error.param}`')
+            return await ctx.send(f'Command missing required argument `{error.param}`.')
 
 
 def setup(bot):
