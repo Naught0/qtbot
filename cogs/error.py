@@ -10,7 +10,7 @@ class ErrorHandler:
     async def on_command_error(self, ctx, error):
         """ Handle command errors more gracefully """
 
-        if isistance(error, discord.ext.commands.CommandNotFound):
+        if isinstance(error, discord.ext.commands.CommandNotFound):
             return
 
         if isinstance(error, discord.ext.commands.errors.NotOwner):
