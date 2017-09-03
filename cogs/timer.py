@@ -16,13 +16,13 @@ class RemindTime:
         sleep = int(time_in_seconds)
 
         if sleep < 3600:
-            await ctx.send('Timer set for `sleep` seconds.')
+            await ctx.send(f'Timer set for `{sleep}` seconds.')
             await asyncio.sleep(time_in_seconds)
+            await ctx.send(f':timer: {ctx.author.mention} Time is up!')
+
         else:
             return await ctx.send('This is a test command. Please enter a time in seconds not exceeding 3600.')
-
-        await ctx.send(f':timer: {ctx.author.mention} Time is up!')
-
+            
 
 def setup(bot):
     bot.add_cog(RemindTime(bot))
