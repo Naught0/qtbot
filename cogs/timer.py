@@ -11,7 +11,7 @@ class RemindTime:
         self.bot = bot
 
     @commands.command(name='remindme')
-    def create_remind(self, ctx, time_in_seconds):
+    async def create_remind(self, ctx, time_in_seconds):
         """ Create a reminder to do something """
 
         if int(time_in_seconds) < 3600:
