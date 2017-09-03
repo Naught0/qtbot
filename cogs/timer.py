@@ -14,7 +14,9 @@ class RemindTime:
     async def create_remind(self, ctx, time_in_seconds):
         """ Create a reminder to do something """
 
-        if int(time_in_seconds) < 3600:
+        sleep = int(time_in_seconds)
+
+        if sleep < 3600:
             await asyncio.sleep(time_in_seconds)
         else:
             return await ctx.send('This is a test command. Please enter a time in seconds not exceeding 3600')
