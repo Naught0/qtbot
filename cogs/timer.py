@@ -6,14 +6,15 @@ import json
 from discord.ext import commands
 
 
-class RemindTime:
+class Timer:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='remindme')
-    async def create_remind(self, ctx, time_in_seconds):
-        """ Create a reminder to do something """
-        sleep = int(time_in_seconds)
+    @commands.command(name='time')
+    async def create_remind(self, ctx, time):
+        """ Create a timer in seconds """
+
+        sleep = int(time)
 
         if sleep < 3600:
             await ctx.send(f'Timer set for `{sleep}` seconds.')
@@ -25,4 +26,4 @@ class RemindTime:
 
 
 def setup(bot):
-    bot.add_cog(RemindTime(bot))
+    bot.add_cog(Timer(bot))
