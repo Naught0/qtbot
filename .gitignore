@@ -3,3 +3,5 @@ apikeys.json
 *.sqlite
 __pycache__/
 *.log
+*.xml
+.idea/qtbot.iml
