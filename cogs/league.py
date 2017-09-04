@@ -156,7 +156,7 @@ class League:
 
         # No data found
         if 'error' in res:
-            return await ctx.send(f"Sorry, I can't find `{}`")
+            return await ctx.send(f"Sorry, I can't find `{summoner}`")
 
         # Replace 'None' with 0 for error margin because "+/- None" looks bad
         for kind in res:
