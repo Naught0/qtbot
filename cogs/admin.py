@@ -16,6 +16,7 @@ class Admin:
     @commands.is_owner()
     async def shell_access(self, ctx, *, cmd):
         """ Lets me access the VPS command line via the bot """
+        print(f'Attempting to run {cmd.decode("utf-8")')
         process = await asyncio.create_subprocess_exec(cmd.decode('utf-8'), stdout=asyncio.subprocess.PIPE)
         stdout, stderr = await process.communicate()
         try:
