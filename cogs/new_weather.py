@@ -13,18 +13,21 @@ class Weather:
         self.bot = bot
         self.aio_session = bot.aio_session
         self.weather_icon_dict = {} # Empty for now
-        self.api_url = 'http://api.openweathermap.org/data/2.5/weather?zip={},{}'
+        self.api_url = 'http://api.openweathermap.org/data/2.5/weather?zip={},{}&APPID={}'
         self.icon_url = "http://openweathermap.org/img/w/{weather_data['weather'][0]['icon']}.png" # for later use
 
+        with open('data/apikeys.json') as f:
+            self.api_key = json.load(f)['open_weather']
+
     @commands.command(name='nu_weather', aliases=['nwt'])
-    @cached(ttl=1200)
+    @cached(ttl=7200)
     async def get_weather(self, ctx, zip_code=None):
         """ Get the weather via a new source """
 
         # Initial start time
         start_time = datetime.now()
 
-        resp = await aw.aio_get_json(self.aio_session, self.api_url.format('33073', 'us'))
+        resp = await aw.aio_get_json(self.aio_session, self.api_url.format('33073', 'us', self.api_key))
 
         now_time = datetime.now()
 
