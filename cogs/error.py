@@ -1,6 +1,8 @@
 #!/bin/env python
 
 import discord.ext
+import sys
+import traceback
 
 
 class ErrorHandler:
@@ -22,7 +24,8 @@ class ErrorHandler:
         if isinstance(error, discord.ext.commands.MissingRequiredArgument):
             return await ctx.send(f'Command missing required argument `{error.param}`.')
 
-        print(f'Ignoring exception in command {ctx.command}')
+        print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
 def setup(bot):
