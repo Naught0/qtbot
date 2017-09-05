@@ -22,6 +22,8 @@ class ErrorHandler:
         if isinstance(error, discord.ext.commands.MissingRequiredArgument):
             return await ctx.send(f'Command missing required argument `{error.param}`.')
 
+        print(f'Ignoring exception in command {ctx.command}')
+
 
 def setup(bot):
     bot.add_cog(ErrorHandler(bot))
