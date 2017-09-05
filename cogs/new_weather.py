@@ -44,7 +44,8 @@ class Weather:
         # Check for cached results in redis server
         if await self.redis_client.exists(f'{ctx.author.id}:weather'):
             resp = await self.redis_client.get(f'{ctx.author.id}:weather')
-
+            resp = json.loads(resp)
+            
         # Store reults in cache for 7200 seconds
         # This is the frequency with which the API updates so there's no use in querying at a faster rate
         else:
