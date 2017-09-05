@@ -45,7 +45,7 @@ class Weather:
         if await self.redis_client.exists(f'{ctx.author.id}:weather'):
             resp = await self.redis_client.get(f'{ctx.author.id}:weather')
             resp = json.loads(resp)
-            
+
         # Store reults in cache for 7200 seconds
         # This is the frequency with which the API updates so there's no use in querying at a faster rate
         else:
@@ -57,7 +57,7 @@ class Weather:
         em.title = f"Weather for {resp['name']}"
         # Yeah this converts from Kevlin to Fahrenheit...
         em.add_field(name='Temperature', value=f"{float((resp['main']['temp'] - 273) * 1.8 + 32):.1f}°F")
-        em.add_field(name='Conditions', value=f"{resp['weather']['description'].capitalize()}")
+        em.add_field(name='Conditions', value=f"{resp['weather'][0]['description'].capitalize()}")
         em.add_field(name='Humidity', value=f"{resp['main']['humidity']}%")
         em.add_field(name='Winds', value=f"{float(resp['wind']['speed']) * 2.237:.2f}mph")
         em.set_thumbnail(url=f"http://openweathermap.org/img/w/{resp['weather'][0]['icon']}.png")
