@@ -56,7 +56,7 @@ class Weather:
 
         now_time = datetime.now()
 
-        await ctx.send(f'Response:\n ```{resp}```\nTime: `{str(now_time - start_time)}`')
+        await ctx.send(f'Response:\n ```{str(resp)}```\nTime: `{str(now_time - start_time)}`')
 
 
 def setup(bot):
