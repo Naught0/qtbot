@@ -15,7 +15,7 @@ class Eval:
         process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE)
         stdout, stderr = await process.communicate()
         try:
-            await ctx.send(f'`{" ".join(args)}`\n```{stdout.decode().strip()}```')
+            await ctx.send(f'`{cmd}`\n```{stdout.decode().strip()}```')
         except Exception as e:
             await ctx.send(f'Unable to send output\n```py\n{e}```')
 
