@@ -45,7 +45,7 @@ class Weather:
             return await ctx.send("Sorry, you're not in my file. Please use `az` to add your zipcode, or supply one to the command.")
 
         # Check for cached results in redis server
-        if self.redis_client.exists(f'{ctx.author.id}:weather'):
+        if await self.redis_client.exists(f'{ctx.author.id}:weather'):
             resp = await self.redis_client.get(f'{ctx.author.id}:weather')
             await ctx.send('Using cached information.')
 
