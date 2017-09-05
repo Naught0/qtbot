@@ -19,7 +19,7 @@ with open('data/apikeys.json') as f:
 bot.aio_session = aiohttp.ClientSession
 
 # Create bot redis client
-bot.redis_client = aredis.StrictRedis(host='localhost')
+bot.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
 
 # Choose default cogs
 bot.startup_extensions = (
