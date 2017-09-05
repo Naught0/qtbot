@@ -5,3 +5,4 @@ __pycache__/
 *.log
 *.xml
 .idea/qtbot.iml
+*.xml___jb_tmp___

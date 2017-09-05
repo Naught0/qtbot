@@ -3,6 +3,7 @@
 import discord
 import json
 import aiohttp
+import aredis
 from datetime import datetime
 from discord.ext import commands
 
@@ -16,6 +17,9 @@ with open('data/apikeys.json') as f:
 
 # Create bot aiohttp session
 bot.aio_session = aiohttp.ClientSession
+
+# Create bot redis client
+bot.redis_client = aredis.StrictRedis(host='localhost')
 
 # Choose default cogs
 bot.startup_extensions = (
