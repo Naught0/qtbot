@@ -44,12 +44,11 @@ class Weather:
         # Check for cached results in redis server
         if await self.redis_client.exists(f'{ctx.author.id}:weather'):
             resp = await self.redis_client.get(f'{ctx.author.id}:weather')
-            await ctx.send('Using cached information.')
+            resp = json.loads(resp)
 
         # Store reults in cache for 7200 seconds
         # This is the frequency with which the API updates so there's no use in querying at a faster rate
         else:
-            await ctx.send('Making call -- NO cached info.')
             resp = await aw.aio_get_json(self.aio_session, self.api_url.format(zip_code, region_abv, self.api_key))
             await self.redis_client.set(f'{ctx.author.id}:weather', resp, ex=7200)
 
