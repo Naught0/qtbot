@@ -52,17 +52,19 @@ class Weather:
             resp = await aw.aio_get_json(self.aio_session, self.api_url.format(zip_code, region_abv, self.api_key))
             await self.redis_client.set(f'{ctx.author.id}:weather', resp, ex=7200)
 
-        # Create the embed
-        em = discord.Embed()
-        em.title = f"Weather for {resp['name']}"
-        # Yeah this converts from Kevlin to Fahrenheit...
-        em.add_field(name='Temperature', value=f"{float((resp['main']['temp'] - 273) * 1.8 + 32):.1f}°F")
-        em.add_field(name='Conditions', value=f"{resp['weather'][0]['description'].capitalize()}")
-        em.add_field(name='Humidity', value=f"{resp['main']['humidity']}%")
-        em.add_field(name='Winds', value=f"{float(resp['wind']['speed']) * 2.237:.2f}mph")
-        em.set_thumbnail(url=f"http://openweathermap.org/img/w/{resp['weather'][0]['icon']}.png")
+        await ctx.send(f'```json\n{resp}```')
 
-        await ctx.send(embed=em)
+        # # Create the embed
+        # em = discord.Embed()
+        # em.title = f"Weather for {resp['name']}"
+        # # Yeah this converts from Kevlin to Fahrenheit...
+        # em.add_field(name='Temperature', value=f"{float((resp['main']['temp'] - 273) * 1.8 + 32):.1f}°F")
+        # em.add_field(name='Conditions', value=f"{resp['weather'][0]['description'].capitalize()}")
+        # em.add_field(name='Humidity', value=f"{resp['main']['humidity']}%")
+        # em.add_field(name='Winds', value=f"{float(resp['wind']['speed']) * 2.237:.2f}mph")
+        # em.set_thumbnail(url=f"http://openweathermap.org/img/w/{resp['weather'][0]['icon']}.png")
+        #
+        # await ctx.send(embed=em)
 
 
 def setup(bot):
