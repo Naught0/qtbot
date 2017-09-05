@@ -23,9 +23,13 @@ class Weather:
     @cached(ttl=7200)
     async def get_weather(self, ctx, zip_code=None):
         """ Get the weather via a new source """
+        if not zip_code:
+            zip_code = ufm.get_user_info(str(ctx.author), 'zip')
 
-        # Initial start time
-        start_time = datetime.now()
+        # ufm function will return None in the case that the user doesn't have zip saved
+        if zip_code is None:
+            return await ctx.send("Sorry, you're not in my file. Please use `az` to add your zipcode, or supply one to the command.")
+
 
         resp = await aw.aio_get_json(self.aio_session, self.api_url.format('33073', 'us', self.api_key))
 
