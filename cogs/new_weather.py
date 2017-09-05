@@ -38,7 +38,7 @@ class Weather:
         start_time = datetime.now()
 
         if not zip_code:
-            zip_code = uf.get_user_info(ctx.author.id, 'zip')
+            zip_code = uf.get_user_info(str(ctx.author.id), 'zip')
 
         # ufm function will return None in the case that the user doesn't have zip saved
         if zip_code is None:
