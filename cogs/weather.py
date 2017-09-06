@@ -33,14 +33,11 @@ class Weather:
     async def get_weather(self, ctx, zip_code='', region_abv='us'):
         """ Get the weather via zipcode """
         if not zip_code:
-            zip_code = uf.get_user_info(ctx.author.id, 'zip')
+            zip_code = uf.get_user_info(str(ctx.author.id), 'zip')
 
         # ufm function will return None in the case that the user doesn't have zip saved
         if zip_code is None:
             return await ctx.send("Sorry, you're not in my file. Please use `az` to add your zipcode, or supply one to the command.")
-
-        if len(zip_code) != 5 or not zip_code.is_numeric():
-            return await ctx.send('Please supply a valid zipcode.')
 
         # Check for cached results in redis server
         if await self.redis_client.exists(f'{ctx.author.id}:weather'):
@@ -69,11 +66,11 @@ class Weather:
 
         await ctx.send(embed=em)
 
-    @commands.command(name='fc', aliases=['f'])
-    async def forecast(self, ctx, zip_code=''):
+    @commands.command(name='fc')
+    async def get_forecast(self, ctx, zip_code=''):
         """ Get the forecase via zipcode """
         if zip_code == '':
-            zip_code = uf.get_user_info(ctx.author.id, 'zip')
+            zip_code = uf.get_user_info(str(ctx.author.id), 'zip')
 
         if zip_code is None:
             return await ctx.send(
