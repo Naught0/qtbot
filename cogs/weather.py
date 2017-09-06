@@ -39,8 +39,8 @@ class Weather:
             return await ctx.send("Sorry, you're not in my file. Please use `az` to add your zipcode, or supply one to the command.")
 
         # Check for cached results in redis server
-        if await self.redis_client.exists(f'{ctx.author.id}:weather'):
-            owm_data = await self.redis_client.get(f'{ctx.author.id}:weather')
+        if await self.redis_client.exists(f'{zip_code}:weather'):
+            owm_data = await self.redis_client.get(f'{zip_code}:weather')
             owm_data = json.loads(owm_data)
 
         # Store reults in cache for 7200 seconds
@@ -51,7 +51,7 @@ class Weather:
             if not owm_data:
                 return await ctx.say(f"Sorry, I couldn't find weather for `{zip_code}`.")
 
-            await self.redis_client.set(f'{ctx.author.id}:weather', json.dumps(owm_data), ex=7200)
+            await self.redis_client.set(f'{zip_code}:weather', json.dumps(owm_data), ex=7200)
 
         # Create the embed
         em = discord.Embed()
@@ -76,8 +76,8 @@ class Weather:
                 "Sorry, you're not in my file. Please use `az` to add your zipcode, or supply one to the command.")
 
         # Check for cached results in redis server
-        if await self.redis_client.exists(f'{ctx.author.id}:forecast'):
-            forecast_data = await self.redis_client.get(f'{ctx.author.id}:forecast')
+        if await self.redis_client.exists(f'{zip_code}:forecast'):
+            forecast_data = await self.redis_client.get(f'{zip_code}:forecast')
             forecast_data = json.loads(forecast_data)
 
         # Store reults in cache for 7200 seconds
@@ -91,7 +91,7 @@ class Weather:
 
             # Compresses the call into something more managable and less wasteful than the whole mess of json it gives
             forecast_data = resp['forecast']['txt_forecast']['forecastday']
-            await self.redis_client.set(f'{ctx.author.id}:forecast', json.dumps(forecast_data), ex=7200)
+            await self.redis_client.set(f'{zip_code}:forecast', json.dumps(forecast_data), ex=7200)
 
         await ctx.send(
             f"Tomorrow: `{forecast_data[2]['fcttext']}`\nTomorrow Evening: `{forecast_data[3]['fcttext']}`")
