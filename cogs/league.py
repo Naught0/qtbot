@@ -18,9 +18,10 @@ class League:
         self.redis_client = bot.redis_client
 
         with open('data/apikeys.json') as fp:
-            self.riot_api_key = json.load(fp)['riot']
-            self.champion_gg_api_key = json.load(fp)['champion.gg']
+            api_keys = json.load(fp)
 
+        self.champion_gg_api_key = api_keys['champion.gg']
+        self.riot_api_key = api_keys['riot']
         self.riot_observer = ro(self.riot_api_key)
 
 

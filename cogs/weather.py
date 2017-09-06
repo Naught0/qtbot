@@ -16,8 +16,10 @@ class Weather:
         self.wunder_api_url = 'http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json'
 
         with open('data/apikeys.json') as fp:
-            self.wunder_api_key = json.load(fp)['wunderground']
-            self.api_key = json.load(fp)['open_weather']
+            api_keys = json.load(fp)
+
+        self.wunder_api_key = api_keys['wunderground']
+        self.api_key = api_keys['open_weather']
 
     @commands.command(name='az')
     async def add_zip(self, ctx, zip_code):
