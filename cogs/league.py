@@ -145,7 +145,7 @@ class League:
                 return await ctx.send(f"Sorry, I can't find `{summoner}`\nResponse:```{elo_data}```")
 
             # Store in redis cache
-            await self.redis_client.set(f'elo:{f_summoner}', json.dumps(raw_elo_data), ex=7200)
+            await self.redis_client.set(f'elo:{f_summoner}', json.dumps(elo_data), ex=7200)
 
 
         # Replace 'None' with 0 for error margin because "+/- None" looks bad
