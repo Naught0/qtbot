@@ -2,6 +2,8 @@
 
 import discord
 import json
+import requests
+import requests_cache
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
 from riot_observer import RiotObserver as ro
@@ -140,8 +142,8 @@ class League:
 
         # Store results from call
         f_summoner = summoner.replace(' ', '%20')
-        #res = requests.get(
-        #    api_uri.format(f_summoner), headers=headers).json()
+        res = requests.get(
+            api_uri.format(f_summoner), headers=headers).json()
 
         # No data found
         if 'error' in res:
