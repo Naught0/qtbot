@@ -1,47 +1,36 @@
 #!/bin/env python
 
 import discord
-import requests
 import json
-import requests_cache
+from utils import aiohttp_wrap as aw
 from discord.ext import commands
-from pathlib import Path
 from riot_observer import RiotObserver as ro
 from utils import user_funcs as ufm
 from utils import league as lu
-from utils import dict_manip as dm
 
 
 class League:
     def __init__(self, bot):
         self.bot = bot
+        self.aio_session = bot.aio_session
+        self.redis_client = bot.redis_client
+        self.riot_observer = ro(self.riot_api_key)
 
-    # Get API keys
-    with open('data/apikeys.json') as f:
-        api_keys = json.load(f)
+        with open('data/apikeys.json') as f:
+            api_keys = json.load(f)
+        self.riot_api_key = api_keys['riot']
+        self.champion_gg_api_key = api_keys['champion.gg']
 
-    # Riot API key
-    riot_api_key = api_keys['riot']
-
-    # Champion.gg API key
-    champion_gg_api_key = api_keys['champion.gg']
-
-    # Init RiotObserver
-    rito = ro(riot_api_key)
 
     @commands.command(name='aln', aliases=['addl', 'addleague'])
     async def add_league_name(self, ctx, *, summoner_name):
         """ Add your summoner name to the user file """
-        member = str(ctx.author)
-
         if not ufm.found_user_file():
-            await ctx.send("No user file found...\nCreated user file and added `{}'s`' summoner name as `{}`.".format(member, summoner_name))
-            ufm.create_user_file(member, 'summoner_name', summoner_name)
-            return
+            ufm.create_user_file(ctx.author.id, 'summoner_name', summoner_name)
+            await ctx.send(f"No user file found...\nCreated user file and added `{summoner_name}`.")
         else:
-            await ctx.send('Added `{}` as summoner name for `{}`.'.format(summoner_name, member))
-            ufm.update_user_info(member, 'summoner_name', summoner_name)
-            return
+            ufm.update_user_info(ctx.author.id, 'summoner_name', summoner_name)
+            await ctx.send(f'Added `{summoner_name}`.')
 
     @commands.command(name='ci', aliases=['champ'])
     async def get_champ_info(self, ctx, *, champ):
@@ -53,14 +42,22 @@ class League:
         riot_champ_name = lu.get_riot_champ_name(champ)
         fancy_champ_name = lu.get_fancy_champ_name(riot_champ_name)
         champ_title = lu.get_champ_title(riot_champ_name)
-        champID = lu.get_champ_id(riot_champ_name)
+        champ_id = lu.get_champ_id(riot_champ_name)
 
-        res = requests.get(uri.format(
-            champID, League.champion_gg_api_key)).json()
+        # Check for cached results
+        if await self.redis_client.exists(f'champ_info:{champ_id}'):
+            res_string = await self.redis_client.get(f'champ_info:{champ_id}')
+            res = json.loads(res_string)
 
-        # New champs have no data
-        if not res:
-            return await ctx.send('Sorry, no data for `{}`, yet.'.format(fancy_champ_name))
+        # Stores results if not found in cache for 6hrs (API only updates twice a day anyway)
+        else:
+            res = await aw.aio_get_json(self.aio_session, uri.format(champ_id, self.champion_gg_api_key))
+
+            # New champs have no data
+            if not res:
+                return await ctx.send('Sorry, no data for `{}`, yet.'.format(fancy_champ_name))
+
+            await self.redis_client.set(f'champ_info:{champ_id}', json.dumps(res), ex=21600)
 
         # Create embed
         em = discord.Embed()
@@ -81,14 +78,6 @@ class League:
 
         return await ctx.send(embed=em)
 
-    # @commands.command( aliases=['matches'])
-    # async def matchHistory(self, ctx, ):
-    #         """ do not use """
-    #         member = str(ctx.message.author)
-    #         summoner_name = ufm.get_user_info(member, 'summoner_name')
-    #         summoner_obj = League.getSummonerObj(summoner_name)
-    #         return await ctx.send('Latest match information for {} ({})\n{}'.format(member, summoner_name, League.getLastTenMatches(summoner_obj)))
-
     @commands.command(name='ucf')
     @commands.is_owner()
     async def update_champ_file(self, ctx):
@@ -100,7 +89,7 @@ class League:
                 file_champ_list = json.load(f)
 
             # Get champ list from Riot's API
-            new_champ_list = League.rito.static_get_champion_list()
+            new_champ_list = self.riot_observer.static_get_champion_list()
 
             # If file is up to date, don't update
             if len(new_champ_list['data']) == len(file_champ_list['data']):
@@ -114,7 +103,7 @@ class League:
 
         # Create champion data file if not found
         else:
-            new_champ_list = League.rito.static_get_champion_list()
+            new_champ_list = self.riot_observer.static_get_champion_list()
             with open('data/champ_data.json', 'w') as f:
                 json.dump(new_champ_list, f)
 
@@ -151,8 +140,8 @@ class League:
 
         # Store results from call
         f_summoner = summoner.replace(' ', '%20')
-        res = requests.get(
-            api_uri.format(f_summoner), headers=headers).json()
+        #res = requests.get(
+        #    api_uri.format(f_summoner), headers=headers).json()
 
         # No data found
         if 'error' in res:
