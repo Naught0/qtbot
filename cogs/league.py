@@ -170,7 +170,7 @@ class League:
         em.set_thumbnail(url=lu.get_summoner_icon(summoner, 'na'))
 
         # Display ranked MMR
-        if res['ranked']['avg'] is not None:
+        if res['ranked']['avg']:
             # I'll think of a better way to do this later, but for now, it works
             rank_str = res['ranked']['summary'].split('<b>')[1].split('</b')[0]
             new_str = rank_str.split(' ')
@@ -183,12 +183,12 @@ class League:
                 value=f"{res['ranked']['avg']}±{res['ranked']['err']}")
 
         # Display normal MMR
-        if res['normal']['avg'] is not None:
+        if res['normal']['avg']:
             em.add_field(name='Normal MMR',
                 value=f"{res['normal']['avg']}±{res['normal']['err']}")
 
         # Display ARAM MMR
-        if res['ARAM']['avg'] is not None:
+        if res['ARAM']['avg']:
             em.add_field(name='ARAM MMR', value=f"{res['ARAM']['avg']}±{res['ARAM']['err']}")
 
         em.set_footer(text="Powered by WhatIsMyMMR.com and Riot's API.")
