@@ -36,6 +36,7 @@ bot.startup_extensions = (
     'cogs.ask',
     'cogs.meme',
     'cogs.error',
+    'cogs.eval',
     'cogs.timer',
     'cogs.yt',
     'cogs.news',
