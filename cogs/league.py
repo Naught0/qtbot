@@ -17,11 +17,11 @@ class League:
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
 
-        with open('data/apikeys.json') as f:
-            self.riot_api_key = json.load(f)['riot']
-            self.champion_gg_api_key = json.load(f)['champion.gg']
+        with open('data/apikeys.json') as fp:
+            self.riot_api_key = json.load(fp)['riot']
+            self.champion_gg_api_key = json.load(fp)['champion.gg']
 
-        # self.riot_observer = ro(self.riot_api_key)
+        self.riot_observer = ro(self.riot_api_key)
 
 
     @commands.command(name='aln', aliases=['addl', 'addleague'])
