@@ -21,7 +21,7 @@ class League:
             self.riot_api_key = json.load(f)['riot']
             self.champion_gg_api_key = json.load(f)['champion.gg']
 
-        self.riot_observer = ro(api_keys['riot'])
+        self.riot_observer = ro(self.riot_api_key)
 
 
     @commands.command(name='aln', aliases=['addl', 'addleague'])
