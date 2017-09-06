@@ -47,7 +47,7 @@ class AskAsk:
 
         # Actually request page html and store the link list for 6 hrs
         else:
-            resp_html = await aw.aio_get_text(self.aio_session, self.scrape_uri.format(search_query), headers=headers)
+            resp_html = await aw.aio_get_text(self.aio_session, self.scrape_uri.format(search_query), headers=self.headers)
             link_list = AskAsk._get_ask_links(resp_html)
 
             if link_list:
