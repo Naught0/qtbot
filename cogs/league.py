@@ -2,8 +2,6 @@
 
 import discord
 import json
-import requests
-import requests_cache
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
 from riot_observer import RiotObserver as ro
@@ -143,7 +141,7 @@ class League:
                 self.aio_session, self.elo_api_uri, headers=self.elo_headers)
 
             # No data found -- don't bother storing it
-            if 'error' in elo_data:
+            if elo_data is None or 'error' in elo_data :
                 return await ctx.send(f"Sorry, I can't find `{summoner}`")
 
             # Store in redis cache
