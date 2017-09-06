@@ -17,8 +17,11 @@ class Eval:
         try:
             if stdout:
                 await ctx.send(f'`{cmd}`\n```{stdout.decode().strip()}```')
+            elif stderr:
+                await ctx.send(f'`{cmd}`\n```{stderr.decode().strip()}```')
             else:
                 await ctx.send(f'`{cmd}` produced no output')
+
         except Exception as e:
             await ctx.send(f'Unable to send output\n```py\n{e}```')
 
