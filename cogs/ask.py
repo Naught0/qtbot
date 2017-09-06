@@ -1,7 +1,6 @@
 #!/bin/env python
 
-import aiohttp
-import discord
+import ast
 from discord.ext import commands
 from bs4 import BeautifulSoup
 from utils import aiohttp_wrap as aw
@@ -11,7 +10,9 @@ class AskAsk:
     def __init__(self, bot):
         self.bot = bot
         self.aio_session = bot.aio_session
+        self.redis_client = bot.redis_client
         self.scrape_uri = 'http://www.ask.com/web?q={}&o=0&qo=homepageSearchBox'
+        self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
 
     def _get_ask_links(html):
         """ Gets all result links from [REDACTED] """
@@ -39,14 +40,20 @@ class AskAsk:
         # Format query for search url
         search_query = query.replace(' ', '+')
 
-        # Get response and store links
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
-        resp_html = await aw.aio_get_text(self.aio_session, self.scrape_uri.format(search_query), headers=headers)
+        # Check if this has been searched in the cache
+        if await self.redis_client.exists(f'ask:{search_query}'):
+            link_list_str = await self.redis_client.get(f'ask:{search_query}')
+            link_list = ast.literal_eval(link_list_str)
 
-        link_list = AskAsk._get_ask_links(resp_html)
+        # Actually request page html and store the link list for 6 hrs
+        else:
+            resp_html = await aw.aio_get_text(self.aio_session, self.scrape_uri.format(search_query), headers=headers)
+            link_list = AskAsk._get_ask_links(resp_html)
 
-        if not link_list:
-            return await ctx.send("Sorry, I couldn't find anything for `{}``.".format(query))
+            if link_list:
+                await self.redis_client.set(f'ask:{search_query}', f'{link_list}', ex=21600)
+            else:
+                return await ctx.send(f"Sorry, I couldn't find anything for `{query}``.")
 
         if len(link_list) >= 3:
             await ctx.send(f'**Top result:**\n{link_list[0]}\n**See Also:**\n1. <{link_list[1]}>\n2. <{link_list[2]}>')
