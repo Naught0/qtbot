@@ -150,7 +150,7 @@ class League:
         headers = {'user-agent': 'qtbot/1.0'}
 
         # Store results from call
-        f_summoner = in_summoner.replace(' ', '%20')
+        f_summoner = summoner.replace(' ', '%20')
         res = requests.get(
             api_uri.format(f_summoner), headers=headers).json()
 
