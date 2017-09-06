@@ -17,8 +17,6 @@ class Weather:
 
         with open('data/apikeys.json') as f:
             self.wunder_api_key = json.load(f)['wunderground']
-
-        with open('data/apikeys.json') as f:
             self.api_key = json.load(f)['open_weather']
 
     @commands.command(name='az')

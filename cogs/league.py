@@ -19,11 +19,9 @@ class League:
 
         with open('data/apikeys.json') as f:
             self.riot_api_key = json.load(f)['riot']
-
-        with open('data/apikeys.json') as f:
             self.champion_gg_api_key = json.load(f)['champion.gg']
 
-        self.riot_observer = ro(self.riot_api_key)
+        # self.riot_observer = ro(self.riot_api_key)
 
 
     @commands.command(name='aln', aliases=['addl', 'addleague'])
