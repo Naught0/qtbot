@@ -1,7 +1,6 @@
 #!/bin/env python
 
 import discord
-import aredis
 import json
 from utils import user_funcs as uf
 from utils import aiohttp_wrap as aw
