@@ -1,7 +1,10 @@
+#!/bin/env python
+
 import discord
+import aredis
 import json
+from utils import user_funcs as uf
 from utils import aiohttp_wrap as aw
-from utils import user_funcs as ufm
 from discord.ext import commands
 
 
@@ -9,125 +12,93 @@ class Weather:
     def __init__(self, bot):
         self.bot = bot
         self.aio_session = bot.aio_session
-        self.weather_icon_dict = {'storm': 'https://ssl.gstatic.com/onebox/weather/128/thunderstorms.png', 'partly_cloudy': 'https://ssl.gstatic.com/onebox/weather/128/partly_cloudy.png', 'mostly_cloudy': 'https://ssl.gstatic.com/onebox/weather/128/cloudy.png', 'clear': 'https://ssl.gstatic.com/onebox/weather/128/sunny.png', 'rain': 'https://ssl.gstatic.com/onebox/weather/128/rain.png'}
-        self.api_url = 'http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json'
+        self.redis_client = bot.redis_client
+        self.api_url = 'http://api.openweathermap.org/data/2.5/weather?zip={},{}&APPID={}'
+        self.wunder_api_url = 'http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json'
 
         with open('data/apikeys.json') as f:
-            self.api_key = json.load(f)['wunderground']
+            self.wunder_api_key = json.load(f)['wunderground']
+
+        with open('data/apikeys.json') as f:
+            self.api_key = json.load(f)['open_weather']
 
     @commands.command(name='az')
-    async def add_zip(self, ctx, zip_code=None):
-        """ Add your zipcode for qtbot to remember. """
+    async def add_zip(self, ctx, zip_code):
+        """ Add your zipcode to qtbot's database so you don't have to supply it later """
+        uf.update_user_info(ctx.author.id, 'zip', zip_code)
 
-        # No zipcode supplied
-        if (zip_code is None):
-            return await ctx.send('Please supply a zipcode.')
+        await ctx.send(f'Successfully added zipcode `{zip_code}`.')
 
-        # Invalid zip supplied
-        if len(zip_code) != 5 or not zip_code.isnumeric():
+    @commands.command(name='wt')
+    async def get_weather(self, ctx, zip_code='', region_abv='us'):
+        """ Get the weather via zipcode """
+        if not zip_code:
+            zip_code = uf.get_user_info(ctx.author.id, 'zip')
+
+        # ufm function will return None in the case that the user doesn't have zip saved
+        if zip_code is None:
+            return await ctx.send("Sorry, you're not in my file. Please use `az` to add your zipcode, or supply one to the command.")
+
+        if len(zip_code) != 5 or not zip_code.is_numeric():
             return await ctx.send('Please supply a valid zipcode.')
 
-        # Get user ID
-        member = str(ctx.author.id)
+        # Check for cached results in redis server
+        if await self.redis_client.exists(f'{ctx.author.id}:weather'):
+            owm_data = await self.redis_client.get(f'{ctx.author.id}:weather')
+            owm_data = json.loads(owm_data)
 
-        # Add zipcode to file
-        ufm.update_user_info(member, 'zip', zip_code)
+        # Store reults in cache for 7200 seconds
+        # This is the frequency with which the API updates so there's no use in querying at a faster rate
+        else:
+            owm_data = await aw.aio_get_json(self.aio_session, self.api_url.format(zip_code, region_abv, self.api_key))
 
-        await ctx.send('Successfully added zipcode `{}` for user `{}`.'.format(zip_code, member))
+            if not owm_data:
+                return await ctx.say(f"Sorry, I couldn't find weather for `{zip_code}`.")
 
-    # Gets weather based on zip
-    @commands.command(name='wt', aliases=['w'])
-    @commands.cooldown(rate=1, per=120.0, type=commands.BucketType.user)
-    async def weather(self, ctx, zip_code=''):
-        """ Search with zipcode, or not, and qtbot will try to find your zip from the userfile. """
-
-        # Get discord member 
-        member = str(ctx.author)
-
-        # If no zipcode provided
-        if zip_code == '':
-            zip_code = ufm.get_user_info(member, 'zip')
-
-        # get_user_info returns None if user has no zip on file
-        if zip_code is None:
-            return await ctx.send("Sorry, you're not in my file!\n Please `az` with a zipcode.")
-
-        # Load wunderAPI info into d
-        # Sometimes wunderground dies --> handle it
-        try:
-            d = await aw.aio_get_json(self.aio_session, self.api_url.format(
-                self.api_key, zip_code))
-        except ConnectionError:
-            return await ctx.send('Sorry, wunderground is having trouble with this request. Try again in a bit.')
-
-        # Except KeyError --> city isn't found
-        try:
-            city = d['location']['city']
-        except KeyError:
-            return await ctx.send("Sorry, I'm having trouble finding your location.")
-
-        # Store the relevant parts of the call in strings
-        state = d['location']['state']
-        temp = d['current_observation']['temp_f']
-        conditions = d['current_observation']['weather']
-        wind = d['current_observation']['wind_string']
-        humidity = d['current_observation']['relative_humidity']
+            await self.redis_client.set(f'{ctx.author.id}:weather', json.dumps(owm_data), ex=7200)
 
         # Create the embed
         em = discord.Embed()
-        em.title = 'Weather for {}, {}'.format(city, state)
-        em.add_field(name='Temperature', value='{}°F'.format(temp))
-        em.add_field(name='Conditions', value=conditions)
-        em.add_field(name='Relative humidity', value=humidity)
-        em.add_field(name='Winds', value=wind)
-
-        # Conditions to lower
-        cond_lower = conditions.lower()
-        if 'rain' in cond_lower:
-            em.set_thumbnail(url=self.weather_icon_dict['rain'])
-        elif 'clear' in cond_lower or 'sunny' in cond_lower:
-            em.set_thumbnail(url=self.weather_icon_dict['clear'])
-        elif 'partly' in cond_lower:
-            em.set_thumbnail(url=self.weather_icon_dict['partly_cloudy'])
-        elif 'cloudy' in cond_lower or 'overcast' in cond_lower:
-            em.set_thumbnail(url=self.weather_icon_dict['mostly_cloudy'])
-        elif 'storm' in cond_lower or 'thunderstorm' in cond_lower:
-            em.set_thumbnail(url=self.weather_icon_dict['storm'])
+        em.title = f"Weather for {owm_data['name']}"
+        # Yeah this converts from Kevlin to Fahrenheit...
+        em.add_field(name='Temperature', value=f"{float((owm_data['main']['temp'] - 273) * 1.8 + 32):.1f}°F")
+        em.add_field(name='Conditions', value=f"{owm_data['weather'][0]['description'].capitalize()}")
+        em.add_field(name='Humidity', value=f"{owm_data['main']['humidity']}%")
+        em.add_field(name='Winds', value=f"{float(owm_data['wind']['speed']) * 2.237:.2f}mph")
+        em.set_thumbnail(url=f"http://openweathermap.org/img/w/{owm_data['weather'][0]['icon']}.png")
 
         await ctx.send(embed=em)
 
-    # Gets forecast based on zip
     @commands.command(name='fc', aliases=['f'])
-    @commands.cooldown(rate=1, per=120.0, type=commands.BucketType.user)
     async def forecast(self, ctx, zip_code=''):
-        """ Search with zipcode, or not, and qtbot will try to find your zip from the userfile."""
+        """ Get the forecase via zipcode """
+        if zip_code == '':
+            zip_code = uf.get_user_info(ctx.author.id, 'zip')
 
-        # Get Discord user
-        member = str(ctx.author)
-
-        # If no zipcode provided
-        if zip_code == '':  # Find zipcode in file
-            zip_code = ufm.get_user_info(member, 'zip')
-
-        # UFM returns str error if no zip found
         if zip_code is None:
-            return await ctx.send("Sorry, you're not in my file!\nPlease use `az` with a valid zipcode.")
+            return await ctx.send(
+                "Sorry, you're not in my file. Please use `az` to add your zipcode, or supply one to the command.")
 
-        # Json response in string form
-        d = await aw.aio_get_json(self.aio_session, self.api_url.format(
-            self.api_key, zip_code))
+        # Check for cached results in redis server
+        if await self.redis_client.exists(f'{ctx.author.id}:forecast'):
+            forecast_data = await self.redis_client.get(f'{ctx.author.id}:forecast')
+            forecast_data = json.loads(forecast_data)
 
-        # Handling city not found error
-        try:
-            city = d['location']['city']
-        except KeyError:
-            return await ctx.send("Sorry, I'm having trouble finding your location.")
+        # Store reults in cache for 7200 seconds
+        # This is the frequency with which the API updates so there's no use in querying at a faster rate
+        else:
+            resp = await aw.aio_get_json(self.aio_session, self.wunder_api_url.format(self.wunder_api_key, zip_code))
 
-        # Load forecasts into strings
-        fc_tomorrow = d['forecast']['txt_forecast']['forecastday'][2]['fcttext']
-        fc_tomorrow_night = d['forecast']['txt_forecast']['forecastday'][3]['fcttext']
+            # Handling CityNotFound exception
+            if not ('location' in resp and 'city' in resp['location']):
+                return await ctx.send("Sorry, I'm having trouble finding your location.")
 
-        await ctx.send('Tomorrow: `{}`\nTomorrow Evening: `{}`'.format(fc_tomorrow, fc_tomorrow_night))
+            # Compresses the call into something more managable and less wasteful than the whole mess of json it gives
+            forecast_data = resp['forecast']['txt_forecast']['forecastday']
+            await self.redis_client.set(f'{ctx.author.id}:forecast', json.dumps(forecast_data), ex=7200)
+
+        await ctx.send(
+            f"Tomorrow: `{forecast_data[2]['fcttext']}`\nTomorrow Evening: `{forecast_data[3]['fcttext']}`")
 
 
 def setup(bot):
