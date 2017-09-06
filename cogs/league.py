@@ -142,7 +142,7 @@ class League:
 
             # No data found -- don't bother storing it
             if elo_data is None or 'error' in elo_data :
-                return await ctx.send(f"Sorry, I can't find `{summoner}`")
+                return await ctx.send(f"Sorry, I can't find `{summoner}`\nResponse:```{elo_data}```")
 
             # Store in redis cache
             await self.redis_client.set(f'elo:{f_summoner}', json.dumps(raw_elo_data), ex=7200)
