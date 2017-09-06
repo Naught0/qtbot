@@ -138,7 +138,7 @@ class League:
             # Send typing because this can take a while
             await ctx.trigger_typing()
             elo_data = await aw.aio_get_json(
-                self.aio_session, self.elo_api_uri, headers=self.elo_headers)
+                self.aio_session, self.elo_api_uri.format(f_summoner), headers=self.elo_headers)
 
             # No data found -- don't bother storing it
             if elo_data is None or 'error' in elo_data :
