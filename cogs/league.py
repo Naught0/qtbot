@@ -16,6 +16,8 @@ class League:
         self.bot = bot
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
+        self.elo_api_uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
+        self.elo_headers = {'user-agent': 'qtbot/1.0'}
 
         with open('data/apikeys.json') as fp:
             api_keys = json.load(fp)
@@ -23,7 +25,6 @@ class League:
         self.champion_gg_api_key = api_keys['champion.gg']
         self.riot_api_key = api_keys['riot']
         self.riot_observer = ro(self.riot_api_key)
-
 
     @commands.command(name='aln', aliases=['addl', 'addleague'])
     async def add_league_name(self, ctx, *, summoner_name):
@@ -118,53 +119,52 @@ class League:
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic
         # More information here: https://creativecommons.org/licenses/by/2.0
 
-        # Get who's calling the function
-        member = str(ctx.message.author)
-
         # Try to read summoner from file if none supplied
         if not summoner:
-            summoner = ufm.get_user_info(member, 'summoner_name')
+            summoner = ufm.get_user_info(str(ctx.author.id), 'summoner_name')
 
         # get_user_info() will return None if there is no summoner found
         if summoner is None:
             return await ctx.send("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply a name to this command.")
 
-        # TODO: remove this final instance of requests
-        # Cache results for 2hrs
-        requests_cache.install_cache(expire_after=3600)
-
-        # Send typing b/c this can take some time
-        await ctx.trigger_typing()
-
-        # Requests call information
-        site_uri = 'https://na.whatismymmr.com/{}'
-        api_uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
-        headers = {'user-agent': 'qtbot/1.0'}
-
-        # Store results from call
         f_summoner = summoner.replace(' ', '%20')
-        res = requests.get(
-            api_uri.format(f_summoner), headers=headers).json()
 
-        # No data found
-        if 'error' in res:
-            return await ctx.send(f"Sorry, I can't find `{summoner}`")
+        # Check whether there is a cached elo_dataponse
+        if await self.redis_client.exists(f'elo:{f_summoner}'):
+            raw_elo_data = await self.redis_client.get(f'elo:{f_summoner}')
+            elo_data = json.loads(raw_elo_data)
+
+        # Make the call
+        # Store the data for 2hrs because it doesn't update that frequently
+        else:
+            # Send typing because this can take a while
+            await ctx.trigger_typing()
+            elo_data = await aw.aio_get_json(
+                self.aio_session, self.elo_api_uri, headers=self.elo_headers)
+
+            # No data found -- don't bother storing it
+            if 'error' in elo_data:
+                return await ctx.send(f"Sorry, I can't find `{summoner}`")
+
+            # Store in redis cache
+            await self.redis_client.set(f'elo:{f_summoner}', json.dumps(raw_elo_data), ex=7200)
+
 
         # Replace 'None' with 0 for error margin because "+/- None" looks bad
-        for kind in res:
-            if res[kind]['err'] is None:
-                res[kind]['err'] = 0
+        for kind in elo_data:
+            if elo_data[kind]['err'] is None:
+                elo_data[kind]['err'] = 0
 
         # Create embed
         em = discord.Embed()
         em.title = summoner
-        em.url = site_uri.format(f_summoner)
+        em.url = f'https://na.whatismymmr.com/{f_summoner}'
         em.set_thumbnail(url=lu.get_summoner_icon(summoner, 'na'))
 
         # Display ranked MMR
-        if res['ranked']['avg']:
+        if elo_data['ranked']['avg']:
             # I'll think of a better way to do this later, but for now, it works
-            rank_str = res['ranked']['summary'].split('<b>')[1].split('</b')[0]
+            rank_str = elo_data['ranked']['summary'].split('<b>')[1].split('</b')[0]
             new_str = rank_str.split(' ')
             new_str[0] = new_str[0].capitalize()
             rank_str = ' '.join(new_str)
@@ -172,16 +172,16 @@ class League:
             # Add to embed field
             em.add_field(name='Approximate rank', value=rank_str)
             em.add_field(name='Ranked MMR',
-                value=f"{res['ranked']['avg']}±{res['ranked']['err']}")
+                value=f"{elo_data['ranked']['avg']}±{elo_data['ranked']['err']}")
 
         # Display normal MMR
-        if res['normal']['avg']:
+        if elo_data['normal']['avg']:
             em.add_field(name='Normal MMR',
-                value=f"{res['normal']['avg']}±{res['normal']['err']}")
+                value=f"{elo_data['normal']['avg']}±{elo_data['normal']['err']}")
 
         # Display ARAM MMR
-        if res['ARAM']['avg']:
-            em.add_field(name='ARAM MMR', value=f"{res['ARAM']['avg']}±{res['ARAM']['err']}")
+        if elo_data['ARAM']['avg']:
+            em.add_field(name='ARAM MMR', value=f"{elo_data['ARAM']['avg']}±{elo_data['ARAM']['err']}")
 
         em.set_footer(text="Powered by WhatIsMyMMR.com and Riot's API.")
 
