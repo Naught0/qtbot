@@ -61,8 +61,8 @@ class News:
 
         bot_message = await ctx.send(embed=em_list[0])
         for embed in em_list:
-            asyncio.sleep(5)
-            bot_message.edit(embed=embed)
+            await asyncio.sleep(5)
+            await bot_message.edit(embed=embed)
 
 def setup(bot):
     bot.add_cog(News(bot))
