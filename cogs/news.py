@@ -63,5 +63,7 @@ class News:
 
         bot_message = await ctx.send(embed=em_list[0])
 
+        await bot_message.add_reaction('\N{BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR}')
+
 def setup(bot):
     bot.add_cog(News(bot))
