@@ -63,7 +63,7 @@ class News:
 
         bot_message = await ctx.send(embed=em_list[0])
 
-        emoji_map = ['\u0031', '\u0032', '\u0033', '\u0034', '\u0035']
+        emoji_map = ['1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3', '5\U000020e3']
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
 
