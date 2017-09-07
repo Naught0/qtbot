@@ -44,7 +44,7 @@ class News:
 
         if await self.redis_client.exists('news'):
             raw_json_string = await self.redis_client.get('news')
-            raw_json_dict = json.loads(raw_json_string)
+            raw_json_dict = json.loads(raw_json_string.read())
             article_list = raw_json_dict['articles']
 
             for article in article_list:
