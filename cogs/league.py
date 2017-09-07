@@ -27,7 +27,7 @@ class League:
     @commands.command(name='aln', aliases=['addl', 'addleague'])
     async def add_league_name(self, ctx, *, summoner_name):
         """ Add your summoner name to the user file """
-        ufm.update_user_info(ctx.author.id, 'summoner_name', summoner_name)
+        ufm.update_user_info(str(ctx.author.id), 'summoner_name', summoner_name)
         await ctx.send(f'Added `{summoner_name}`.')
 
     @commands.command(name='ci', aliases=['champ'])
@@ -115,7 +115,7 @@ class League:
 
         # Try to read summoner from file if none supplied
         if not summoner:
-            summoner = ufm.get_user_info(ctx.author.id, 'summoner_name')
+            summoner = ufm.get_user_info(str(ctx.author.id), 'summoner_name')
 
         # get_user_info() will return None if there is no summoner found
         if summoner is None:
