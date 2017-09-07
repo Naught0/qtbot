@@ -8,35 +8,58 @@ from discord.ext import commands
 class News:
     def __init__(self, bot):
         self.bot = bot
-        self.uri = 'https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey={}'
+        self.redis_client = bot.redis_client
         self.aio_session = bot.aio_session
+        self.uri = 'https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey={}'
         with open('data/apikeys.json') as f:
             self.api_key = json.load(f)['news']
 
+    def json_to_embed(json_dict):
+        em = discord.Embed()
+        em.title = json_dict['title']
+        em.description = json_dict['description']
+        em.url = json_dict['url']
+        em.set_image(url=json_dict['urlToImage'])
+
+        return em
+
     @commands.command(name='news')
-    @commands.cooldown(rate=1, per=60.0, type=commands.BucketType.guild)
-    async def get_news(self, ctx, num_results=3):
-        """ Get the top 1 - 5 (default 3) articles from Google News (powered by https://newsapi.org/) """
+    async def get_news(self, ctx):
+        """ Get the top 5 articles from Google News (http://newsapi.org """
 
-        # More than 5 is very spammy
-        if num_results < 1 or num_results > 5:
-            return await ctx.send('Sorry, please choose a number of results between 1 and 5 inclusive.')
+        """
+        Here's my dream:
+           1. Check whether cached response exists
+           2. Return that information or make the API call
+           3. Map each field of the json response to an embed field
+                - Make the footer of the embed the page currently displayed
+           - The bot sends the first article in this format from a list of pre-fabricated embeds
+            - I can get the message object which was sent by assigning the ctx.send to a variable
+                - Add 1 - 5 emoji reactions along with first/last buttons
+                - When the user clicks on one (on_reaction_add / on_reaction_remove) go to that page with:
+                    - discord.Message.edit
+        """
 
-        # Call to API
-        # raw_result = requests.get(self.uri.format(self.api_key)).json()
-        raw_result = await aw.aio_get_json(self.aio_session, self.uri.format(self.api_key))
+        em_list = []
 
-        article_list = []
+        if await self.redis_client.exists('news'):
+            raw_json_string = await self.redis_client.get('news')
+            raw_json_dict = json.loads(raw_json_string)
+            article_list = raw_json_dict['articles']
 
-        for x in range(num_results):
-            article_list.append(
-                ''.join(['`', raw_result['articles'][x]['title'], '`']))
-            article_list.append(
-                ''.join(['<', raw_result['articles'][x]['url'], '>']))
+            await self.redis_client.set('news', json.dumps(article_list), ex=300)
 
-        # Found a better way
-        await ctx.send('\n'.join(article_list))
+            for article in article_list:
+                em_list.append(News.json_to_embed(article))
 
+        else:
+            raw_json_string = await self.redis_client.get('news')
+            article_list = json.loads(raw_json_string)
+
+            for article in article_list:
+                em_list.append(News.json_to_embed(article))
+
+        await ctx.send(embed=em_list[0])
 
 def setup(bot):
     bot.add_cog(News(bot))
