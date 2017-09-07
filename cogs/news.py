@@ -63,10 +63,9 @@ class News:
 
         bot_message = await ctx.send(embed=em_list[0])
 
-        emoji_map = [{1: '\U00000031'}, {2: '\U00000032'}, {3: '\U00000033'}, {4: '\U00000034'}, {5: '\U00000035'}]
-        for x in range(len(emoji_map)):
-            for key in emoji_map[x]:
-                await bot_message.add_reaction(emoji_map[x][key])
+        emoji_map = ['\U00000031', '\U00000032', '\U00000033', '\U00000034', '\U00000035']
+        for emoji in emoji_map:
+            await bot_message.add_reaction(emoji)
 
 def setup(bot):
     bot.add_cog(News(bot))
