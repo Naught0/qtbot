@@ -63,7 +63,10 @@ class News:
 
         bot_message = await ctx.send(embed=em_list[0])
 
-        await bot_message.add_reaction('\N{BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR}')
+        emoji_map = [{1: '\U00000031'}, {2: '\U00000032'}, {3: '\U00000033'}, {4: '\U00000034'}, {5: '\U00000035'}]
+        for d in emoji_map:
+            for key in d:
+                await bot_message.add_reaction(emoji_map[d][key])
 
 def setup(bot):
     bot.add_cog(News(bot))
