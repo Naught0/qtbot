@@ -1,6 +1,7 @@
 #!/bin/evn python
 import discord
 import json
+import asyncio
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
 
