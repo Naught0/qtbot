@@ -47,14 +47,13 @@ class News:
             raw_json_dict = json.loads(raw_json_string)
             article_list = raw_json_dict['articles']
 
-            await self.redis_client.set('news', json.dumps(article_list), ex=300)
-
             for article in article_list:
                 em_list.append(News.json_to_embed(article))
 
         else:
-            raw_json_string = await self.redis_client.get('news')
-            article_list = json.loads(raw_json_string)
+            api_response = await aw.aio_get_json(self.aio_session, self.uri.format(self.api_key))
+            article_list = json.loads(api_response)['articles']
+            await self.redis_client.set('news', json.dumps(article_list), ex=300)
 
             for article in article_list:
                 em_list.append(News.json_to_embed(article))
