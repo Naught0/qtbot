@@ -21,6 +21,8 @@ class News:
         em.description = json_dict['description']
         em.url = json_dict['url']
         em.set_image(url=json_dict['urlToImage'])
+        em.set_thumbnail(
+            url='http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png')
 
         return em
 
@@ -60,9 +62,6 @@ class News:
                 em_list.append(News.json_to_embed(article))
 
         bot_message = await ctx.send(embed=em_list[0])
-        for embed in em_list:
-            await asyncio.sleep(5)
-            await bot_message.edit(embed=embed)
 
 def setup(bot):
     bot.add_cog(News(bot))
