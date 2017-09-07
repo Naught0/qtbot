@@ -61,11 +61,15 @@ class News:
             for article in article_list:
                 em_list.append(News.json_to_embed(article))
 
+
         bot_message = await ctx.send(embed=em_list[0])
 
-        emoji_map = ['\U000023ee','1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3', '5\U000020e3', '\U000023ed']
+        # Add Emojis for navigation
+        emoji_map = ['\U000023ee', '\U000023ed', '1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3', '5\U000020e3']
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
+
+        
 
 def setup(bot):
     bot.add_cog(News(bot))
