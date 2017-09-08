@@ -25,6 +25,31 @@ class News:
             url='http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png')
 
         return em
+
+    async def on_reaction_add(reaction, user):
+        # def check():
+        #     if user == ctx.author:
+        #         if str(r) == 'BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
+        #             return {'index_add': 1}
+        #         if str(r) == 'BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
+        #             return {'index_sub': 1}
+        #         if str(r) == 'DIGIT ONE':
+        #             return {'index_set': 1}
+        #         if str(r) == 'DIGIT TWO':
+        #             return {'index_set': 2}
+        #         if str(r) == 'DIGIT THREE':
+        #             return {'index_set': 3}
+        #         if str(r) == 'DIGIT FOUR':
+        #             return {'index_set': 4}
+        #         if str(r) == 'DIGIT FIVE':
+        #             return {'index_set': 5}
+
+        def check():
+            print('Wew lad')
+
+        await self.bot.wait_for('reaction_add', check=check, timeout=120)
+
+        # await self.bot.wait_for('reaction_add', check=check, timeout=120)
         
     @commands.command(name='news')
     async def get_news(self, ctx):
@@ -70,28 +95,6 @@ class News:
         emoji_map = ['\U000023ee', '\U000023ed', '1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3', '5\U000020e3']
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
-
-        async def on_reaction_add(reaction, user):
-            async def check():
-                if user == ctx.author:
-                    if str(r) == 'BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
-                        current_em_index = current_em_index - 1
-                        await bot_message.edit(embed=em_list[current_em_index])
-                    if str(r) == 'BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
-                        current_em_index = current_em_index + 1
-                        await bot_message.edit(embed=em_list[current_em_index])
-                    if str(r) == 'DIGIT ONE':
-                        await bot_message.edit(embed=em_list[0])                    
-                    if str(r) == 'DIGIT TWO':
-                        await bot_message.edit(embed=em_list[1])
-                    if str(r) == 'DIGIT THREE':
-                        await bot_message.edit(embed=em_list[2])
-                    if str(r) == 'DIGIT FOUR':
-                        await bot_message.edit(embed=em_list[3])
-                    if str(r) == 'DIGIT FIVE':
-                        await bot_message.edit(embed=em_list[4])
-
-            await self.bot.wait_for('reaction_add', check=check, timeout=120)
 
 
 def setup(bot):
