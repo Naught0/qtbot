@@ -93,6 +93,10 @@ class News:
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
 
+        reaction, user = await self.bot.wait_for('reaction_add', check=check, timeout=120)
+        if user == ctx.author:
+            await ctx.send('wew lads')
+
 
 def setup(bot):
     bot.add_cog(News(bot))
