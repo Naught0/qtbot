@@ -25,7 +25,7 @@ class News:
             url='http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png')
 
         return em
-
+        
     @commands.command(name='news')
     async def get_news(self, ctx):
         """ Get the top 5 articles from Google News (http://newsapi.org """
@@ -62,14 +62,39 @@ class News:
                 em_list.append(News.json_to_embed(article))
 
 
-        bot_message = await ctx.send(embed=em_list[0])
+        current_em_index = 0
+
+        bot_message = await ctx.send(embed=em_list[current_em_index])
 
         # Add Emojis for navigation
         emoji_map = ['\U000023ee', '\U000023ed', '1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3', '5\U000020e3']
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
 
-        
+        async def on_reaction_add(reaction, user):
+            await wait_for('reaction_add', timeout=120)
+
+            def check():
+                if member = ctx.author:
+                    if str(r) == 'BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
+                        current_em_index = current_em_index - 1
+                        await bot_message.edit(embed=em_list[current_em_index])
+                    if str(r) == 'BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
+                        current_em_index = current_em_index + 1
+                        await bot_message.edit(embed=em_list[current_em_index])
+                    if str(r) == 'DIGIT ONE':
+                        await bot_message.edit(embed=em_list[0])                    
+                    if str(r) == 'DIGIT TWO':
+                        await bot_message.edit(embed=em_list[1])
+                    if str(r) == 'DIGIT THREE':
+                        await bot_message.edit(embed=em_list[2])
+                    if str(r) == 'DIGIT FOUR':
+                        await bot_message.edit(embed=em_list[3])
+                    if str(r) == 'DIGIT FIVE':
+                        await bot_message.edit(embed=em_list[4])
+                        
+            await self.bot.wait_for('reaction_add', check=check, timeout=120)
+
 
 def setup(bot):
     bot.add_cog(News(bot))
