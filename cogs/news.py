@@ -23,10 +23,7 @@ async def on_reaction_add(reaction, user):
     #         if str(r) == 'DIGIT FIVE':
     #             return {'index_set': 5}
 
-    def check():
-        print('Wew lad')
-
-    await self.bot.wait_for('reaction_add', check=check, timeout=120)
+    print('Wew lad')
 
     # await self.bot.wait_for('reaction_add', check=check, timeout=120)
 
