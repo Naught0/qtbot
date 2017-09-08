@@ -5,6 +5,30 @@ import asyncio
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
 
+async def on_reaction_add(reaction, user):
+    # def check():
+    #     if user == ctx.author:
+    #         if str(r) == 'BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
+    #             return {'index_add': 1}
+    #         if str(r) == 'BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
+    #             return {'index_sub': 1}
+    #         if str(r) == 'DIGIT ONE':
+    #             return {'index_set': 1}
+    #         if str(r) == 'DIGIT TWO':
+    #             return {'index_set': 2}
+    #         if str(r) == 'DIGIT THREE':
+    #             return {'index_set': 3}
+    #         if str(r) == 'DIGIT FOUR':
+    #             return {'index_set': 4}
+    #         if str(r) == 'DIGIT FIVE':
+    #             return {'index_set': 5}
+
+    def check():
+        print('Wew lad')
+
+    await self.bot.wait_for('reaction_add', check=check, timeout=120)
+
+    # await self.bot.wait_for('reaction_add', check=check, timeout=120)
 
 class News:
     def __init__(self, bot):
@@ -26,31 +50,6 @@ class News:
 
         return em
 
-    async def on_reaction_add(reaction, user):
-        # def check():
-        #     if user == ctx.author:
-        #         if str(r) == 'BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
-        #             return {'index_add': 1}
-        #         if str(r) == 'BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
-        #             return {'index_sub': 1}
-        #         if str(r) == 'DIGIT ONE':
-        #             return {'index_set': 1}
-        #         if str(r) == 'DIGIT TWO':
-        #             return {'index_set': 2}
-        #         if str(r) == 'DIGIT THREE':
-        #             return {'index_set': 3}
-        #         if str(r) == 'DIGIT FOUR':
-        #             return {'index_set': 4}
-        #         if str(r) == 'DIGIT FIVE':
-        #             return {'index_set': 5}
-
-        def check():
-            print('Wew lad')
-
-        await self.bot.wait_for('reaction_add', check=check, timeout=120)
-
-        # await self.bot.wait_for('reaction_add', check=check, timeout=120)
-        
     @commands.command(name='news')
     async def get_news(self, ctx):
         """ Get the top 5 articles from Google News (http://newsapi.org """
