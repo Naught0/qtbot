@@ -72,10 +72,8 @@ class News:
             await bot_message.add_reaction(emoji)
 
         async def on_reaction_add(reaction, user):
-            await wait_for('reaction_add', timeout=120)
-
             async def check():
-                if member == ctx.author:
+                if user == ctx.author:
                     if str(r) == 'BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
                         current_em_index = current_em_index - 1
                         await bot_message.edit(embed=em_list[current_em_index])
