@@ -74,7 +74,7 @@ class News:
         async def on_reaction_add(reaction, user):
             await wait_for('reaction_add', timeout=120)
 
-            def check():
+            async def check():
                 if member == ctx.author:
                     if str(r) == 'BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
                         current_em_index = current_em_index - 1
