@@ -75,7 +75,7 @@ class News:
             await wait_for('reaction_add', timeout=120)
 
             def check():
-                if member = ctx.author:
+                if member == ctx.author:
                     if str(r) == 'BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
                         current_em_index = current_em_index - 1
                         await bot_message.edit(embed=em_list[current_em_index])
@@ -92,7 +92,7 @@ class News:
                         await bot_message.edit(embed=em_list[3])
                     if str(r) == 'DIGIT FIVE':
                         await bot_message.edit(embed=em_list[4])
-                        
+
             await self.bot.wait_for('reaction_add', check=check, timeout=120)
 
 
