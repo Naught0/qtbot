@@ -13,9 +13,9 @@ class Timer:
     @commands.command(name='time')
     async def create_remind(self, ctx, time: int):
         """ Create a timer in seconds """
-        if sleep < 7200:
+        if time < 7200:
             await ctx.send(f'Timer set for `{sleep}` seconds.')
-            await asyncio.sleep(sleep)
+            await asyncio.sleep(time)
             await ctx.send(f':timer: {ctx.author.mention} Time is up!')
 
         else:
