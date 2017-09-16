@@ -153,7 +153,7 @@ class League:
         em = discord.Embed()
         em.title = summoner
         em.url = f'https://na.whatismymmr.com/{f_summoner}'
-        em.set_thumbnail(url=lu.get_summoner_icon(summoner, 'na'))
+        em.set_thumbnail(url=lu.get_summoner_icon(f_summoner, 'na'))
 
         # Display ranked MMR
         if elo_data['ranked']['avg']:
