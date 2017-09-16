@@ -14,7 +14,7 @@ class Wiki:
         self.aio_session = bot.aio_session
 
     @commands.command(name='wiki', aliases=['wi'])
-    async def wiki_seearch(self, ctx, *, query=None):
+    async def wiki_search(self, ctx, *, query=None):
         """ Get the closest matching Wikipedia article for a given query """
 
         # Determine whether we want a random article
@@ -30,7 +30,7 @@ class Wiki:
 
         # No result found
         if not wiki_info[1]:
-            return await ctx.send(f'Sorry, I couldn\'t find anything for `{query}`.')
+            return await ctx.send(f"Sorry, I couldn't find anything for `{query}`.")
 
         # Create embed
         em = discord.Embed()
