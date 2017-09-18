@@ -75,7 +75,7 @@ class News:
         def check(reaction, user):
             return user == ctx.author and reaction.emoji in emoji_map
 
-        async def waiter(future: asnyncio.Future):
+        async def waiter(future: asyncio.Future):
             reaction, user = await self.bot.wait_for('reaction_add', check=check)
             future.set_result(reaction.emoji)
 
