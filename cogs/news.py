@@ -88,16 +88,22 @@ class News:
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
             if reaction.emoji == emoji_map[1]:
                 await bot_message.edit(embed=em_list[current_em_index + 1])
+                await bot_message.remove_reaction(reaction.emoji, ctx.author)
             if reaction.emoji == emoji_map[2]:
                 await bot_message.edit(embed=em_list[0])
+                await bot_message.remove_reaction(reaction.emoji, ctx.author)
             if reaction.emoji == emoji_map[3]:
                 await bot_message.edit(embed=em_list[1])
+                await bot_message.remove_reaction(reaction.emoji, ctx.author)
             if reaction.emoji == emoji_map[4]:
                 await bot_message.edit(embed=em_list[2])
+                await bot_message.remove_reaction(reaction.emoji, ctx.author)
             if reaction.emoji == emoji_map[5]:
                 await bot_message.edit(embed=em_list[3])
+                await bot_message.remove_reaction(reaction.emoji, ctx.author)
             if reaction.emoji == emoji_map[6]:
                 await bot_message.edit(embed=em_list[4])
+                await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
 
 def setup(bot):
