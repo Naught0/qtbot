@@ -85,6 +85,8 @@ class News:
         while not emoji.done():
             await asyncio.sleep(0.1)
 
+        await ctx.send(f'You reacted with {emoji.result}')
+
 
 def setup(bot):
     bot.add_cog(News(bot))
