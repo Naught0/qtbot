@@ -50,7 +50,7 @@ class News:
             raw_json_dict = json.loads(raw_json_string)
             article_list = raw_json_dict['articles']
 
-            for article in article_list:
+            for article in article_list[:5]:
                 em_list.append(News.json_to_embed(article))
 
         else:
@@ -58,7 +58,7 @@ class News:
             article_list = api_response['articles']
             await self.redis_client.set('news', json.dumps(api_response), ex=300)
 
-            for article in article_list:
+            for article in article_list[:5]:
                 em_list.append(News.json_to_embed(article))
 
 
@@ -67,7 +67,8 @@ class News:
         bot_message = await ctx.send(embed=em_list[current_em_index])
 
         # Add Emojis for navigation
-        emoji_map = ['\U000023ee', '\U000023ed', '1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3', '5\U000020e3']
+        emoji_map = ['\U000023ee', '\U000023ed', '1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3',
+                     '5\U000020e3']
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
 
@@ -83,25 +84,44 @@ class News:
                 return await bot_message.clear_reactions()
 
             if reaction.emoji == emoji_map[0]:
-                # Preivous page
-                await bot_message.edit(embed=em_list[current_em_index - 1])
+                # Prev. page
+                current_em_index -= 1
+                await bot_message.edit(embed=em_list[current_em_index])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
+
             if reaction.emoji == emoji_map[1]:
-                await bot_message.edit(embed=em_list[current_em_index + 1])
+                # Next page
+                current_em_index += 1
+                await bot_message.edit(embed=em_list[current_em_index])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
+
             if reaction.emoji == emoji_map[2]:
+                # Page 1
+                current_em_index = 0
                 await bot_message.edit(embed=em_list[0])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
+
             if reaction.emoji == emoji_map[3]:
+                # Page 2
+                current_em_index = 1
                 await bot_message.edit(embed=em_list[1])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
+
             if reaction.emoji == emoji_map[4]:
+                # Page 3
+                current_em_index = 2
                 await bot_message.edit(embed=em_list[2])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
+
             if reaction.emoji == emoji_map[5]:
+                # Page 4
+                current_em_index = 3
                 await bot_message.edit(embed=em_list[3])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
+
             if reaction.emoji == emoji_map[6]:
+                # Page 5
+                current_em_index = 4
                 await bot_message.edit(embed=em_list[4])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
