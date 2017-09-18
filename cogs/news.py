@@ -75,17 +75,29 @@ class News:
         def check(reaction, user):
             return user == ctx.author and reaction.emoji in emoji_map
 
-        async def waiter(future: asyncio.Future):
-            reaction, user = await self.bot.wait_for('reaction_add', check=check, timeout=60.0)
-            future.set_result(reaction.emoji)
 
-        emoji = asyncio.Future()
-        self.bot.loop.create_task(waiter(emoji))
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for('reaction_add', check=check, timeout=60.0)
+            except asyncio.TimeoutError:
+                return await bot_message.clear_reactions()
 
-        while not emoji.done():
-            await asyncio.sleep(0.1)
-
-        await ctx.send(f'You reacted with {emoji.result}')
+            if reaction.emoji == emoji_map[0]:
+                # Preivous page
+                await bot_message.edit(embed=em_list[current_em_index - 1])
+                await bot_message.remove_reaction(reaction.emoji, ctx.author)
+            if reaction.emoji == emoji_map[1]:
+                await bot_message.edit(embed=em_list[current_em_index + 1])
+            if reaction.emoji == emoji_map[2]:
+                await bot_message.edit(embed=em_list[0])
+            if reaction.emoji == emoji_map[3]:
+                await bot_message.edit(embed=em_list[1])
+            if reaction.emoji == emoji_map[4]:
+                await bot_message.edit(embed=em_list[2])
+            if reaction.emoji == emoji_map[5]:
+                await bot_message.edit(embed=em_list[3])
+            if reaction.emoji == emoji_map[6]:
+                await bot_message.edit(embed=em_list[4])
 
 
 def setup(bot):
