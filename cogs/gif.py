@@ -35,7 +35,7 @@ class Giphy:
     @commands.command(aliases=['ty', 'thank'])
     async def thanks(self, ctx):
         """ Thank your overlord, qtbot """
-        gif_result = await self.bot.loop.run_in_executor(None, Giphy.sync_giphy, 'blush')
+        gif_result = await self.bot.loop.run_in_executor(None, Giphy.sync_giphy, 'blushing')
 
         await ctx.send(gif_result.fixed_width.downsampled.url)
 
