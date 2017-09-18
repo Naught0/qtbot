@@ -67,15 +67,13 @@ class News:
         bot_message = await ctx.send(embed=em_list[current_em_index])
 
         # Add Emojis for navigation
-        emoji_map = ['\U000023ee', '\U000023ed', '1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3',
-                     '5\U000020e3']
+        emoji_map = ['1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3', '5\U000020e3']
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
 
-        # Plagiarized pagination for testing purposes
+        # Hacked together but works
         def check(reaction, user):
             return user == ctx.author and reaction.emoji in emoji_map
-
 
         while True:
             try:
@@ -84,42 +82,30 @@ class News:
                 return await bot_message.clear_reactions()
 
             if reaction.emoji == emoji_map[0]:
-                # Prev. page
-                current_em_index -= 1
-                await bot_message.edit(embed=em_list[current_em_index])
-                await bot_message.remove_reaction(reaction.emoji, ctx.author)
-
-            if reaction.emoji == emoji_map[1]:
-                # Next page
-                current_em_index += 1
-                await bot_message.edit(embed=em_list[current_em_index])
-                await bot_message.remove_reaction(reaction.emoji, ctx.author)
-
-            if reaction.emoji == emoji_map[2]:
                 # Page 1
                 current_em_index = 0
                 await bot_message.edit(embed=em_list[0])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
-            if reaction.emoji == emoji_map[3]:
+            if reaction.emoji == emoji_map[1]:
                 # Page 2
                 current_em_index = 1
                 await bot_message.edit(embed=em_list[1])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
-            if reaction.emoji == emoji_map[4]:
+            if reaction.emoji == emoji_map[2]:
                 # Page 3
                 current_em_index = 2
                 await bot_message.edit(embed=em_list[2])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
-            if reaction.emoji == emoji_map[5]:
+            if reaction.emoji == emoji_map[3]:
                 # Page 4
                 current_em_index = 3
                 await bot_message.edit(embed=em_list[3])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
-            if reaction.emoji == emoji_map[6]:
+            if reaction.emoji == emoji_map[4]:
                 # Page 5
                 current_em_index = 4
                 await bot_message.edit(embed=em_list[4])
