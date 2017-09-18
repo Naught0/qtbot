@@ -76,7 +76,7 @@ class News:
             return user == ctx.author and reaction.emoji in emoji_map
 
         async def waiter(future: asyncio.Future):
-            reaction, user = await self.bot.wait_for('reaction_add', check=check)
+            reaction, user = await self.bot.wait_for('reaction_add', check=check, timeout=60.0)
             future.set_result(reaction.emoji)
 
         emoji = asyncio.Future()
@@ -85,7 +85,6 @@ class News:
         while not emoji.done():
             await asyncio.sleep(0.1)
 
-        await ctx.send(f'Reaction: {emoji.result()}')
 
 def setup(bot):
     bot.add_cog(News(bot))
