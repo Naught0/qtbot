@@ -15,28 +15,6 @@ class News:
         with open('data/apikeys.json') as f:
             self.api_key = json.load(f)['news']
 
-    async def on_reaction_add(reaction, user):
-        # def check():
-        #     if user == ctx.author:
-        #         if str(r) == 'BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
-        #             return {'index_add': 1}
-        #         if str(r) == 'BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR':
-        #             return {'index_sub': 1}
-        #         if str(r) == 'DIGIT ONE':
-        #             return {'index_set': 1}
-        #         if str(r) == 'DIGIT TWO':
-        #             return {'index_set': 2}
-        #         if str(r) == 'DIGIT THREE':
-        #             return {'index_set': 3}
-        #         if str(r) == 'DIGIT FOUR':
-        #             return {'index_set': 4}
-        #         if str(r) == 'DIGIT FIVE':
-        #             return {'index_set': 5}
-
-        print('Wew lad')
-
-        # await self.bot.wait_for('reaction_add', check=check, timeout=120)
-
     def json_to_embed(json_dict):
         em = discord.Embed()
         em.title = json_dict['title']
@@ -93,10 +71,21 @@ class News:
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
 
-        reaction, user = await self.bot.wait_for('reaction_add', check=check, timeout=120)
-        if user == ctx.author:
-            await ctx.send('wew lads')
+        # Plagiarized pagination for testing purposes
+        def check(reaction, user):
+            return user == ctx.author and reaction.emoji in emoji_map
 
+        async def waiter(future: asnyncio.Future):
+            reaction, user = await self.bot.wait_for('reaction_add', check=check)
+            future.set_result(reaction.emoji)
+
+        emoji = asyncio.Future()
+        self.bot.loop.create_task(waiter(emoji))
+
+        while not emoji.done():
+            await asyncio.sleep(0.1)
+
+        await ctx.send(f'Reaction: {emoji.result()}')
 
 def setup(bot):
     bot.add_cog(News(bot))
