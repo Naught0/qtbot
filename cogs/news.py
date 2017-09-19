@@ -50,7 +50,7 @@ class News:
             raw_json_dict = json.loads(raw_json_string)
             article_list = raw_json_dict['articles']
 
-            for article in article_list[:5]:
+            for article in article_list:
                 em_list.append(News.json_to_embed(article))
 
         else:
@@ -58,7 +58,7 @@ class News:
             article_list = api_response['articles']
             await self.redis_client.set('news', json.dumps(api_response), ex=300)
 
-            for article in article_list[:5]:
+            for article in article_list:
                 em_list.append(News.json_to_embed(article))
 
 
