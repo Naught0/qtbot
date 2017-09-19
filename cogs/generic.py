@@ -77,6 +77,13 @@ class Generic:
 
         await ctx.send("{} gives {} some good ol' fashioned lovin'".format(member, target))
 
+    @commands.command(aliases=['at'])
+    async def aesthetify(self, ctx, *, a_text):
+        ascii_to_wide = dict((i, chr(i + 0xfee0)) for i in range(0x21, 0x7f))
+        ascii_to_wide.update({0x20: u'\u3000', 0x2D: u'\u2212'})
+
+        await ctx.send(f'{a_text.translate(ascii_to_wide)}')
+
 
 def setup(bot):
     bot.add_cog(Generic(bot))
