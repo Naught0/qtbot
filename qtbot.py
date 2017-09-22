@@ -4,6 +4,7 @@ import discord
 import json
 import aiohttp
 import aredis
+import asyncpg
 from datetime import datetime
 from discord.ext import commands
 
@@ -20,6 +21,13 @@ bot.aio_session = aiohttp.ClientSession
 
 # Create bot redis client
 bot.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
+
+# Create connection to postgresql server using pools
+async def create_db_pool():
+    with open('data/apikeys.json') as f:
+        pg_pw = json.load(f)['postgres']
+    bot.pg_con = await asyncpg.create_pool(user='james', password=pg_pw, database='discord_testing')
+bot.loop.create_task(create_db_pool())
 
 # Choose default cogs
 bot.startup_extensions = (

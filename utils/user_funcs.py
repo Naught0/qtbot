@@ -1,58 +1,19 @@
-#!/bin/env python
+#!bin/env python
 
-import json
-from pathlib import Path
+import asyncpg
 
+class PGDB:
+    def __init__(self, db_conn):
+        self.db_conn = db_conn
 
-def found_user_file():
-    """ Checks for user file and returns T/F """
-    return Path('data/user_data.json').is_file()
+    async def fetch_user_info(self, member_id: int, column: str):
+        query = f'''SELECT {column} FROM user_info WHERE member_id = {member_id};'''
+        return await self.db_conn.fetchval(query)
 
-def get_user_info(member, key):
-    """ Finds user and prints value of key """
-    with open('data/user_data.json', 'r') as user_file:
-        user_data = json.load(user_file)
-
-    if (member in user_data) and (key in user_data[member]):
-        return user_data[member][key]
-    else:
-        return None
-
-def create_user(member, key, info):
-    """ Creates a user with given info """
-    with open('data/user_data.json') as f:
-        user_data = json.load(f)
-
-    user_data[member] = {
-        key: info
-    }
-
-    # Write the new data
-    with open('data/user_data.json', 'w') as f:
-        json.dump(user_data, f)
-
-def update_user_info(member, key, info):
-    """ Updates a user's information """
-    with open('data/user_data.json') as f:
-        user_data = json.load(f)
-
-    if member in user_data:
-        user_data[member][key] = info
-        with open('data/user_data.json', 'w') as user_file:
-            json.dump(user_data, user_file)
-
-    # User not found
-    else:
-        create_user(member, key, info)
-
-# Creates user file based on input
-def create_user_file(member, key, info):
-    """ Creates a user file with given user information """
-    new_user = {
-        member:
-        {
-            key: info
-        }
-    }
-    with open('data/user_data.json'):
-        json.dump(new_user, f)
+    async def insert_user_info(self, member_id: int, column: str, col_value):
+        execute = (
+            f'''INSERT INTO user_info (member_id, {column}) 
+                    VALUES ({member_id}, {col_value})
+                    ON CONFLICT (member_id)
+                        DO UPDATE SET {column} = {col_value}''')
+        await self.db_conn.execute(execute)
