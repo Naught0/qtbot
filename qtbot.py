@@ -27,7 +27,7 @@ async def create_db_pool():
     with open('data/apikeys.json') as f:
         pg_pw = json.load(f)['postgres']
     bot.pg_con = await asyncpg.create_pool(user='james', password=pg_pw, database='discord_testing')
-bot.loop.create_task(create_db_pool())
+bot.loop.run_until_complete(create_db_pool())
 
 # Choose default cogs
 bot.startup_extensions = (
