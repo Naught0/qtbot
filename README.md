@@ -13,50 +13,61 @@
 * WhatIsMyMMR.com: `.elo`
 ---
 * Admin:
-  * `load`   Loads an extension.
-  * `unload` Unloads an extension.
-  * `reload` Reloads an extension.
+  * `load`       Loads an extension 
+  * `reload`     Reloads an extension 
+  * `reload_all` Reloads all extensions 
+  * `unload`     Unloads an extension. 
 * AskAsk:
-  * `g`      Get search results from an *alternative source* now that Google has blocked me.
+  * `ask`        Get search results from [REDACTED], now that Google hates me. 
 * Calculator:
-  * `calc`   Calculate like, anything (wolfram alpha).
+  * `calc`       Calculate like, anything. 
 * Comics:
-  * `xkcd`   Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic.
+  * `xkcd`       Search for a vaguely relevant xkcd comic (if you're lucky). Otherwise returns a random comic.
 * Dictionary:
-  * `define` Provides the definition of *a* word.
-  * `ud`     Consult the world's leading dictionary.
-* Generic:  
-  * `akick`  Don't use this.
-  * `ball`   Ask the magic 8ball.
-  * `love`   Give someone, or something, some lovin'.
-  * `resame`
-  * `same`   
-  * `slap`   Teach someone a lesson.
-  * `todo`   A to-do list for myself.
-  * `unsame`
+  * `define`     Provides the definition of a word 
+  * `ud`         Consult the world's leading dictionary 
+* DownDetect:
+  * `isup`       Check whether a website is down or up 
+* Eval:
+  * `eval`       Lets me access the VPS command line via the bot 
+* FindMeme:
+  * `meme`       Search for some dank meme information 
+* Generic:
+  * `at`         Make your message ａｅｓｔｈｅｔｉｃ，　ｍａｎ 
+  * `ball`       Ask the magic 8ball 
+  * `kick`       Don't use this 
+  * `love`       Give someone some lovin' 
+  * `resame`     
+  * `same`       
+  * `say`        Make qtbot say anything ;) 
+  * `slap`       Teach someone a lesson 
+  * `unsame`     
 * Giphy:
-  * `gif`    Returns a random gif matching a query.
-  * `thanks` Thank your overlord, qtbot.
+  * `gif`        returns a random gif matching a query 
+  * `thanks`     Thank your overlord, qtbot 
 * League:
-  * `elo`    Get League of Legends elo.
-  * `mmr`    Alias for the above.
-  * `ci`     Get LoL champion information from Champion.gg.
-  * `ucf`    Update champion file (Owner Only).
-* TMDb:
-  * `movie`  Get movie information.
-  * `show`   Get TV show information.
+  * `aln`        Add your summoner name to the user file 
+  * `ci`         Return play, ban, and win rate for a champ 
+  * `elo`        Get League of Legends elo / mmr from na.whatismymmr.com 
+  * `ucf`        Creates / updates a league info json file (Owner Only)
+* MyTMDb:
+  * `movie`      Get movie information 
+  * `show`       Get TV show information 
 * News:
-  * `news`   Get the top (1 - 5) news articles from Google News.
+  * `news`       Get the top 5 articles from Google News (http://newsapi.org) (Paginated)
 * OSRS:
-  * `ge`     Get the buying/selling price and quantity of an OSRS item.
+  * `ge`         Get the buying/selling price and quantity of an OSRS item 
+* Timer:
+  * `time`       Create a timer in seconds 
 * Weather:
-  * `az`     Add zipcode to userfile.
-  * `fc`     Wunderground weather forecast for `zip`.
-  * `wt`     Wunderground current weather for `zip`.
+  * `az`         Add your zipcode to qtbot's database so you don't have to supply it later
+  * `fc`         Get the forecast via zipcode 
+  * `wt`         Get the weather via zipcode 
 * Wiki:
-  * `wiki`   Search for a loosely related wikipedia article.
+  * `wiki`       Get the closest matching Wikipedia article for a given query 
 * YouTube:
-  * `yt`     Returns some matching youtube videos for a query.
+  * `yt`         Returns a matching youtube video for a query 
 * No Category:
-  * `help`   Shows this message.
-  * `uptime` Get current uptime.
+  * `help`       Shows this message.
+  * `uptime`     Get current bot uptime 
+  
