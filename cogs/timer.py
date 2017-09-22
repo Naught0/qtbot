@@ -19,7 +19,6 @@ class Timer:
             await ctx.send(f'Timer set for `{sleep}` seconds.')
             await asyncio.sleep(sleep)
             await ctx.send(f':timer: {ctx.author.mention} Time is up!')
-
         else:
             return await ctx.send('This is a test command. Please enter a time in seconds not exceeding 7200.')
 
