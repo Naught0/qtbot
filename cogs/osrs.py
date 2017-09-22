@@ -16,7 +16,7 @@ class OSRS:
     def check_osrs_json_file(ctx):
         return Path('data/item-data.json').is_file()
 
-    @commands.command(name=['ge'])
+    @commands.command(name='ge')
     @commands.check(check_osrs_json_file)
     async def ge_search(self, ctx, *, query):
         """ Get the buying/selling price and quantity of an OSRS item """
