@@ -15,6 +15,5 @@ class PGDB:
             f'''INSERT INTO user_info (member_id, {column}) 
                     VALUES ({member_id}, {col_value})
                     ON CONFLICT (member_id)
-                        DO UPDATE SET {column} = {col_value}
-                        WHERE member_id = {member_id};''')
+                        DO UPDATE SET {column} = {col_value};''')
         await self.db_conn.execute(execute)
