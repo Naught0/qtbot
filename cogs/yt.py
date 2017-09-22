@@ -15,7 +15,7 @@ class YouTube:
 
     @commands.command(name='yt')
     async def get_youtube_video(self, ctx, *, query):
-        """ Returns some matching youtube videos for a query """
+        """ Returns a matching youtube video for a query  """
 
         if not query:
             return await ctx.send('Go on, search something.')
