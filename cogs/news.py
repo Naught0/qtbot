@@ -28,7 +28,7 @@ class News:
 
     @commands.command(name='news')
     async def get_news(self, ctx):
-        """ Get the top 5 articles from Google News (http://newsapi.org """
+        """ Get the top 5 articles from Google News (http://newsapi.org) (Paginated) """
 
         """
         Here's my dream:
