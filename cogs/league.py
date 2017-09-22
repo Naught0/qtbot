@@ -5,8 +5,8 @@ import json
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
 from riot_observer import RiotObserver as ro
-from utils import user_funcs as ufm
 from utils import league as lu
+from utils.user_funcs import PGDB
 
 
 class League:
@@ -14,6 +14,7 @@ class League:
         self.bot = bot
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
+        self.db = PGDB(bot.pg_con)
         self.elo_api_uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
         self.elo_headers = {'user-agent': 'qtbot/1.0'}
 
@@ -27,7 +28,7 @@ class League:
     @commands.command(name='aln', aliases=['addl', 'addleague'])
     async def add_league_name(self, ctx, *, summoner_name):
         """ Add your summoner name to the user file """
-        ufm.update_user_info(str(ctx.author.id), 'summoner_name', summoner_name)
+        await self.db.insert_user_info(ctx.author.id, 'league_name', summoner_name)
         await ctx.send(f'Added `{summoner_name}`.')
 
     @commands.command(name='ci', aliases=['champ'])
@@ -115,9 +116,9 @@ class League:
 
         # Try to read summoner from file if none supplied
         if not summoner:
-            summoner = ufm.get_user_info(str(ctx.author.id), 'summoner_name')
+            summoner = await self.db.fetch_user_info(ctx.author.id, 'league_name')
 
-        # get_user_info() will return None if there is no summoner found
+        # fetch_user_info() will return None if there is no summoner found
         if summoner is None:
             return await ctx.send("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply a name to this command.")
 
