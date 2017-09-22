@@ -16,5 +16,5 @@ class PGDB:
                     VALUES ({member_id}, {col_value})
                     ON CONFLICT (member_id)
                         DO UPDATE SET {column} = {col_value}
-                        WHERE member_id = {member_id}''')
+                        WHERE member_id = {member_id};''')
         await self.db_conn.execute(execute)
