@@ -2,9 +2,9 @@
 
 import discord
 import json
-from utils import user_funcs as uf
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
+from utils.user_funcs import PGDB
 
 
 class Weather:
@@ -12,6 +12,7 @@ class Weather:
         self.bot = bot
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
+        self.db = PGDB(bot.pg_con)
         self.api_url = 'http://api.openweathermap.org/data/2.5/weather?zip={},{}&APPID={}'
         self.wunder_api_url = 'http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json'
 
@@ -24,19 +25,19 @@ class Weather:
     @commands.command(name='az')
     async def add_zip(self, ctx, zip_code):
         """ Add your zipcode to qtbot's database so you don't have to supply it later """
-        uf.update_user_info(str(ctx.author.id), 'zip', zip_code)
-
+        await self.db.insert_user_info(ctx.author.id, 'zipcode', zip_code)
         await ctx.send(f'Successfully added zipcode `{zip_code}`.')
 
     @commands.command(name='wt')
     async def get_weather(self, ctx, zip_code='', region_abv='us'):
         """ Get the weather via zipcode """
         if not zip_code:
-            zip_code = uf.get_user_info(str(ctx.author.id), 'zip')
+            zip_code = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
 
-        # ufm function will return None in the case that the user doesn't have zip saved
+        # DB function will return None in the case that the user doesn't have zip saved
         if zip_code is None:
-            return await ctx.send("Sorry, you're not in my file. Please use `az` to add your zipcode, or supply one to the command.")
+            return await ctx.send(
+                "Sorry, you're not in my file. Please use `az` to add your zipcode, or supply one to the command.")
 
         # Check for cached results in redis server
         if await self.redis_client.exists(f'{zip_code}:weather'):
@@ -67,9 +68,9 @@ class Weather:
 
     @commands.command(name='fc')
     async def get_forecast(self, ctx, zip_code=''):
-        """ Get the forecase via zipcode """
+        """ Get the forecast via zipcode """
         if zip_code == '':
-            zip_code = uf.get_user_info(str(ctx.author.id), 'zip')
+            zip_code = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
 
         if zip_code is None:
             return await ctx.send(
