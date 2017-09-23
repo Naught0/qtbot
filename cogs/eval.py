@@ -8,7 +8,7 @@ from discord.ext import commands
 class Eval:
     def __init__(self, bot):
         self.bot = bot
-        self.db_conn = bot.pg_conn
+        self.db_conn = bot.pg_con
 
     @commands.command(name='eval')
     @commands.is_owner()
