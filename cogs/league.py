@@ -102,7 +102,8 @@ class League:
 
         # Create champion data file if not found
         else:
-            new_champ_list = self.riot_observer.static_get_champion_list()
+            new_champ_list = await self.bot.loop.run_in_executor(None, ro.static_get_champion_list())
+
             with open('data/champ_data.json', 'w') as f:
                 json.dump(new_champ_list, f)
 
