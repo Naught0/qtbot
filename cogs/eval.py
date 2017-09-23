@@ -33,7 +33,7 @@ class Eval:
         try:
             res = await self.db_conn.execute(query)
         except Exception as e:
-            return await ctx.send(f'{type(e).__name__}\n{str(e)}')
+            return await ctx.send(f'```py\n{type(e).__name__}\n{str(e)}```')
 
         await ctx.send(f'```sql\n{res}```')
 
