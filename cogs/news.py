@@ -30,19 +30,6 @@ class News:
     async def get_news(self, ctx):
         """ Get the top 5 articles from Google News (http://newsapi.org) (Paginated) """
 
-        """
-        Here's my dream:
-           1. Check whether cached response exists
-           2. Return that information or make the API call
-           3. Map each field of the json response to an embed field
-                - Make the footer of the embed the page currently displayed
-           - The bot sends the first article in this format from a list of pre-fabricated embeds
-            - I can get the message object which was sent by assigning the ctx.send to a variable
-                - Add 1 - 5 emoji reactions along with first/last buttons
-                - When the user clicks on one (on_reaction_add / on_reaction_remove) go to that page with:
-                    - discord.Message.edit
-        """
-
         em_list = []
 
         if await self.redis_client.exists('news'):
