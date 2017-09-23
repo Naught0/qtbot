@@ -13,5 +13,5 @@ class PGDB:
     async def insert_user_info(self, member_id: int, column: str, col_value):
         execute = (
             f'''INSERT INTO user_info (member_id, {column}) VALUES ($1, $2)
-                    ON CONFLICT (member_id) DO UPDATE SET ({column} = $2);''')
+                    ON CONFLICT (member_id) DO UPDATE SET {column} = $2;''')
         await self.db_conn.execute(execute, member_id, col_value)
