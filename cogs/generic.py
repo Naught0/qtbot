@@ -59,10 +59,9 @@ class Generic:
     async def slap(self, ctx, *, target=None):
         """ Teach someone a lesson """
         if not target:
-            return await ctx.send("You can't slap nothing.")
+            return await ctx.send(f'{ctx.author.name} thrusts his hands wildly about in the air.')
 
-        member = ctx.author.nick
-        await ctx.send('{} slaps {} around a bit with a large trout.'.format(member, target))
+        await ctx.send(f'{ctx.author.name} slaps {target} around a bit with a large trout.')
 
     @commands.command()
     async def love(self, ctx, *, target=None):
