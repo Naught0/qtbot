@@ -38,7 +38,7 @@ class Generic:
                      'Reply hazy try again', 'Ask again later', 'Better not tell you now',
                      'Cannot predict now', 'Concentrate and ask again', 'Don\'t count on it',
                      'My reply is no', 'My sources say no', 'Outlook not so good', 'Very doubtful']
-        await ctx.send(responses[random.randint(0, len(responses) - 1)])
+        await ctx.send(random.choice(responses))
 
     # Same!
     @commands.command()
