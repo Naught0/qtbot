@@ -2,11 +2,13 @@
 
 import discord
 import asyncio
+import asyncpg
 from discord.ext import commands
 
 class Eval:
     def __init__(self, bot):
         self.bot = bot
+        self.db_conn = bot.pg_conn
 
     @commands.command(name='eval')
     @commands.is_owner()
@@ -24,6 +26,12 @@ class Eval:
 
         except Exception as e:
             await ctx.send(f'Unable to send output\n```py\n{e}```')
+
+        @commands.command(name='sql')
+        @commands.is_owner()
+        async def sql_execute(self, ctx, *, query):
+            res = await self.db_conn.execute(query)
+            await ctx.send(res)
 
 
 def setup(bot):
