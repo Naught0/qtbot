@@ -28,7 +28,7 @@ class League:
     @commands.command(name='aln', aliases=['addl', 'addleague'])
     async def add_league_name(self, ctx, *, summoner_name):
         """ Add your summoner name to the user file """
-        await self.db.insert_user_info(ctx.author.id, 'league_name', str(summoner_name))
+        await self.db.insert_user_info(ctx.author.id, 'league_name', summoner_name)
         await ctx.send(f'Added `{summoner_name}`.')
 
     @commands.command(name='ci', aliases=['champ'])
