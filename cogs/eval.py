@@ -27,11 +27,11 @@ class Eval:
         except Exception as e:
             await ctx.send(f'Unable to send output\n```py\n{e}```')
 
-        @commands.command(name='sql')
-        @commands.is_owner()
-        async def sql_execute(self, ctx, *, query):
-            res = await self.db_conn.execute(query)
-            await ctx.send(res)
+    @commands.command(name='sql')
+    @commands.is_owner()
+    async def sql_execute(self, ctx, *, query):
+        res = await self.db_conn.execute(query)
+        await ctx.send(res)
 
 
 def setup(bot):
