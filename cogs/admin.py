@@ -18,7 +18,7 @@ class Admin:
         try:
             self.bot.load_extension(extension_name)
         except (AttributeError, ImportError) as e:
-            return await ctx.send('```py\n{}: {}\n```'.format(type(e).__name__, str(e)))
+            return await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
         await ctx.send('Cog `{}` loaded successfully.'.format(extension_name))
 
 
@@ -34,9 +34,12 @@ class Admin:
     @commands.is_owner()
     async def _reload(self, ctx, extension_name: str):
         """ Reloads an extension """
-        self.bot.unload_extension(extension_name)
-        self.bot.load_extension(extension_name)
-        await ctx.send('Cog `{}` has been reloaded.'.format(extension_name))
+        try:
+            self.bot.unload_extension(extension_name)
+            self.bot.load_extension(extension_name)
+        except Exception as e:
+            return await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
+        await ctx.send(f'Cog `{extension_name}` has been reloaded.')
 
     @commands.command(name='reload_all', aliases=['ra'])
     @commands.is_owner()
@@ -50,9 +53,12 @@ class Admin:
         ext_list.pop(ext_list.index('cogs.admin'))
 
         # Reloads all cogs
-        for extension in self.bot.startup_extensions:
-            self.bot.unload_extension(extension)
-            self.bot.load_extension(extension)
+        for extension in ext_list:
+            try:
+                self.bot.unload_extension(extension)
+                self.bot.load_extension(extension)
+            except Exception as e:
+                return await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
 
         await ctx.send('All cogs have been reloaded.')
 
