@@ -30,8 +30,12 @@ class Eval:
     @commands.command(name='sql')
     @commands.is_owner()
     async def sql_execute(self, ctx, *, query):
-        res = await self.db_conn.execute(query)
-        await ctx.send(res)
+        try:
+            res = await self.db_conn.execute(query)
+        except Exception as e:
+            return await ctx.send(f'{type(e).__name__}\n{str(e)}')
+
+        await ctx.send(f'```sql\n{res}```')
 
 
 def setup(bot):
