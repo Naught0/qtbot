@@ -57,9 +57,9 @@ class Tag:
             await ctx.send(f'```py\n{e}```')
 
         if owner_id == ctx.author.id:
-            await ctx.send('User match')
+            await ctx.send('Match')
         else:
-            await ctx.send('Users !=')
+            await ctx.send(f'Returned value `{owner_id}`.')
 
 
 def setup(bot):
