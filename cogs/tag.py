@@ -41,7 +41,7 @@ class Tag:
             # Update usage count
             query = ''' UPDATE tags SET total_uses = total_uses + 1 
                         WHERE server_id = $1
-                        AND tag_name = $2 '''
+                        AND tag_name = lower($2) '''
             await self.pg_con.execute(query, ctx.guild.id, tag_name)
 
         else:
@@ -51,7 +51,7 @@ class Tag:
     async def create(self, ctx, tag_name, *, contents):
         """ Create a new tag for later retrieval """
         query = ''' INSERT INTO tags (server_id, owner_id, tag_name, tag_contents, created_at, total_uses)
-                    VALUES ($1, $2, $3, lower($4), now(), $5) '''
+                    VALUES ($1, $2, lower($3), $4, now(), $5) '''
         try:
             await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, tag_name, contents, 0)
             await ctx.send(f'Tag `{tag_name}` created.')
