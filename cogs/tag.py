@@ -12,7 +12,7 @@ class Tag:
 
     async def get_tag(self, server_id: int, tag_name: str):
         """ Returns tag value or None """
-        query = ''' SELECT server_id, owner_id, tag_name, tag_contents 
+        query = ''' SELECT server_id, owner_id, tag_name, tag_contents, created_at, total_uses 
                     FROM tags WHERE server_id = $1 
                     AND tag_name = $2; '''
 
