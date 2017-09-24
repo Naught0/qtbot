@@ -12,7 +12,7 @@ class test:
         guild = ctx.guild
 
         # Move to specific category
-        temp_category = guild.get_channel(361376623402024960)
+        temp_category = guild.get_channel(361378212049190922)
 
         if temp_category:
             channel = await guild.create_voice_channel('testing for memes')
