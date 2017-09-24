@@ -88,7 +88,7 @@ class League:
                 file_champ_list = json.load(f)
 
             # Get champ list from Riot's API
-            new_champ_list = await self.bot.loop.run_in_executor(None, riot_observer.static_get_champion_list())
+            new_champ_list = await self.bot.loop.run_in_executor(None, ro.static_get_champion_list())
 
             # If file is up to date, don't update
             if len(new_champ_list['data']) == len(file_champ_list['data']):
