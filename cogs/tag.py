@@ -107,7 +107,7 @@ class Tag:
             return await ctx.send(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
 
         # Create the embed
-        em = discord.Embed(title='Tag Info', color=discord.Color.blue())
+        em = discord.Embed(title=tag_record['tag_name'], color=discord.Color.blue())
         em.timestamp = tag_record['created_at']
         em.set_footer(text='Created at')
 
