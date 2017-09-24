@@ -58,7 +58,7 @@ class Tag:
         except asyncpg.UniqueViolationError:
             return await ctx.send(f'Sorry, tag `{tag_name}` already exists. If you own it, feel free to `.tag edit` it.')
 
-    @tag.command(tag_name='delete', aliases=['del'])
+    @tag.command(name='delete', aliases=['del'])
     async def _delete(self, ctx, *, tag_name):
         """ Delete a tag you created (or if you're an admin) """
         _can_delete = await self.can_delete_tag(ctx, tag_name)
