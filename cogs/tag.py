@@ -38,7 +38,7 @@ class Tag:
     async def create(self, ctx, name, *, contents):
         """ Create a new tag for later retrieval """
         query = ''' INSERT INTO tags (server_id, owner_id, tag_name, tag_contents, created_at, total_uses)
-                    VALUES ($1, $2, $3, $4, now(), $6) '''
+                    VALUES ($1, $2, $3, $4, now(), $5) '''
         try:
             await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, name, contents, 0)
         except asyncpg.UniqueViolationError:
