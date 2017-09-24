@@ -11,7 +11,7 @@ class Admin:
     async def on_member_join(self, ctx):
         await ctx.send('Welcome to the server! For a complete list of commands, type `.help`.')
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def load(self, ctx, extension_name: str):
         """ Loads an extension """
@@ -22,7 +22,7 @@ class Admin:
         await ctx.send('Cog `{}` loaded successfully.'.format(extension_name))
 
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def unload(self, ctx, extension_name: str):
         """ Unloads an extension. """
@@ -30,7 +30,7 @@ class Admin:
         await ctx.send('Cog `{}` has been unloaded.'.format(extension_name))
 
 
-    @commands.command(name='reload', aliases='r')
+    @commands.command(name='reload', aliases='r', hidden=True)
     @commands.is_owner()
     async def _reload(self, ctx, extension_name: str):
         """ Reloads an extension """
@@ -41,7 +41,7 @@ class Admin:
             return await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
         await ctx.send(f'Cog `{extension_name}` has been reloaded.')
 
-    @commands.command(name='reload_all', aliases=['ra'])
+    @commands.command(name='reload_all', aliases=['ra'], hidden=True)
     @commands.is_owner()
     async def reload_all(self, ctx):
         """ Reloads all extensions """

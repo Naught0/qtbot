@@ -10,7 +10,7 @@ class Eval:
         self.bot = bot
         self.db_conn = bot.pg_con
 
-    @commands.command(name='eval')
+    @commands.command(name='eval', hidden=True)
     @commands.is_owner()
     async def shell_access(self, ctx, *, cmd):
         """ Lets me access the VPS command line via the bot """
@@ -27,9 +27,10 @@ class Eval:
         except Exception as e:
             await ctx.send(f'Unable to send output\n```py\n{e}```')
 
-    @commands.command(name='sql')
+    @commands.command(name='sql', hidden=True)
     @commands.is_owner()
     async def sql_execute(self, ctx, *, query):
+        """ Lets me access the postgres database via discord """
         try:
             res = await self.db_conn.execute(query)
         except Exception as e:
