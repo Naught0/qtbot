@@ -62,6 +62,23 @@ class Admin:
 
         await ctx.send('All cogs have been reloaded.')
 
+    @commands.command(name='clean', aliases=['purge'])
+    @commands.has_permissions(manage_messages=True)
+    async def clean_bot_messages(self, ctx, num_msg: int):
+        """ Remove a given number of bot messages """
+
+        if num_msg > 100:
+            await ctx.send('Sorry, number of messages to be deleted must not exceed 100.')
+
+        # Check so that only bot msgs are removed
+        def check(message):
+            return message.author.id == self.bot.user.id
+
+        try:
+            await ctx.channel.purge(check=check, limit=num_msg)
+        except Exception as e:
+            await ctx.send(f'Failed to delete messages.\n ```py\n{e}```')
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))
