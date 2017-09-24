@@ -59,7 +59,7 @@ class League:
             await self.redis_client.set(f'champ_info:{champ_id}', json.dumps(res), ex=21600)
 
         # Create embed
-        em = discord.Embed()
+        em = discord.Embed(color=discord.Color.green())
         em.title = '{} "{}"'.format(fancy_champ_name, champ_title)
         em.description = None
         em.add_field(name='Role',
