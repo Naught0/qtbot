@@ -38,7 +38,7 @@ class Tag:
     async def create(self, ctx, name, *, contents):
         """ Create a new tag for later retrieval """
         query = ''' INSERT INTO tags (server_id, owner_id, tag_name, tag_contents, created_at, total_uses)
-                    VALUES ($1, $2, $3, $4, now(), $5) '''
+                    VALUES ($1, $2, $3, lower($4), now(), $5) '''
         try:
             await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, name, contents, 0)
             await ctx.send(f'Tag `{name}` created.')
@@ -49,17 +49,20 @@ class Tag:
     async def _delete(self, ctx, *, name):
         """ Delete a tag you created (or if you're an admin) """
 
-        # Check whether owner ID = callerid (lol)
+        # Check for owner of tag & whether tag exists
         query = ''' SELECT owner_id FROM tags WHERE server_id = $1 AND tag_name = $2; '''
-        try:
-            owner_id = await self.pg_con.fetchval(query, ctx.guild.id, name)
-        except Exception as e:
-            await ctx.send(f'```py\n{e}```')
+        owner_id = await self.pg_con.fetchval(query, ctx.guild.id, name)
+
+        if not owner_id:
+            return await ctx.send(f'Tag `{name}` does not exist.')
 
         if owner_id == ctx.author.id:
-            await ctx.send('Match')
+            execute = "DELETE FROM tags WHERE tag_name = lower($1) AND server_id = $2"
+            await self.pg_con.execute(execute, name, ctx.guild.id)
+            await ctx.send(f'Tag `{name}` deleted.')
+
         else:
-            await ctx.send(f'Returned value `{owner_id}`.')
+            await ctx.send(f'Sorry, you do not have the necssary permissions to delete this tag.')
 
 
 def setup(bot):
