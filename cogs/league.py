@@ -152,7 +152,7 @@ class League:
                 elo_data[kind]['err'] = 0
 
         # Create embed
-        em = discord.Embed()
+        em = discord.Embed(color=discord.Color.green())
         em.title = summoner
         em.url = f'https://na.whatismymmr.com/{f_summoner}'
         em.set_thumbnail(url=lu.get_summoner_icon(f_summoner, 'na'))
