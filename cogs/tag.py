@@ -41,7 +41,7 @@ class Tag:
                     VALUES ($1, $2, $3, $4, now(), $6) '''
         try:
             await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, name, contents, 0)
-        except UniqueViolationError:
+        except asyncpg.UniqueViolationError:
             return await ctx.send(f'Sorry, tag `{name}` already exists. If you own it, feel free to `.tag edit` it.')
 
 
