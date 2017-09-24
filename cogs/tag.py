@@ -45,6 +45,22 @@ class Tag:
         except asyncpg.UniqueViolationError:
             return await ctx.send(f'Sorry, tag `{name}` already exists. If you own it, feel free to `.tag edit` it.')
 
+    @tag.command(name='delete', aliases=['del'])
+    async def _delete(self, ctx, *, name):
+        """ Delete a tag you created (or if you're an admin) """
+
+        # Check whether owner ID = callerid (lol)
+        query = ''' SELECT owner_id FROM tags WHERE server_id = $1 AND tag_name = $2; '''
+        try:
+            owner_id = await self.pg_con.fetchval(query, ctx.guild.id, name)
+        except Exception as e:
+            await ctx.send(f'```py\n{e}```')
+
+        if owner_id == ctx.author.id:
+            await ctx.send('User match')
+        else:
+            await ctx.send('Users !=')
+
 
 def setup(bot):
     bot.add_cog(Tag(bot))
