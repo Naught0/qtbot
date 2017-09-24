@@ -12,19 +12,16 @@ class Tag:
 
     async def get_tag(self, server_id: int, tag_name: str):
         """ Returns tag value or None """
-        query = ''' SELECT tag_contents 
+        query = ''' SELECT server_id, owner_id, tag_name, tag_contents 
                     FROM tags WHERE server_id = $1 
                     AND tag_name = $2; '''
 
-        return await self.pg_con.fetchval(query, server_id, tag_name)
-
-    async def get_tag_owner(self, ctx, tag_name):
-        query = ''' SELECT owner_id FROM tags WHERE server_id = $1 AND tag_name = $2; '''
-        return await self.pg_con.fetchval(query, ctx.guild.id, tag_name)
+        return await self.pg_con.fetchrow(query, server_id, tag_name)
 
     async def can_delete_tag(self, ctx, tag_name):
         """ Check whether a user is admin or owns the tag """
-        tag_owner = await self.get_tag_owner(ctx, tag_name)
+        tag_record = await self.get_tag(ctx.guild.id, tag_name)
+        tag_owner = tag_record['owner_id']
 
         if not tag_owner:
             return None
@@ -34,7 +31,9 @@ class Tag:
     @commands.group(invoke_without_command=True)
     async def tag(self, ctx, *, tag_name: str):
         """ Add a tag to the database for later retrieval """
-        tag_contents = await self.get_tag(ctx.guild.id, tag_name)
+        tag_record = await self.get_tag(ctx.guild.id, tag_name)
+        tag_contents = tag_record['tag_contents']
+
         if tag_contents:
             await ctx.send(tag_contents)
 
@@ -67,9 +66,31 @@ class Tag:
             return await ctx.send(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
 
         elif _can_delete:
-            execute = "DELETE FROM tags WHERE tag_name = lower($1) AND server_id = $2"
-            await self.pg_con.execute(execute, tag_name, ctx.guild.id)
+            query = "DELETE FROM tags WHERE tag_name = lower($1) AND server_id = $2"
+            await self.pg_con.execute(query, tag_name, ctx.guild.id)
             await ctx.send(f'Tag `{tag_name}` deleted.')
+
+        else:
+            await ctx.send(f'Sorry, you do not have the necssary permissions to delete this tag.')
+
+    @tag.command(aliases=['ed'])
+    async def edit(self, ctx, tag_name, *, contents):
+        """ Edit a tag which you created """
+        
+        # Get the record
+        tag_record = await self.get_tag(ctx.guild.id, tag_name)
+
+        # Check whether tag exists
+        if not tag_record:
+            return await ctx.send(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
+
+        # Check owner
+        if tag_record['owner_id'] == ctx.author.id:
+            query = ''' UPDATE tags SET tag_contents = $1
+                        WHERE tag_name = $2
+                        AND server_id = $3 '''
+            await self.pg_con.execute(query, contents, tag_name, ctx.guild.id)
+            await ctx.send(f'Successfully edited tag `{tag_name}`.')
 
         else:
             await ctx.send(f'Sorry, you do not have the necssary permissions to delete this tag.')
