@@ -95,6 +95,29 @@ class Tag:
         else:
             await ctx.send(f'Sorry, you do not have the necssary permissions to delete this tag.')
 
+    @tag.command()
+    async def info(self, ctx, *, tag_name):
+        """ Retrieve information about a tag """
+
+        # Get the record
+        tag_record = await self.get_tag(ctx.guild.id, tag_name)
+
+        # Check whether tag exists
+        if not tag_record:
+            return await ctx.send(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
+
+        # Create the embed
+        em = discord.Embed(title='Tag Info', color=discord.Color.blue())
+        em.timestamp = tag_record['created_at']
+        em.set_footer(text='Created at')
+
+        user = self.bot.get_user(tag_record['owner_id']) or (await self.bot.get_user_info(tag_record['owner_id']))
+        em.set_author(name=str(user), icon_url=user.avatar_url)
+
+        em.add_field(name='Tag Owner:', value=f"<{tag_record['owner_id']}>")
+        em.add_field(name='Uses:', value=tag_record['total_uses'])
+
+        await ctx.send(embed=em)
 
 def setup(bot):
     bot.add_cog(Tag(bot))
