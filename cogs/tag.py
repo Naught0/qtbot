@@ -71,7 +71,7 @@ class Tag:
             await ctx.send(f'Tag `{tag_name}` deleted.')
 
         else:
-            await ctx.send(f'Sorry, you do not have the necssary permissions to delete this tag.')
+            await ctx.send(f'Sorry, you do not have the necessary permissions to delete this tag.')
 
     @tag.command(aliases=['ed'])
     async def edit(self, ctx, tag_name, *, contents):
@@ -93,7 +93,7 @@ class Tag:
             await ctx.send(f'Successfully edited tag `{tag_name}`.')
 
         else:
-            await ctx.send(f'Sorry, you do not have the necssary permissions to delete this tag.')
+            await ctx.send(f'Sorry, you do not have the necessary permissions to delete this tag.')
 
     @tag.command()
     async def info(self, ctx, *, tag_name):
@@ -118,6 +118,7 @@ class Tag:
         em.add_field(name='Uses:', value=tag_record['total_uses'])
 
         await ctx.send(embed=em)
+
 
 def setup(bot):
     bot.add_cog(Tag(bot))
