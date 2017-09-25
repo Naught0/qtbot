@@ -119,9 +119,6 @@ class Tag:
 
         await ctx.send(embed=em)
 
-    @tag.command()
-    async def search(self, ctx, *, tag_name):
-
 
 def setup(bot):
     bot.add_cog(Tag(bot))
