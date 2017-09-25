@@ -58,18 +58,15 @@ class Eval:
 
     @commands.command(name='em', hidden=True)
     @commands.is_owner()
-    async def msg_to_embed(self, ctx, **kwargs):
+    async def msg_to_embed(self, ctx, *args):
         """ Convert message to embed """
-        em = discord.Embed()
-        if 'title' in kwargs:
-            em.title = kwargs['title']
-            kwargs.pop('title', None)
-        if 'des' in kwargs:
-            em.description = kwargs['des']
-            kwargs.pop('des', None)
+        em = discord.Embed(title=args[0])
+        args.pop(0)
+        i = 0
 
-        for k, v in kwargs:
-            em.add_field(name=k, value=v)
+        for x in args:
+            em.add_field(name=f'Field {i}:', value=x)
+            i += 1
 
         await ctx.send(embed=em)
 
