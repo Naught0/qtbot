@@ -50,7 +50,7 @@ class Eval:
         em = discord.Embed(color=discord.Color.dark_orange(), title='SQL Fetch')
 
         for k, v in res[0].items():
-            em.add_field(title=k, value=v)
+            em.add_field(name=k, value=v)
 
         await ctx.send(embed=em)
 
