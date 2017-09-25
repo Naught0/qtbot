@@ -46,7 +46,7 @@ class Eval:
             return await ctx.send(f'```py\n{type(e).__name__}\n{str(e)}```')
 
         record_dict = {}
-        for k, v in res.items():
+        for k, v in res[0].items():
             record_dict[k] = v
 
         await ctx.send(str(record_dict))
