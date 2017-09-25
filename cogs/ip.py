@@ -26,7 +26,7 @@ class IPLookup:
         em.add_field(name='ISP', value=res['as'])
         em.set_thumbnail(url='http://www.iconsdb.com/icons/preview/white/wifi-xxl.png')
         em.set_image(
-            url=f"https://maps.googleapis.com/maps/api/staticmap?center={res['lat']},{res['lon']}&zoom=13&scale=false&size=255x255&maptype=roadmap&format=png&markers=size:mid%7Ccolor:0xAD1457%7Clabel:%7C{res['lat']},{res['lon']}#{str(datetime.datetime.now())}")
+            url=f"https://maps.googleapis.com/maps/api/staticmap?center={res['lat']},{res['lon']}&zoom=13&scale=false&size=255x255&maptype=roadmap&format=png&markers=size:mid%7Ccolor:0xAD1457%7Clabel:%7C{res['lat']},{res['lon']}#{str(datetime.now())}")
 
         await ctx.send(embed=em)
 
