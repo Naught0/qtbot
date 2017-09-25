@@ -41,6 +41,7 @@ class Eval:
         await ctx.send(f'```sql\n{res}```')
 
     @sql_execute.command(name='fetch')
+    @commands.is_owner()
     async def sql_fetch(self, ctx, *, query):
         try:
             res = await self.db_conn.fetch(query)
