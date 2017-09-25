@@ -2,7 +2,6 @@
 
 import discord
 import asyncio
-from pprint import pformat
 from discord.ext import commands
 
 class Eval:
@@ -36,6 +35,9 @@ class Eval:
         except Exception as e:
             return await ctx.send(f'```py\n{type(e).__name__}\n{str(e)}```')
 
+        if not res:
+            return await ctx.send('SQL execution returned nothing or failed.')
+
         await ctx.send(f'```sql\n{res}```')
 
     @sql_execute.command(name='fetch')
@@ -45,11 +47,12 @@ class Eval:
         except Exception as e:
             return await ctx.send(f'```py\n{type(e).__name__}\n{str(e)}```')
 
-        record_dict = {}
-        for k, v in res[0].items():
-            record_dict[k] = v
+        em = discord.Embed(color=discord.Color.darkorange(), title='SQL Fetch')
 
-        await ctx.send(f'```json\n{pformat(record_dict)}```')
+        for k, v in res[0].items():
+            em.add_field(title=k, value=v)
+
+        await ctx.send(embed=em)
 
 
 def setup(bot):
