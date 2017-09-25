@@ -56,20 +56,6 @@ class Eval:
 
         await ctx.send(embed=em)
 
-    @commands.command(name='em', hidden=True)
-    @commands.is_owner()
-    async def msg_to_embed(self, ctx, *args):
-        """ Convert message to embed """
-        em = discord.Embed(title=args[0])
-        args.pop(0)
-        i = 0
-
-        for x in args:
-            em.add_field(name=f'Field {i}:', value=x)
-            i += 1
-
-        await ctx.send(embed=em)
-
 
 def setup(bot):
     bot.add_cog(Eval(bot))
