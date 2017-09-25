@@ -32,10 +32,9 @@ class Tag:
     async def tag(self, ctx, *, tag_name: str):
         """ Add a tag to the database for later retrieval """
         tag_record = await self.get_tag(ctx.guild.id, tag_name)
-        tag_contents = tag_record['tag_contents']
 
-        if tag_contents:
-            await ctx.send(tag_contents)
+        if tag_record:
+            await ctx.send(tag_record['tag_contents'])
 
             # Update usage count
             query = ''' UPDATE tags SET total_uses = total_uses + 1 
