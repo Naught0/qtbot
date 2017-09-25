@@ -20,7 +20,7 @@ class IPLookup:
             return await ctx.send(f"Sorry, I couldn't find any data on `{query}`.")
 
         em = discord.Embed(title=res['org'], color=discord.Color.dark_magenta())
-        em.add_field(name='Location', value=f"{res['city']}, {res['regionName']}, {res['country']}")
+        em.add_field(name='Location', value=f"{res['city']}, {res['regionName']}, {res['country']}", inline=False)
         em.add_field(name='Coordinates', value=f"({res['lat']:.3f}, {res['lon']:.3f})")
         em.add_field(name='ISP', value=res['isp'])
         em.set_image(
