@@ -49,7 +49,7 @@ class Eval:
         for k, v in res[0].items():
             record_dict[k] = v
 
-        await ctx.send(pformat(record_dict))
+        await ctx.send(f'```json\n{pformat(record_dict)}```')
 
 
 def setup(bot):
