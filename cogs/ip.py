@@ -23,6 +23,8 @@ class IPLookup:
         em.add_field(name='Location', value=f"{res['city']}, {res['regionName']}, {res['country']}")
         em.add_field(name='Coordinates', value=f"({res['lat']:.3f}, {res['lon']:.3f})")
         em.add_field(name='ISP', value=res['isp'])
+        em.set_image(
+            url=f"https://maps.googleapis.com/maps/api/staticmap?center={res['lat']},{res['lon']}&zoom=13&scale=false&size=255x255&maptype=roadmap&format=png")
 
         await ctx.send(embed=em)
 
