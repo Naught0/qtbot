@@ -1,8 +1,8 @@
 #!/bin/env python
 
 import json
-from pathlib import Path
 from utils import dict_manip as dm
+from datetime import datetime
 
 
 def found_champ_file():
@@ -49,7 +49,7 @@ def get_champ_title(champ):
     return champ_dict['data'][champ]['title']
 
 def get_summoner_icon(summoner, region):
-    return f'https://avatar.leagueoflegends.com/{region}/{summoner}.png'
+    return f'https://avatar.leagueoflegends.com/{region}/{summoner}.png?_{datetime.now()}'
 
 def get_summoner_id(summoner_name):
     pass
