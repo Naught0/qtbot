@@ -27,7 +27,7 @@ class Eval:
         except Exception as e:
             await ctx.send(f'Unable to send output\n```py\n{e}```')
 
-    @commands.command(name='sql', hidden=True)
+    @commands.group(invoke_without_command=True, name='sql', hidden=True)
     @commands.is_owner()
     async def sql_execute(self, ctx, *, query):
         """ Lets me access the postgres database via discord """
@@ -37,6 +37,19 @@ class Eval:
             return await ctx.send(f'```py\n{type(e).__name__}\n{str(e)}```')
 
         await ctx.send(f'```sql\n{res}```')
+
+    @sql_execute.command(name='fetch')
+    async def sql_fetch(self, ctx, *, query):
+        try:
+            res = await self.db_conn.fetch(query)
+        except Exception as e:
+            return await ctx.send(f'```py\n{type(e).__name__}\n{str(e)}```')
+
+        record_dict = {}
+        for k, v in res.items():
+            record_dict[k] = v
+
+        await ctx.send(str(record_dict))
 
 
 def setup(bot):
