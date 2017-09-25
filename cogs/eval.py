@@ -47,7 +47,7 @@ class Eval:
         except Exception as e:
             return await ctx.send(f'```py\n{type(e).__name__}\n{str(e)}```')
 
-        em = discord.Embed(color=discord.Color.darkorange(), title='SQL Fetch')
+        em = discord.Embed(color=discord.Color.dark_orange(), title='SQL Fetch')
 
         for k, v in res[0].items():
             em.add_field(title=k, value=v)
