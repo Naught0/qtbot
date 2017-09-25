@@ -2,7 +2,7 @@
 
 import discord
 import asyncio
-import asyncpg
+from pprint import pformat
 from discord.ext import commands
 
 class Eval:
@@ -49,7 +49,7 @@ class Eval:
         for k, v in res[0].items():
             record_dict[k] = v
 
-        await ctx.send(str(record_dict))
+        await ctx.send(pformat(record_dict))
 
 
 def setup(bot):
