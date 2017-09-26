@@ -30,7 +30,7 @@ class News:
             em.set_footer(text=f'Author: {json_dict["author"]})')
 
         em.timestamp = datetime.strptime(
-            ' '.join(json_dict['publishedAt'].split('T').strip('Z')), "%Y-%m-%d %H:%M:%S")
+            ' '.join(json_dict['publishedAt'].split('T')).strip('Z'), "%Y-%m-%d %H:%M:%S")
 
         return em
 
