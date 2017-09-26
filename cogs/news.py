@@ -23,6 +23,9 @@ class News:
         em.set_image(url=json_dict['urlToImage'])
         em.set_thumbnail(
             url='http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png')
+        if json_dict['author']:
+            em.set_footer(text=f'Author: {json_dict["author"]})')
+        em.timestamp = json_dict['publishedAt']
 
         return em
 
