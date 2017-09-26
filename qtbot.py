@@ -52,13 +52,13 @@ bot.startup_extensions = (
     'cogs.isup')
 
 # Get current time for uptime
-startTime = datetime.now()
-startTimeStr = startTime.strftime('%B %d %H:%M:%S')
+start_time = datetime.now()
+start_time_str = start_time.strftime('%B %d %H:%M:%S')
 
 @bot.event
 async def on_ready():
     """ Basic information printed via stdout """
-    print('Client logged in at {}'.format(startTimeStr))
+    print(f'Client logged in at {start_time_str}')
     print(bot.user.name)
     print(bot.user.id)
     print('------')
@@ -66,11 +66,11 @@ async def on_ready():
 @bot.command(aliases=['up'])
 async def uptime(ctx):
     """ Get current bot uptime """
-    currentTime = datetime.now()
-    currentTimeStr = currentTime.strftime('%B %d %H:%M:%S')
+    current_time = datetime.now()
+    current_time_str = current_time.strftime('%B %d %H:%M:%S')
 
-    await ctx.send('Initialized: `{}`\nCurrent Time: `{}`\nUptime: `{}`'.format(
-    startTimeStr, currentTimeStr, str(currentTime - startTime).split('.')[0]))
+    await ctx.send(
+        f'Initialized: `{start_time_str}`\nCurrent Time: `{current_time_str}`\nUptime: `{str(current_time - start_time).split(".")[0]}`')
 
 
 if __name__ == '__main__':
@@ -78,7 +78,7 @@ if __name__ == '__main__':
         try:
             bot.load_extension(ext)
         except Exception as e:
-            exc = '{}: {}'.format(type(e).__name__, e)
-            print('failed to load extension {}\n{}'.format(ext, exc))
+            exc = f'{type(e).__name__}: {e}'
+            print(u'failed to load extension {ext}\n{exc}')
 
     bot.run(discord_bot_token)

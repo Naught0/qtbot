@@ -24,10 +24,10 @@ class YouTube:
         video_list = await self.bot.loop.run_in_executor(None, YouTube.sync_get_youtube_video, query)
 
         if not video_list:
-            return await ctx.say("Sorry, couldn't find anything for `{}`".format(query))
+            return await ctx.say(f"Sorry, couldn't find anything for `{query}`")
 
         # Return top hit
-        await ctx.send('{}'.format(video_list[0]['video_url']))
+        await ctx.send(f'{video_list[0]["video_url"]}')
 
 
 def setup(bot):
