@@ -26,7 +26,7 @@ class News:
         em.set_thumbnail(
             url='http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png')
 
-        em.set_footer(str(json_dict['url'].split('www.')[1].split('.')[0].upper()))
+        em.set_footer(text=json_dict['url'].split('www.')[1].split('.')[0].upper())
 
         em.timestamp = datetime.strptime(
             ' '.join(json_dict['publishedAt'].split('T')).strip('Z'), "%Y-%m-%d %H:%M:%S")
