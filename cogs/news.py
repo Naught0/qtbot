@@ -2,6 +2,7 @@
 import discord
 import json
 import asyncio
+from datetime import datetime
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
 
@@ -25,7 +26,7 @@ class News:
             url='http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png')
         if json_dict['author']:
             em.set_footer(text=f'Author: {json_dict["author"]})')
-        em.timestamp = json_dict['publishedAt']
+        em.timestamp = datetime.strptime(json_dict['publishedAt'], '%Y-%m-%d %H:%M:')
 
         return em
 
