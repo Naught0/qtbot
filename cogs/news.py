@@ -22,11 +22,15 @@ class News:
         em.description = json_dict['description']
         em.url = json_dict['url']
         em.set_image(url=json_dict['urlToImage'])
+
         em.set_thumbnail(
             url='http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png')
+
         if json_dict['author']:
             em.set_footer(text=f'Author: {json_dict["author"]})')
-        em.timestamp = datetime.strptime(json_dict['publishedAt'], '%Y-%m-%d %H:%M:')
+
+        em.timestamp = datetime.strptime(
+            ' '.join(json_dict['publishedAt'].split('T').strip('Z')), "%Y-%m-%d %H:%M:%S")
 
         return em
 
