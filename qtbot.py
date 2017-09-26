@@ -49,8 +49,7 @@ bot.startup_extensions = (
     'cogs.yt',
     'cogs.news',
     'cogs.wiki',
-    'cogs.isup',
-    'cogs.ip')
+    'cogs.isup')
 
 # Get current time for uptime
 start_time = datetime.now()
