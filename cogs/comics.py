@@ -69,9 +69,9 @@ class Comics:
         comic_dict = await self.bot.loop.run_in_executor(None, Comics.sync_get_xkcd, word_list)
 
         if comic_dict['random']:
-            await ctx.send("Sorry, I didn't find anything. Here's a random comic:\n**{}**\n{}".format(comic_dict['title'], comic_dict['image_link']))
+            await ctx.send(f"Sorry, I didn't find anything. Here's a random comic:\n**{comic_dict['title']}**\n{comic_dict['image_link']}")
         else:
-            await ctx.send('I found this comic with {} hit(s):\n**{}**\n{}'.format(comic_dict['hits'], comic_dict['title'], comic_dict['image_link']))
+            await ctx.send(f"I found this comic with {comic_dict['hits']} hit(s):\n**{comic_dict['title']}**\n{comic_dict['image_link']}")
 
 
 def setup(bot):

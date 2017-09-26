@@ -29,7 +29,7 @@ class Giphy:
         if gif_result:
             await ctx.send(gif_result.media_url)
         else:
-            await ctx.send("Sorry, I couldn't find anything for `{}`.".format(query))
+            await ctx.send(f"Sorry, I couldn't find anything for `{query}`.")
 
     # Thanks qtbot!
     @commands.command(aliases=['ty', 'thank'])

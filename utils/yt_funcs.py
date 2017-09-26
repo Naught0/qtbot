@@ -57,6 +57,7 @@ def get_video_info(query: str, title_append='', num_results=1, thumb_quality=0) 
 
     # Store gathered information in a dict
     result_dict = {}
+
     """
     The Dictionary format is as follows:
     video_index :
@@ -81,4 +82,4 @@ def get_video_info(query: str, title_append='', num_results=1, thumb_quality=0) 
 def _get_watch_url(video_id: str) -> str:
     """ Creates watchable / downloadable URL from video's ID """
 
-    return 'https://www.youtube.com/watch?v={}'.format(video_id)
+    return f'https://www.youtube.com/watch?v={video_id}'

@@ -52,12 +52,12 @@ class OSRS:
         em = discord.Embed()
         em.color = discord.Colour.dark_gold()
         em.title = item.title()
-        em.url = 'https://rsbuddy.com/exchange?id={}'.format(item_id)
-        em.set_thumbnail(url='https://services.runescape.com/m=itemdb_oldschool/obj_big.gif?id={}'.format(item_id))
-        em.add_field(name='Buying Price', value='{:,}gp'.format(item_pricing_dict['buying']))
-        em.add_field(name='Selling Price', value='{:,}gp'.format(item_pricing_dict['selling']))
-        em.add_field(name='Buying Quantity', value='{:,}/hr'.format(item_pricing_dict['buyingQuantity']))
-        em.add_field(name='Selling Quantity', value='{:,}/hr'.format(item_pricing_dict['sellingQuantity']))
+        em.url = f'https://rsbuddy.com/exchange?id={item_id}'
+        em.set_thumbnail(url= f'https://services.runescape.com/m=itemdb_oldschool/obj_big.gif?id={item_id}')
+        em.add_field(name='Buying Price', value=f'{item_pricing_dict["buying"]:,}gp')
+        em.add_field(name='Selling Price', value=f'{item_pricing_dict["selling"]:,}gp')
+        em.add_field(name='Buying Quantity', value=f'{item_pricing_dict["buyingQuantity"]:,}/hr')
+        em.add_field(name='Selling Quantity', value=f'{item_pricing_dict["sellingQuantity"]:,}/hr')
 
         await ctx.send(embed=em)
 

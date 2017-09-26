@@ -54,9 +54,7 @@ class MyTMDb:
 
         # Create embed
         em = discord.Embed()
-        em.title = '{} ({})'.format(
-            result['name'],
-            result['first_air_date'].split('-')[0])
+        em.title = f'{result["name"]} ({result["first_air_date"].split("-")[0]})'
         em.description = result['overview']
         em.set_thumbnail(url=base_image_uri.format(
             result['poster_path']))
@@ -86,8 +84,7 @@ class MyTMDb:
 
         # Create embed
         em = discord.Embed()
-        em.title = '{} ({})'.format(
-            result['title'], result['release_date'].split('-')[0])
+        em.title = f'{result["title"]} ({result["release_date"].split("-")[0]})'
         em.description = result['overview']
         em.set_thumbnail(url=base_image_uri.format(
             result['poster_path']))

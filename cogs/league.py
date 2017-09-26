@@ -63,16 +63,15 @@ class League:
         em.title = '{} "{}"'.format(fancy_champ_name, champ_title)
         em.description = None
         em.add_field(name='Role',
-                     value='{} ({:.2%})'.format(
-                         res[0]['role'].split('_')[0].title(), res[0]['percentRolePlayed']))
+                     value=f'{res[0]["role"].split("_")[0].title()} ({res[0]["percentRolePlayed"]:.2%})')
         em.add_field(name='Play rate',
-                     value='{:.2%}'.format(res[0]['playRate']))
+                     value=f'{res[0]["playRate"]:.2%}')
         em.add_field(name='Win rate',
-                     value='{:.2%}'.format(res[0]['winRate']))
+                     value=f'{res[0]["winRate"]:.2%}')
         em.add_field(name='Ban rate',
-                     value='{:.2%}'.format(res[0]['banRate']))
+                     value=f'{res[0]["banRate"]:.2%}')
         em.set_thumbnail(url=icon_uri.format(riot_champ_name))
-        em.url = 'http://champion.gg/champion/{}'.format(riot_champ_name)
+        em.url = f'http://champion.gg/champion/{riot_champ_name}'
         em.set_footer(text="Powered by Champion.gg and Riot's API.")
 
         return await ctx.send(embed=em)

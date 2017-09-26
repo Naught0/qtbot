@@ -40,7 +40,7 @@ class Calculator:
         if result is not None:
             await ctx.send(result)
         else:
-            await ctx.send("Sorry, I couldn't calculate `{}`.".format(query))
+            await ctx.send(f"Sorry, I couldn't calculate `{query}`.")
 
 
 def setup(bot):

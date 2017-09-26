@@ -72,9 +72,9 @@ class Generic:
             member = ctx.author.nick
 
         if not target:
-            return await ctx.send('{} loves ... nothing'.format(member))
+            return await ctx.send(f'{member} loves ... nothing')
 
-        await ctx.send("{} gives {} some good ol' fashioned lovin'".format(member, target))
+        await ctx.send(f"{member} gives {target} some good ol' fashioned lovin'")
 
     @commands.command(aliases=['at'])
     async def aesthetify(self, ctx, *, a_text):

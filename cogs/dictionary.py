@@ -40,7 +40,7 @@ class Dictionary:
             else:
                 word_pos = final_result.partOfSpeech
 
-        await ctx.send('{} _{}_ `{}`'.format(word.title(), word_pos, final_result.text))
+        await ctx.send(f'{word.title()} _{word_pos}_ `{final_result.text}`')
 
     # Urban dictionary
     @commands.command(name='ud')
@@ -51,7 +51,7 @@ class Dictionary:
         if not result:
             return await ctx.send("Sorry, couldn't find that one.")
 
-        await ctx.send('{}: `{}`'.format(word.title(), result[0].definition))
+        await ctx.send(f'{word.title()}: `{result[0].definition}`')
 
 
 def setup(bot):
