@@ -49,7 +49,7 @@ def get_champ_title(champ):
     return champ_dict['data'][champ]['title']
 
 def get_summoner_icon(summoner, region):
-    return f'https://avatar.leagueoflegends.com/{region}/{summoner}.png?_{datetime.now()}'
+    return f'https://avatar.leagueoflegends.com/{region}/{summoner}.png'
 
 def get_summoner_id(summoner_name):
     pass
