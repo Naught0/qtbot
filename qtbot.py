@@ -17,7 +17,7 @@ with open('data/apikeys.json') as f:
     discord_bot_token = json.load(f)['discord']
 
 # Create bot aiohttp session
-bot.aio_session = aiohttp.ClientSession
+bot.aio_session = aiohttp.ClientSession(loop=bot.loop)
 
 # Create bot redis client
 bot.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
