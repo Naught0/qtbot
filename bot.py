@@ -1,8 +1,8 @@
 import json
-#import aredis
+import aredis
 import discord
 import aiohttp
-#import asyncpg
+import asyncpg
 import traceback
 from datetime import datetime
 from discord.ext import commands
