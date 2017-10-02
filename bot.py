@@ -11,6 +11,7 @@ class QTBot(commands.Bot):
     def __init__(self, config_file, *args, **kwargs):
         self.config_file = config_file
         self.description = 'qtbot is a big qt written in python3 and love.'
+        
         with open(self.config_file) as f:
             self.token = json.load(f)['discord']
 
@@ -18,31 +19,31 @@ class QTBot(commands.Bot):
                          pm_help=True, *args, **kwargs)
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
-        #self.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
+        self.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
 
 
-        self.startup_extensions = ()
-        #     'cogs.admin',
-        #     'cogs.generic',
-        #     'cogs.weather',
-        #     'cogs.comics',
-        #     'cogs.dictionary',
-        #     'cogs.osrs',
-        #     'cogs.tmdb',
-        #     'cogs.gif',
-        #     'cogs.calc',
-        #     'cogs.league',
-        #     'cogs.ask',
-        #     'cogs.meme',
-        #     'cogs.error',
-        #     'cogs.eval',
-        #     'cogs.timer',
-        #     'cogs.yt',
-        #     'cogs.news',
-        #     'cogs.wiki',
-        #     'cogs.isup')
+        self.startup_extensions = (
+            'cogs.admin',
+            'cogs.generic',
+            'cogs.weather',
+            'cogs.comics',
+            'cogs.dictionary',
+            'cogs.osrs',
+            'cogs.tmdb',
+            'cogs.gif',
+            'cogs.calc',
+            'cogs.league',
+            'cogs.ask',
+            'cogs.meme',
+            'cogs.error',
+            'cogs.eval',
+            'cogs.timer',
+            'cogs.yt',
+            'cogs.news',
+            'cogs.wiki',
+            'cogs.isup')
 
-        # self.loop.run_until_complete(self.create_db_pool())
+        self.loop.run_until_complete(self.create_db_pool())
 
     def run(self):
         super().run(self.token)
