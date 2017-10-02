@@ -30,6 +30,8 @@ class News:
             organization = json_dict['url'].split('www.')[1].split('.')[0].upper()
         elif 'http://' in json_dict['url']:
             organization = json_dict['url'].split('http://')[1].split('.')[0].upper()
+        else:
+            organization = ""
 
         em.set_footer(text=organization)
 
