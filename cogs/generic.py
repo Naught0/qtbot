@@ -20,7 +20,7 @@ class Generic:
                    'Maybe we should talk about our feelings.',
                    'Calm down.', 'Check your privileges.',
                    'Make love, not war.']
-        await ctx.send(phrases[random.randint(0, len(phrases) - 1)])
+        await ctx.send(random.choice(phrases))
 
     @commands.command()
     async def say(self, ctx, *, message):
@@ -28,7 +28,6 @@ class Generic:
         await ctx.message.delete()
         await ctx.send(message)
 
-    # Returns pseudo-random magic 8-ball result
     @commands.command()
     async def ball(self, ctx, *args):
         """ Ask the magic 8ball """
@@ -40,17 +39,14 @@ class Generic:
                      'My reply is no', 'My sources say no', 'Outlook not so good', 'Very doubtful']
         await ctx.send(random.choice(responses))
 
-    # Same!
     @commands.command()
     async def same(self, ctx):
         await ctx.send('\n[✓] same\n[ ] unsame')
 
-    # Unsame!
     @commands.command()
     async def unsame(self, ctx):
         await ctx.send('\n[ ] same\n[✓] unsame')
 
-    # Resame!
     @commands.command()
     async def resame(self, ctx):
         await ctx.send('\n[✓] same\n [✓] re:same\n [ ] unsame')
