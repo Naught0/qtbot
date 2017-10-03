@@ -38,10 +38,11 @@ class QTBot(commands.Bot):
             'cogs.error',
             'cogs.eval',
             'cogs.timer',
+            'cogs.tag',
             'cogs.yt',
             'cogs.news',
             'cogs.wiki',
-            'cogs.isup')
+            'cogs.isup',)
 
         self.loop.run_until_complete(self.create_db_pool())
 
