@@ -38,6 +38,7 @@ class QTBot(commands.Bot):
             'cogs.error',
             'cogs.eval',
             'cogs.timer',
+            'cogs.test',
             'cogs.tag',
             'cogs.yt',
             'cogs.news',

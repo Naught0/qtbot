@@ -83,8 +83,8 @@ class Admin:
         """Get current bot uptime."""
         current_time = datetime.now()
         current_time_str = current_time.strftime('%B %d %H:%M:%S')
-        await ctx.send(f'Initialized `{self.start_time_str}`\nCurrent Time: `{current_time_str}`\nUptime: '\
-                       f'`{str(current_time - self.start_time).split(".")[0]}`')
+        await ctx.send(f'Initialized `{self.bot.start_time_str}`\nCurrent Time: `{current_time_str}`\nUptime: '\
+                       f'`{str(current_time - self.bot.start_time).split(".")[0]}`')
 
 def setup(bot):
     bot.add_cog(Admin(bot))
