@@ -68,7 +68,14 @@ class News:
         bot_message = await ctx.send(embed=em_list[current_em_index])
 
         # Add Emojis for navigation
-        emoji_map = ['1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3', '5\U000020e3']
+        emoji_map = ['1\U000020e3',
+                     '2\U000020e3',
+                     '3\U000020e3',
+                     '4\U000020e3',
+                     '5\U000020e3',
+                     '6\U000020e3',
+                     '7\U000020e3']
+
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
 
