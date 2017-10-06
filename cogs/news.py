@@ -91,7 +91,7 @@ class News:
                 return await bot_message.clear_reactions()
 
             if reaction.emoji in emoji_map:
-                await self.bot.message.edit(embed=em_list[emoji_map.index(reaction.emoji)])
+                await self.bot_message.edit(embed=em_list[emoji_map.index(reaction.emoji)])
 
 
 def setup(bot):
