@@ -16,6 +16,7 @@ class News:
         with open('data/apikeys.json') as f:
             self.api_key = json.load(f)['news']
 
+    @staticmethod
     def json_to_embed(json_dict):
         em = discord.Embed()
         em.title = json_dict['title']
@@ -52,7 +53,7 @@ class News:
             article_list = raw_json_dict['articles']
 
             for article in article_list:
-                em_list.append(News.json_to_embed(article))
+                em_list.append(self.json_to_embed(article))
 
         else:
             api_response = await aw.aio_get_json(self.aio_session, self.uri.format(self.api_key))
@@ -60,7 +61,7 @@ class News:
             await self.redis_client.set('news', json.dumps(api_response), ex=300)
 
             for article in article_list:
-                em_list.append(News.json_to_embed(article))
+                em_list.append(self.json_to_embed(article))
 
 
         current_em_index = 0
@@ -89,35 +90,8 @@ class News:
             except asyncio.TimeoutError:
                 return await bot_message.clear_reactions()
 
-            if reaction.emoji == emoji_map[0]:
-                # Page 1
-                current_em_index = 0
-                await bot_message.edit(embed=em_list[0])
-                await bot_message.remove_reaction(reaction.emoji, ctx.author)
-
-            if reaction.emoji == emoji_map[1]:
-                # Page 2
-                current_em_index = 1
-                await bot_message.edit(embed=em_list[1])
-                await bot_message.remove_reaction(reaction.emoji, ctx.author)
-
-            if reaction.emoji == emoji_map[2]:
-                # Page 3
-                current_em_index = 2
-                await bot_message.edit(embed=em_list[2])
-                await bot_message.remove_reaction(reaction.emoji, ctx.author)
-
-            if reaction.emoji == emoji_map[3]:
-                # Page 4
-                current_em_index = 3
-                await bot_message.edit(embed=em_list[3])
-                await bot_message.remove_reaction(reaction.emoji, ctx.author)
-
-            if reaction.emoji == emoji_map[4]:
-                # Page 5
-                current_em_index = 4
-                await bot_message.edit(embed=em_list[4])
-                await bot_message.remove_reaction(reaction.emoji, ctx.author)
+            if reaction.emoji in emoji_map:
+                await self.bot.message.edit(embed=em_list[emoji_map.index(reaction.emoji)])
 
 
 def setup(bot):
