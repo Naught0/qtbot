@@ -64,9 +64,7 @@ class News:
                 em_list.append(self.json_to_embed(article))
 
 
-        current_em_index = 0
-
-        bot_message = await ctx.send(embed=em_list[current_em_index])
+        bot_message = await ctx.send(embed=em_list[0])
 
         # Add Emojis for navigation
         emoji_map = ['1\U000020e3',
@@ -75,7 +73,9 @@ class News:
                      '4\U000020e3',
                      '5\U000020e3',
                      '6\U000020e3',
-                     '7\U000020e3']
+                     '7\U000020e3',
+                     '8\U000020e3',
+                     '9\U000020e3']
 
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
