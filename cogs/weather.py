@@ -50,7 +50,7 @@ class Weather:
             owm_data = await aw.aio_get_json(self.aio_session, self.api_url.format(zip_code, region_abv, self.api_key))
 
             if not owm_data:
-                return await ctx.say(f"Sorry, I couldn't find weather for `{zip_code}`.")
+                return await ctx.send(f"Sorry, I couldn't find weather for `{zip_code}`.")
 
             await self.redis_client.set(f'{zip_code}:weather', json.dumps(owm_data), ex=7200)
 
