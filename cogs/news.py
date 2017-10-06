@@ -45,26 +45,7 @@ class News:
     async def get_news(self, ctx):
         """ Get the top 5 articles from Google News (http://newsapi.org) (Paginated) """
 
-        em_list = []
-
-        if await self.redis_client.exists('news'):
-            raw_json_string = await self.redis_client.get('news')
-            raw_json_dict = json.loads(raw_json_string)
-            article_list = raw_json_dict['articles']
-
-            for article in article_list:
-                em_list.append(self.json_to_embed(article))
-
-        else:
-            api_response = await aw.aio_get_json(self.aio_session, self.uri.format(self.api_key))
-            article_list = api_response['articles']
-            await self.redis_client.set('news', json.dumps(api_response), ex=300)
-
-            for article in article_list:
-                em_list.append(self.json_to_embed(article))
-
-
-        bot_message = await ctx.send(embed=em_list[0])
+        em_dict = {}
 
         # Add Emojis for navigation
         emoji_map = ['1\U000020e3',
@@ -76,6 +57,24 @@ class News:
                      '7\U000020e3',
                      '8\U000020e3',
                      '9\U000020e3']
+
+        if await self.redis_client.exists('news'):
+            raw_json_string = await self.redis_client.get('news')
+            raw_json_dict = json.loads(raw_json_string)
+            article_list = raw_json_dict['articles']
+
+            for idx, article in enumerate(article_list):
+                em_dict[emoji_map[idx]] = self.json_to_embed(article)
+
+        else:
+            api_response = await aw.aio_get_json(self.aio_session, self.uri.format(self.api_key))
+            article_list = api_response['articles']
+            await self.redis_client.set('news', json.dumps(api_response), ex=300)
+
+            for idx, article in enumerate(article_list):
+                em_dict[emoji_map[idx]] = self.json_to_embed(article)
+
+        bot_message = await ctx.send(embed=em_dict[emoji_map[0]])
 
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
@@ -89,8 +88,8 @@ class News:
             except asyncio.TimeoutError:
                 return await bot_message.clear_reactions()
 
-            if reaction.emoji in emoji_map:
-                await bot_message.edit(embed=em_list[emoji_map.index(reaction.emoji)])
+            if reaction.emoji in em_dict:
+                await bot_message.edit(embed=em_dict[reaction.emoji])
                 await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
 
