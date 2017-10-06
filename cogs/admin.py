@@ -1,6 +1,7 @@
 #!/bin/env python
 
 import discord
+from datetime import datetime
 from discord.ext import commands
 
 
@@ -21,14 +22,12 @@ class Admin:
             return await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
         await ctx.send('Cog `{}` loaded successfully.'.format(extension_name))
 
-
     @commands.command(hidden=True)
     @commands.is_owner()
     async def unload(self, ctx, extension_name: str):
         """ Unloads an extension. """
         self.bot.unload_extension(extension_name)
         await ctx.send('Cog `{}` has been unloaded.'.format(extension_name))
-
 
     @commands.command(name='reload', aliases='r', hidden=True)
     @commands.is_owner()
@@ -68,7 +67,7 @@ class Admin:
         """ Remove a given number of bot messages """
 
         if num_msg > 100:
-            await ctx.send('Sorry, number of messages to be deleted must not exceed 100.')
+            return await ctx.send('Sorry, number of messages to be deleted must not exceed 100.')
 
         # Check so that only bot msgs are removed
         def check(message):
@@ -84,8 +83,8 @@ class Admin:
         """Get current bot uptime."""
         current_time = datetime.now()
         current_time_str = current_time.strftime('%B %d %H:%M:%S')
-        await ctx.send(f'Initialized `{self.start_time_str}`\nCurrent Time: `{current_time_str}`\nUptime: '\
-                       f'`{str(current_time - self.start_time).split(".")[0]}`')
+        await ctx.send(f'Initialized `{self.bot.start_time_str}`\nCurrent Time: `{current_time_str}`\nUptime: '\
+                       f'`{str(current_time - self.bot.start_time).split(".")[0]}`')
 
 def setup(bot):
     bot.add_cog(Admin(bot))
