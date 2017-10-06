@@ -63,7 +63,7 @@ class News:
             raw_json_dict = json.loads(raw_json_string)
             article_list = raw_json_dict['articles']
 
-            for idx, article in enumerate(article_list):
+            for idx, article in enumerate(article_list[:9]):
                 em_dict[emoji_map[idx]] = self.json_to_embed(article)
 
         else:
@@ -71,7 +71,7 @@ class News:
             article_list = api_response['articles']
             await self.redis_client.set('news', json.dumps(api_response), ex=300)
 
-            for idx, article in enumerate(article_list):
+            for idx, article in enumerate(article_list[:9]):
                 em_dict[emoji_map[idx]] = self.json_to_embed(article)
 
         bot_message = await ctx.send(embed=em_dict[emoji_map[0]])
