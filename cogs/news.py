@@ -80,7 +80,6 @@ class News:
         for emoji in emoji_map:
             await bot_message.add_reaction(emoji)
 
-        # Hacked together but works
         def check(reaction, user):
             return user == ctx.author and reaction.emoji in emoji_map
 
@@ -92,6 +91,7 @@ class News:
 
             if reaction.emoji in emoji_map:
                 await bot_message.edit(embed=em_list[emoji_map.index(reaction.emoji)])
+                await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
 
 def setup(bot):
