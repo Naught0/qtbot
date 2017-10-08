@@ -8,7 +8,7 @@ class Moderator:
         self.bot = bot
 
     @commands.command(aliases=['k'])
-    async def kick(self, ctx, user, *, reason=None):
+    async def kick(self, ctx, user: discord.User, *, reason=None):
         """ Kick a user from the server """
         try:
             await ctx.guild.kick(user, reason=reason)
@@ -21,7 +21,7 @@ class Moderator:
                            f'Reason: `{reason}`.')
 
     @commands.command(aliases=['kb'])
-    async def ban(self, ctx, user, *, reason=None):
+    async def ban(self, ctx, user: discord.User, *, reason=None):
         """ Ban a user from the server """
         try:
             await ctx.guild.ban(user, reason=reason, delete_message_days=0)
@@ -34,7 +34,7 @@ class Moderator:
                            f'Reason: `{reason}`.')
 
     @commands.command(aliases=['ub'])
-    async def unban(self, ctx, user, *, reason=None):
+    async def unban(self, ctx, user: discord.User, *, reason=None):
         """ Unban a user from the server """
         try:
             await ctx.guild.unban(user, reason=reason, delete_message_days=0)
