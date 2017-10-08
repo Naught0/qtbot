@@ -61,8 +61,8 @@ class Weather:
             await self.redis_client.set(f'{zip_code}:weather', json.dumps(owm_data), ex=7200)
 
         # Create the embed
-        em = discord.Embed()
-        em.title = f"Weather for {owm_data['name']}"
+        em = discord.Embed(title=f"Weather for {owm_data['name']}", color=discord.Color.dark_orange())
+
         # Yeah this converts from Kevlin to Fahrenheit...
         em.add_field(name='Temperature', value=f"{float((owm_data['main']['temp'] - 273) * 1.8 + 32):.1f}°F")
         em.add_field(name='Conditions', value=f"{owm_data['weather'][0]['description'].capitalize()}")
