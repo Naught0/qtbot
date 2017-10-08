@@ -37,7 +37,7 @@ class Tag:
             await ctx.send(tag_record['tag_contents'])
 
             # Update usage count
-            query = ''' UPDATE tags SET total_uses = total_uses + 1 
+            query = '''UPDATE tags SET total_uses = total_uses + 1 
                         WHERE server_id = $1
                         AND tag_name = lower($2) '''
             await self.pg_con.execute(query, ctx.guild.id, tag_name)
