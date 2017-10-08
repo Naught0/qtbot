@@ -44,7 +44,7 @@ class QTBot(commands.Bot):
 
         for extension in self.startup_extensions:
             try:
-                self.load_extension(extension)
+                self.load_extension(f'cogs.{extension}')
             except:
                 print(f'Failed Extension: {extension}')
                 traceback.print_exc()
