@@ -60,6 +60,13 @@ class Generic:
         await ctx.send(f'{ctx.author.name} slaps {target} around a bit with a large trout.')
 
     @commands.command()
+    async def report(self, ctx):
+        """ Report a user """
+        await ctx.send(
+            f'Thank you for your service. This incident has been reported to the proper authorities.' 
+            "We'll take it from here.")
+
+    @commands.command()
     async def love(self, ctx, *, target=None):
         """ Give someone some lovin' """
         if ctx.author.nick is None:
@@ -70,7 +77,7 @@ class Generic:
         if not target:
             return await ctx.send(f'{member} loves ... nothing')
 
-        await ctx.send(f"{member} gives {target} some good ol' fashioned lovin'")
+        await ctx.send(f"{member} gives {target} some good ol' fashioned lovin'.")
 
     @commands.command(aliases=['at'])
     async def aesthetify(self, ctx, *, a_text):
