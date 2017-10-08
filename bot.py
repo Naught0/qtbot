@@ -6,6 +6,8 @@ import asyncpg
 import traceback
 from datetime import datetime
 from discord.ext import commands
+from pathlib import Path
+
 
 class QTBot(commands.Bot):
     def __init__(self, config_file, *args, **kwargs):
@@ -22,28 +24,7 @@ class QTBot(commands.Bot):
         self.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
 
 
-        self.startup_extensions = (
-            'cogs.admin',
-            'cogs.generic',
-            'cogs.weather',
-            'cogs.comics',
-            'cogs.dictionary',
-            'cogs.osrs',
-            'cogs.tmdb',
-            'cogs.gif',
-            'cogs.calc',
-            'cogs.league',
-            'cogs.ask',
-            'cogs.meme',
-            'cogs.error',
-            'cogs.eval',
-            'cogs.timer',
-            'cogs.test',
-            'cogs.tag',
-            'cogs.yt',
-            'cogs.news',
-            'cogs.wiki',
-            'cogs.isup',)
+        self.startup_extensions = [x.stem for x in Path('cogs').glob('*.py')]
 
         self.loop.run_until_complete(self.create_db_pool())
 
