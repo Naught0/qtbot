@@ -25,11 +25,17 @@ class League:
         self.riot_api_key = api_keys['riot']
         self.riot_observer = ro(self.riot_api_key)
 
-    @commands.command(name='aln', aliases=['addl', 'addleague'])
+    @commands.command(name='aln', aliases=['addl'])
     async def add_league_name(self, ctx, *, summoner_name):
-        """ Add your summoner name to the user file """
+        """ Add your summoner name to the database """
         await self.db.insert_user_info(ctx.author.id, 'league_name', summoner_name)
-        await ctx.send(f'Added `{summoner_name}`.')
+        await ctx.send(f'Successfully added `{summoner_name}` for `{ctx.author}`.')
+
+    @commands.command(name='rmln')
+    async def remove_league_name(self, ctx):
+        """ Remove your summoner name from the database """
+        await self.db.remove_user_info(ctx.author.id, 'league_name')
+        await ctx.send(f'Successfully removed League name for `{ctx.author}`.')
 
     @commands.command(name='ci', aliases=['champ'])
     async def get_champ_info(self, ctx, *, champ):
