@@ -20,7 +20,7 @@ class Giphy:
             await ctx.send(f"Sorry, I couldn't find anything for `{query}`.")
 
     @commands.command(aliases=['ty', 'thank'])
-    @commands.cooldown()
+    @commands.cooldown(rate=1, per=60.0, type=commands.BucketType.user)
     async def thanks(self, ctx):
         """ Thank your overlord, qtbot """
         gif_result = await gwrap.rand_search(self.aio_session, query='blushing')
