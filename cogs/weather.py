@@ -28,6 +28,12 @@ class Weather:
         await self.db.insert_user_info(ctx.author.id, 'zipcode', zip_code)
         await ctx.send(f'Successfully added zipcode `{zip_code}`.')
 
+    @commands.command(name='rz')
+    async def remove_zip(self, ctx):
+        """ Remove your zipcode from the database """
+        await self.db.remove_user_info(ctx.author.id, 'zipcode')
+        await ctx.send(f'Successfully removed zipcode for `{str(ctx.author)}`.')
+
     @commands.command(name='wt')
     async def get_weather(self, ctx, zip_code='', region_abv='us'):
         """ Get the weather via zipcode """
