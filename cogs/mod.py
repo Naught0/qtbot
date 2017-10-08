@@ -16,7 +16,7 @@ class Moderator:
             await ctx.send('Insufficient privilges.')
         except discord.HTTPException:
             await ctx.send('Welp, Discord is having a bad time right now. Try doing this manually instead.')
-        finally:
+        else:
             await ctx.send(f'User `{user}` kicked.\n'
                            f'Reason: `{reason}`.')
 
@@ -29,7 +29,7 @@ class Moderator:
             await ctx.send('Insufficient privilges.')
         except discord.HTTPException:
             await ctx.send('Welp, Discord is having a bad time right now. Try doing this manually instead.')
-        finally:
+        else:
             await ctx.send(f'User `{user}` banned.\n'
                            f'Reason: `{reason}`.')
 
@@ -42,7 +42,7 @@ class Moderator:
             await ctx.send('Insufficient privilges.')
         except discord.HTTPException:
             await ctx.send('Welp, Discord is having a bad time right now. Try doing this manually instead.')
-        finally:
+        else:
             await ctx.send(f'User `{user}` unbanned.\n'
                            f'Reason: `{reason}`.')
 
