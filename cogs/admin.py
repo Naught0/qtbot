@@ -9,8 +9,8 @@ class Admin:
     def __init__(self, bot):
         self.bot = bot
 
-    async def on_member_join(self, ctx):
-        await ctx.send('Welcome to the server! For a complete list of commands, type `.help`.')
+    # async def on_member_join(self, ctx):
+    #     await ctx.send('Welcome to the server! For a complete list of commands, type `.help`.')
 
     @commands.command(hidden=True)
     @commands.is_owner()
