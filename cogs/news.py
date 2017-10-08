@@ -1,7 +1,8 @@
 #!/bin/evn python
-import discord
 import json
 import asyncio
+import re
+import discord
 from datetime import datetime
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
@@ -16,8 +17,9 @@ class News:
         with open('data/apikeys.json') as f:
             self.api_key = json.load(f)['news']
 
+
     @staticmethod
-    def json_to_embed(json_dict):
+    def json_to_embed(json_dict: dict) -> discord.Embed:
         em = discord.Embed()
         em.title = json_dict['title']
         em.description = json_dict['description']
@@ -27,17 +29,12 @@ class News:
         em.set_thumbnail(
             url='http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png')
 
-        if 'www.' in json_dict['url']:
-            organization = json_dict['url'].split('www.')[1].split('.')[0].upper()
-        elif 'http://' in json_dict['url']:
-            organization = json_dict['url'].split('http://')[1].split('.')[0].upper()
-        else:
-            organization = ""
-
+        # This regex string brought to you by Jared :)
+        pattern = 'https?://(?:www\.)?(\w+).*'
+        organization = re.match(pattern, json_dict['url']).group(1)
         em.set_footer(text=organization)
 
-        em.timestamp = datetime.strptime(
-            ' '.join(json_dict['publishedAt'].split('T')).strip('Z'), "%Y-%m-%d %H:%M:%S")
+        em.timestamp = datetime.strptime(re.sub('[TZ]', '', json_dict['publishedAt']), '%Y-%m-%d%H:%M:%S')
 
         return em
 
