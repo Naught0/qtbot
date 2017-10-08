@@ -10,7 +10,7 @@ class Timer:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='time')
+    @commands.command(name='timer', aliases=['time'])
     async def create_remind(self, ctx, time):
         """ Create a timer in seconds """
         sleep = int(time)
