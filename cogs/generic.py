@@ -12,15 +12,14 @@ class Generic:
         """ A to-do list for myself """
         await ctx.send('[ ] Gambling bot [ ] League Match History')
 
-    # No kicking allowed
-    @commands.command()
-    async def kick(self, ctx, *args):
-        """ Don't use this """
-        phrases = ['I would never!', 'That isn\'t very nice!',
-                   'Maybe we should talk about our feelings.',
-                   'Calm down.', 'Check your privileges.',
-                   'Make love, not war.']
-        await ctx.send(random.choice(phrases))
+    # @commands.command()
+    # async def kick(self, ctx, *args):
+    #     """ Don't use this """
+    #     phrases = ['I would never!', 'That isn\'t very nice!',
+    #                'Maybe we should talk about our feelings.',
+    #                'Calm down.', 'Check your privileges.',
+    #                'Make love, not war.']
+    #     await ctx.send(random.choice(phrases))
 
     @commands.command()
     async def say(self, ctx, *, message):
