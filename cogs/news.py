@@ -24,7 +24,11 @@ class News:
         em.title = json_dict['title']
         em.description = json_dict['description']
         em.url = json_dict['url']
-        em.set_image(url=json_dict['urlToImage'])
+
+        if json_dict['urlToImage'].startswith('//'):
+            em.set_image(url=f'http:{json_dict["urlToImage"]}')
+        else:
+            em.set_image(url=json_dict['urlToImage'])
 
         em.set_thumbnail(
             url='http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png')
