@@ -36,7 +36,7 @@ class News:
         # This regex string brought to you by Jared :)
         pattern = 'https?://(?:www\.)?(\w+).*'
         organization = re.match(pattern, json_dict['url']).group(1)
-        em.set_footer(text=organization)
+        em.set_footer(text=organization.upper())
 
         em.timestamp = datetime.strptime(re.sub('[TZ]', '', json_dict['publishedAt']), '%Y-%m-%d%H:%M:%S')
 
