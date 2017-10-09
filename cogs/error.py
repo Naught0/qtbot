@@ -31,7 +31,7 @@ class ErrorHandler:
             return await ctx.send(f'Sorry I need permissions: `{",".join(error.missing_perms)}` to do that.')
         
         if isinstance(error, errors.BadArgument):
-            return await ctx.send(f'{error.message}')
+            return await ctx.send(error.__traceback__)
 
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
