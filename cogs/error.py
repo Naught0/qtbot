@@ -24,6 +24,9 @@ class ErrorHandler:
         if isinstance(error, discord.ext.commands.MissingRequiredArgument):
             return await ctx.send(f'Command missing required argument `{error.param}`.')
 
+        if isinstance(error, discord.ext.commands.errors.MissingPermissions):
+            return await ctx.send(f'Sorry you need permissions: `{",".join(error.missing_perms)}` to do that.')
+
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
