@@ -25,6 +25,7 @@ class News:
         em.description = json_dict['description']
         em.url = json_dict['url']
 
+        # The API returns some http shortcuts that don't place nicely with d.py
         if json_dict['urlToImage'].startswith('//'):
             em.set_image(url=f'http:{json_dict["urlToImage"]}')
         else:
@@ -46,8 +47,6 @@ class News:
     async def get_news(self, ctx):
         """ Get the top 5 articles from Google News (http://newsapi.org) (Paginated) """
 
-        em_dict = {}
-
         # Add Emojis for navigation
         emoji_map = ['1\U000020e3',
                      '2\U000020e3',
@@ -58,6 +57,8 @@ class News:
                      '7\U000020e3',
                      '8\U000020e3',
                      '9\U000020e3']
+
+        em_dict = {}
 
         if await self.redis_client.exists('news'):
             raw_json_string = await self.redis_client.get('news')
