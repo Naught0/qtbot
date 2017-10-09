@@ -12,22 +12,22 @@ class ErrorHandler:
     async def on_command_error(self, ctx, error):
         """ Handle command errors more gracefully """
 
-        if isinstance(error, commands.errors.CommandNotFound):
+        if isinstance(error, commands.CommandNotFound):
             return
 
-        if isinstance(error, commands.errors.NotOwner):
+        if isinstance(error, commands.NotOwner):
             return await ctx.send('Sorry, only the owner of qtbot may run this command.')
 
-        if isinstance(error, commands.errors.CommandOnCooldown):
+        if isinstance(error, commands.CommandOnCooldown):
             return await ctx.send(f'This command is on cooldown. Please retry in `{error.retry_after:.0f}` second(s).')
 
-        if isinstance(error, commands.errors.MissingRequiredArgument):
+        if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f'Command missing required argument `{error.param}`.')
 
-        if isinstance(error, commands.errors.MissingPermissions):
+        if isinstance(error, commands.MissingPermissions):
             return await ctx.send(f'Sorry you need permissions: `{",".join(error.missing_perms)}` to do that.')
 
-        if isinstance(error, commands.errors.BotMissingPermissions):
+        if isinstance(error, commands.BotMissingPermissions):
             return await ctx.send(f'Sorry I need permissions: `{",".join(error.missing_perms)}` to do that.')
 
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
