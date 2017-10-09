@@ -82,7 +82,7 @@ class League:
 
         return await ctx.send(embed=em)
 
-    @commands.command(name='ucf')
+    @commands.command(name='ucf', hidden=True)
     @commands.is_owner()
     async def update_champ_file(self, ctx):
         """ Creates / updates a json file containing champion IDs, names, titles, etc. """
