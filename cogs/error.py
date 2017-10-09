@@ -2,8 +2,7 @@
 
 import sys
 import traceback
-import discord
-from discord.ext.commands import errors
+from discord.ext import commands
 
 
 class ErrorHandler:
@@ -13,26 +12,23 @@ class ErrorHandler:
     async def on_command_error(self, ctx, error):
         """ Handle command errors more gracefully """
 
-        if isinstance(error, errors.CommandNotFound):
+        if isinstance(error, commands.errors.CommandNotFound):
             return
 
-        if isinstance(error, errors.NotOwner):
+        if isinstance(error, commands.errors.NotOwner):
             return await ctx.send('Sorry, only the owner of qtbot may run this command.')
 
-        if isinstance(error, errors.CommandOnCooldown):
+        if isinstance(error, commands.errors.CommandOnCooldown):
             return await ctx.send(f'This command is on cooldown. Please retry in `{error.retry_after:.0f}` second(s).')
 
-        if isinstance(error, errors.MissingRequiredArgument):
+        if isinstance(error, commands.errors.MissingRequiredArgument):
             return await ctx.send(f'Command missing required argument `{error.param}`.')
 
-        if isinstance(error, errors.MissingPermissions):
+        if isinstance(error, commands.errors.MissingPermissions):
             return await ctx.send(f'Sorry you need permissions: `{",".join(error.missing_perms)}` to do that.')
 
-        if isinstance(error, errors.BotMissingPermissions):
+        if isinstance(error, commands.errors.BotMissingPermissions):
             return await ctx.send(f'Sorry I need permissions: `{",".join(error.missing_perms)}` to do that.')
-
-        if isinstance(error, discord.Forbidden):
-            return await ctx.send(error.text)
 
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
