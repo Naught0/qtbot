@@ -1,3 +1,7 @@
+[![forthebadge](http://forthebadge.com/images/badges/made-with-python.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/built-with-love.svg)](http://forthebadge.com)
+
+
 ## Qtbot
 
 A Discord bot with some neat functionality.
@@ -23,6 +27,3 @@ Don't. Just DM naught0#4417 and I'll join the bot to your server.
 ### Disclaimer
 
 Qtbot is still very much a work in progress, so commands are being added and changed often. Despite this, the bot is up 99% of the time.
-
-[![forthebadge](http://forthebadge.com/images/badges/made-with-python.svg)](http://forthebadge.com)
-[![forthebadge](http://forthebadge.com/images/badges/built-with-love.svg)](http://forthebadge.com)
