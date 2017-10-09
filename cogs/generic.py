@@ -1,6 +1,9 @@
+#!/bin/env python3
+
+import random
 import discord
 from discord.ext import commands
-import random
+from datetime import datetime
 
 
 class Generic:
@@ -86,6 +89,15 @@ class Generic:
 
         await ctx.message.delete()
         await ctx.send(f'{a_text.translate(ascii_to_wide)}')
+
+    @commands.command(aliases=['up'])
+    async def uptime(self, ctx):
+        """Get current bot uptime."""
+        current_time = datetime.now()
+        current_time_str = current_time.strftime('%B %d %H:%M:%S')
+        await ctx.send(f'Initialized `{self.bot.start_time_str}`\n'
+                       f'Current Time: `{current_time_str}`\n'
+                       f'Uptime: `{str(current_time - self.bot.start_time).split(".")[0]}`')
 
 
 def setup(bot):

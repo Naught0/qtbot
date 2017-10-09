@@ -32,6 +32,23 @@ class Moderator:
         await ctx.send(f'User `{user}` unbanned.\n'
                        f'Reason: `{reason}`.')
 
+    @commands.command(aliases=['purge'])
+    @commands.has_permissions(manage_messages=True)
+    async def clean(self, ctx, num_msg: int):
+        """ Remove bot messages from the last X messages """
+
+        if num_msg > 100:
+            return await ctx.send('Sorry, number of messages to be deleted must not exceed 100.')
+
+        # Check so that only bot msgs are removed
+        def check(message):
+            return message.author.id == self.bot.user.id
+
+        try:
+            await ctx.channel.purge(check=check, limit=num_msg)
+        except Exception as e:
+            await ctx.send(f'Failed to delete messages.\n ```py\n{e}```')
+
 
 def setup(bot):
     bot.add_cog(Moderator(bot))
