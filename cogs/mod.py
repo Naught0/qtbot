@@ -26,10 +26,12 @@ class Moderator:
     @commands.command(aliases=['ub'])
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, user: discord.User, *, reason=None):
-        """ Unban a user from the server """
+        """ Unban a user from the server
+        Since you can't highlight them anymore use their name#discrim """
         await ctx.guild.unban(user, reason=reason)
         await ctx.send(f'User `{user}` unbanned.\n'
                        f'Reason: `{reason}`.')
+
 
 def setup(bot):
     bot.add_cog(Moderator(bot))
