@@ -21,8 +21,8 @@ class QTBot(commands.Bot):
                          pm_help=True, *args, **kwargs)
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
-        self.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
 
+        self.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
 
         self.startup_extensions = [x.stem for x in Path('cogs').glob('*.py')]
 
