@@ -1,8 +1,9 @@
 #!/bin/env python
 
-from discord.ext.commands import errors
 import sys
 import traceback
+import discord
+from discord.ext.commands import errors
 
 
 class ErrorHandler:
@@ -29,6 +30,9 @@ class ErrorHandler:
 
         if isinstance(error, errors.BotMissingPermissions):
             return await ctx.send(f'Sorry I need permissions: `{",".join(error.missing_perms)}` to do that.')
+
+        if isinstance(error, discord.Forbidden):
+            return await ctx.send(error.text)
 
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
