@@ -7,6 +7,8 @@ class Moderator:
     def __init__(self, bot):
         self.bot = bot
 
+    async def on_command_error
+
     @commands.command(aliases=['k'])
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, user: discord.User, *, reason=None):

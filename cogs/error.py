@@ -29,9 +29,6 @@ class ErrorHandler:
 
         if isinstance(error, errors.BotMissingPermissions):
             return await ctx.send(f'Sorry I need permissions: `{",".join(error.missing_perms)}` to do that.')
-        
-        if isinstance(error, errors.BadArgument):
-            return await ctx.send('Nope.')
 
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
