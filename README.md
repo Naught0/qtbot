@@ -4,7 +4,7 @@ A Discord bot with some neat functionality.
 
 ## Commands
 
-Qtbot has a lot of commands which you can find by either calling `.help` or visiting the website [here](http://definitelynaught.me)
+Qtbot has a lot of commands which you can find by either calling `.help` or visiting the website [here](http://definitelynaught.me) 
 Noteworthy categories are: 
 - Google
 - Youtube
