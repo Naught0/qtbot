@@ -119,7 +119,7 @@ class Tag:
         await ctx.send(embed=em)
 
     @tag.command()
-    async def search(self, ctx, *, query):
+    async def search(self, ctx, *, query: str):
         """ Search for some matching tags """ 
 
         if len(query) < 3:
@@ -128,7 +128,7 @@ class Tag:
         execute = '''SELECT tag_name 
                         FROM tags
                         WHERE server_id = $1 AND tag_name % $2
-                        ORDER BY similarity(name, $2) DESC
+                        ORDER BY similarity(tag_name, $2) DESC
                         LIMIT 10;'''
 
         search_results = await self.bot.pg_con.fetch(execute, ctx.guild.id, query)
