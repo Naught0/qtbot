@@ -127,7 +127,7 @@ class Tag:
 
         execute = '''SELECT tag_name 
                         FROM tags
-                        WHERE server_id = $1 AND tag_name % $2
+                        WHERE server_id = $1 AND tag_name % $2::text
                         ORDER BY similarity(tag_name, $2) DESC
                         LIMIT 10;'''
 
