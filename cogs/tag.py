@@ -131,7 +131,7 @@ class Tag:
                         ORDER BY similarity(name, $2) DESC
                         LIMIT 10;'''
 
-        search_results = await bot.pg_con.fetch(execute, ctx.guild.id, query)
+        search_results = await self.bot.pg_con.fetch(execute, ctx.guild.id, query)
 
         await ctx.send(search_results)
 
