@@ -119,21 +119,30 @@ class Tag:
         await ctx.send(embed=em)
 
     @tag.command()
-    async def search(self, ctx, *, query: str):
+    async def search(self, ctx, *, query: commands.clean_content):
         """ Search for some matching tags """ 
 
         if len(query) < 3:
             return await ctx.send("Sorry, you'll have to be more specific.")
 
         execute = '''SELECT tag_name 
-                        FROM tags
-                        WHERE server_id = $1 AND tag_name % $2::text
-                        ORDER BY similarity(tag_name, $2) DESC
-                        LIMIT 10;'''
+                     FROM tags
+                     WHERE server_id = $1 AND tag_name % $2
+                     ORDER BY similarity(tag_name, $2) DESC
+                     LIMIT 10;'''
 
         search_results = await self.bot.pg_con.fetch(execute, ctx.guild.id, query)
 
-        await ctx.send(search_results)
+
+        emoji_map = ['1\U000020e3', '2\U000020e3','3\U000020e3','4\U000020e3','5\U000020e3']
+
+        # Do an embed for fun
+        em = discord.Embed(title=':mag: Search Results', color=discord.Color.blue())
+        em.description = f'I found {len(search_results)}. Here are the top 5.' 
+        for idx, record in enumerate(search_results):
+            em.add_field(name=f'{emoji_map[idx]}: {record.tag_name}', value="")
+
+        await ctx.send(embed=em)
 
 
 def setup(bot):
