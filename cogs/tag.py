@@ -140,9 +140,8 @@ class Tag:
         em = discord.Embed(title=':mag: Search Results', color=discord.Color.blue())
         em.description = f'I found {len(search_results)}' 
         for idx, record in enumerate(search_results):
-            em.add_field(name=f'{emoji_map[idx]}: {record["tag_name"]}', value="​", inline=False) 
-            # Note there is a zero-width space in the value field
-
+            em.add_field(name=f'{emoji_map[idx]}: {record["tag_name"]}', value='\u200b', inline=False) 
+            
         await ctx.send(embed=em)
 
 
