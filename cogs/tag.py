@@ -157,8 +157,8 @@ class Tag:
         # Total tags
         # Total tag uses
         # Top 5 most used tags
-        em = discord.Embed(title=f':label: Tag Stats for {ctx.guild}', color=discord.Color.blue())
-        em.set_author(name='\u200b', icon_url=ctx.guild.icon_url)
+        em = discord.Embed(title='Tag Statistics', color=discord.Color.blue())
+        em.set_author(name=f'{ctx.guild.name}', icon_url=ctx.guild.icon_url)
 
         tt = await self.pg_con.fetchval(f'''SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}''')
         em.add_field(name='Total Tags', value=tt)
