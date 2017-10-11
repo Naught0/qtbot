@@ -174,7 +174,7 @@ class Tag:
         tu_build_list = []
 
         for idx, record in enumerate(total_use_record_list):
-            tu_build_list.append(f'{self.emoji_map[idx]} {record["tag_name"]} | {record["total_uses"]} uses')
+            tu_build_list.append(f'{self.emoji_map[idx]} {record["tag_name"]} ({record["total_uses"]} uses)')
 
         em.add_field(name='Most Used Tags', value='\n'.join(tu_build_list))
 
@@ -188,7 +188,7 @@ class Tag:
         tt_build_list = []
 
         for idx, record in enumerate(top_tagger_record_list):
-            tt_build_list.append(f'{self.emoji_map[idx]} <@{record["owner_id"]}> | {record["count"]} tags created')
+            tt_build_list.append(f'{self.emoji_map[idx]} <@{record["owner_id"]}> ({record["count"]} tags created)')
 
         em.add_field(name='Top Taggers', value='\n'.join(tt_build_list))
 
