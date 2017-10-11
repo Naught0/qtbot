@@ -138,10 +138,10 @@ class Tag:
 
         # Do an embed for fun
         em = discord.Embed(title=':mag: Search Results', color=discord.Color.blue())
-        em.description = f'I found {len(search_results)}' 
+        em.description = f'I found {len(search_results)} similar tags:'
         for idx, record in enumerate(search_results):
-            em.add_field(name=f'{emoji_map[idx]}: {record["tag_name"]}', value='\u200b', inline=False) 
-            
+            em.add_field(name=f'{emoji_map[idx]} {record["tag_name"]}', value='\u200b', inline=False) 
+
         await ctx.send(embed=em)
 
 
