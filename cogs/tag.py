@@ -177,7 +177,7 @@ class Tag:
         for idx, record in enumerate(tag_record_list):
             str_build_list.append(f'{self.emoji_map[idx]} {record["tag_name"]} | {record["total_uses"]} uses')
 
-        em.add_field(name='Most Used Tags', value='\n'.join(str_build_list))
+        em.add_field(name='Most Used Tags', value='\n'.join(str_build_list), inline=False)
 
         await ctx.send(embed=em)
 
