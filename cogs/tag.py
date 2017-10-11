@@ -154,15 +154,12 @@ class Tag:
     @tag.command(aliases=['stat'])
     async def stats(self, ctx):
         """ Get stats about the tags for your guild """
-        # Total tags
-        # Total tag uses
-        # Top 5 most used tags
         em = discord.Embed(title='Tag Statistics', color=discord.Color.blue())
         em.set_author(name=f'{ctx.guild.name}', icon_url=ctx.guild.icon_url)
 
         tt = await self.pg_con.fetchval(f'''SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}''')
         ttu = await self.pg_con.fetchval(f'''SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}''')
-        em.description = f'Total tags: {tt}\nTotal Tag Uses: {ttu}'
+        em.description = f'Totala Tags: {tt}\nTotal Tag Uses: {ttu}'
 
         get_top_tags = '''SELECT tag_name, total_uses
                             FROM tags 
