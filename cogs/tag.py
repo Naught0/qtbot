@@ -158,12 +158,13 @@ class Tag:
         # Total tag uses
         # Top 5 most used tags
         em = discord.Embed(title=f':label: Tag Stats for {ctx.guild}', color=discord.Color.blue())
+        em.set_author(name='', icon_url=ctx.guild.icon_url)
 
         tt = await self.pg_con.fetchval(f'''SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}''')
         em.add_field(name='Total Tags', value=tt)
 
         ttu = await self.pg_con.fetchval(f'''SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}''')
-        em.add_field(name='Total Tag Uses', value=ttu)
+        em.add_field(name='Total Tag Uses', value=ttu, inline=False)
 
         get_top_tags = '''SELECT tag_name, total_uses
                             FROM tags 
