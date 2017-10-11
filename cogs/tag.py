@@ -141,7 +141,7 @@ class Tag:
         des_list = [f'I found {len(search_results)} similar tags:']
         
         for idx, record in enumerate(search_results):
-            des_list.append(f'{emoji_map[idx]} {record["tag_name"]}\n'))
+            des_list.append(f'{emoji_map[idx]} {record["tag_name"]}')
         
         em.description = des.join('\n')
 
