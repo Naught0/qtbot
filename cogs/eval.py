@@ -31,7 +31,7 @@ class Eval:
     async def git_pull(self, ctx):
         """ Shortcut for .eval git pull origin master """
         cmd = self.bot.get_command('eval')
-        await ctx.invoke(cmd, 'git pull origin master')
+        await ctx.invoke(cmd, cmd='git pull origin master')
 
     @commands.group(invoke_without_command=True, name='sql', hidden=True)
     @commands.is_owner()
