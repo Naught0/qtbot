@@ -138,7 +138,13 @@ class Tag:
 
         # Do an embed for fun
         em = discord.Embed(title=':mag: Search Results', color=discord.Color.blue())
-        des_list = [f'I found {len(search_results)} similar tags:']
+
+        if len(search_results) == 1:
+            des_list = ['I found 1 similar tag:']
+        elif len(search_results) > 1:
+            des_list = [f'I found {len(search_results)} similar tags:']
+        else:
+            des_list = [f':warning: I could not find any matching tags for {query}.']
         
         for idx, record in enumerate(search_results):
             des_list.append(f'{emoji_map[idx]} {record["tag_name"]}')
