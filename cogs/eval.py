@@ -26,6 +26,13 @@ class Eval:
         except Exception as e:
             await ctx.send(f'Unable to send output\n```py\n{e}```')
 
+    @commands.command(name='git', hidden=True)
+    @commands.is_owner()
+    async def git_pull(self, ctx):
+        """ Shortcut for .eval git pull origin master """
+        cmd = self.bot.get_command('eval')
+        await ctx.invoke(cmd, 'git pull origin master')
+
     @commands.group(invoke_without_command=True, name='sql', hidden=True)
     @commands.is_owner()
     async def sql_execute(self, ctx, *, query):
