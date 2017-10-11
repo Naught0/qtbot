@@ -159,23 +159,25 @@ class Tag:
         # Top 5 most used tags
         em = discord.Embed(title=f':label: Tag Stats for {ctx.guild}', color=discord.Color.blue())
 
+        tt = await self.pg_con.fetchval(f'''SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}''')
+        em.add_field(name='Total Tags', value=tt)
+
+        ttu = await self.pg_con.fetchval(f'''SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}''')
+        em.add_field(name='Total Tag Uses', value=ttu)
+
         get_top_tags = '''SELECT tag_name, total_uses
                             FROM tags 
                             WHERE server_id = $1
                             ORDER BY total_uses DESC
                             LIMIT 5;'''
 
-        top_tag_list = await self.pg_con.fetch(get_top_tags, ctx.guild.id)
+        tag_record_list = await self.pg_con.fetch(get_top_tags, ctx.guild.id)
+        str_build_list = []
 
-        for idx, record in enumerate(top_tag_list):
-            em.add_field(name=f'{self.emoji_map[idx]} {record["tag_name"]}', 
-                value=f'Uses: {record["total_uses"]}', inline=False)
+        for idx, record in enumerate(tag_record_list):
+            str_build_list.append(f'{self.emoji_map[idx]} {record["tag_name"]} | {record["total_uses"]} uses')
 
-        tt = await self.pg_con.fetchval(f'''SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}''')
-        em.add_field(name='Total Tags', value=tt)
-
-        ttu = await self.pg_con.fetchval(f'''SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}''')
-        em.add_field(name='Total Tag Uses', value=ttu)
+        em.add_field(name='Most Used Tags', value='\n'.join(str_build_list))
 
         await ctx.send(embed=em)
 
