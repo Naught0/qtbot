@@ -171,13 +171,26 @@ class Tag:
                             ORDER BY total_uses DESC
                             LIMIT 5;'''
 
-        tag_record_list = await self.pg_con.fetch(get_top_tags, ctx.guild.id)
-        str_build_list = []
+        total_use_record_list = await self.pg_con.fetch(get_top_tags, ctx.guild.id)
+        tu_build_list = []
 
-        for idx, record in enumerate(tag_record_list):
-            str_build_list.append(f'{self.emoji_map[idx]} {record["tag_name"]} | {record["total_uses"]} uses')
+        for idx, record in enumerate(total_use_record_list):
+            tu_build_list.append(f'{self.emoji_map[idx]} {record["tag_name"]} | {record["total_uses"]} uses')
 
         em.add_field(name='Most Used Tags', value='\n'.join(str_build_list), inline=False)
+
+        get_top_taggers = '''SELECT COUNT(owner_id), owner_id
+                                FROM tags
+                                WHERE server_id = $1
+                                GROUP BY owner_id
+                                ORDER BY 1 DESC;'''
+        top_tagger_record_list = await self.pg_con.fetch(get_top_taggers, ctx.guild.id)
+        tt_build_list = []
+
+        for idx, record in enumerate(total_use_record_list):
+            tt_build_list.append(f'{self.emoji_map[idx]} <@{record["owner_id"]}> | {record["count"]} tags created')
+
+        em.add_field(name='Top Taggers', value='\n'.join(tt_build_list))
 
         await ctx.send(embed=em)
 
