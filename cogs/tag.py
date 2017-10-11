@@ -171,11 +171,11 @@ class Tag:
             em.add_field(name=f'{self.emoji_map[idx]} {record["tag_name"]}', 
                 value=f'Uses: {record["total_uses"]}', inline=False)
 
-        tt = await self.pg_con.fetch(f'''SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}''')
-        em.add_field(name='Total Tags', value=tt['count'])
+        tt = await self.pg_con.fetchval(f'''SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}''')
+        em.add_field(name='Total Tags', value=tt)
 
-        ttu = await self.pg_con.fetch(f'''SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}''')
-        em.add_field(name='Total Tag Uses', value=ttu['sum'])
+        ttu = await self.pg_con.fetchval(f'''SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}''')
+        em.add_field(name='Total Tag Uses', value=ttu)
 
         await ctx.send(embed=em)
 
