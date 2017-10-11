@@ -161,10 +161,8 @@ class Tag:
         em.set_author(name=f'{ctx.guild.name}', icon_url=ctx.guild.icon_url)
 
         tt = await self.pg_con.fetchval(f'''SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}''')
-        em.add_field(name='Total Tags', value=tt)
-
         ttu = await self.pg_con.fetchval(f'''SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}''')
-        em.add_field(name='Total Tag Uses', value=ttu, inline=False)
+        em.description = f'Total tags: {tt}\nTotal Tag Uses: {ttu}'
 
         get_top_tags = '''SELECT tag_name, total_uses
                             FROM tags 
@@ -178,7 +176,7 @@ class Tag:
         for idx, record in enumerate(total_use_record_list):
             tu_build_list.append(f'{self.emoji_map[idx]} {record["tag_name"]} | {record["total_uses"]} uses')
 
-        em.add_field(name='Most Used Tags', value='\n'.join(tu_build_list), inline=False)
+        em.add_field(name='Most Used Tags', value='\n'.join(tu_build_list))
 
         get_top_taggers = '''SELECT COUNT(owner_id), owner_id
                                 FROM tags
