@@ -56,8 +56,8 @@ class Tag:
         except asyncpg.UniqueViolationError:
             return await ctx.send(f'Sorry, tag `{tag_name}` already exists. If you own it, feel free to `.tag edit` it.')
 
-    @tag.command(name='delete', aliases=['del', 'delet'])
-    async def _delete(self, ctx, *, tag_name):
+    @tag.command(aliases=['del', 'delet'])
+    async def delete(self, ctx, *, tag_name):
         """ Delete a tag you created (or if you're an admin) """
         _can_delete = await self.can_delete_tag(ctx, tag_name)
 
@@ -119,7 +119,7 @@ class Tag:
         await ctx.send(embed=em)
 
     @tag.command()
-    async def search(self, ctx, *, query: commands.clean_content):
+    async def search(self, ctx, *, query: str):
         """ Search for some matching tags """ 
 
         if len(query) < 3:
@@ -137,19 +137,32 @@ class Tag:
         emoji_map = ['1\U000020e3', '2\U000020e3','3\U000020e3','4\U000020e3','5\U000020e3']
 
         # Do an embed for fun
-        em = discord.Embed(title=':mag: Search Results', color=discord.Color.blue())
+        em = discord.Embed(title=':mag: Tag Search Results', color=discord.Color.blue())
 
         if len(search_results) == 1:
             des_list = ['I found 1 similar tag:']
         elif len(search_results) > 1:
             des_list = [f'I found {len(search_results)} similar tags:']
         else:
-            des_list = [f':warning: I could not find any matching tags for {query}.']
+            des_list = [f':warning: I could not find any matching tags for "{query}".']
         
         for idx, record in enumerate(search_results):
             des_list.append(f'{emoji_map[idx]} {record["tag_name"]}')
         
         em.description = '\n'.join(des_list)
+
+        await ctx.send(embed=em)
+
+    @tag.command(aliases=['stat'])
+    async def stats(self, ctx):
+        """ Get stats about the tags for your guild """
+        # Total tags
+        # Total tag uses
+        # Top 5 most used tags
+        em = discord.Embed(title=f'Tag Stats for <#{ctx.guild.id}>', color=discord.Color.blue())
+
+        ttu = await self.pg_con.fetch(f'''SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}''')
+        em.add_field(name='Total Tag Uses', value=ttu)
 
         await ctx.send(embed=em)
 
