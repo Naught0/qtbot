@@ -7,6 +7,8 @@ import textwrap
 from contextlib import redirect_stdout
 import io
 
+""" This bit of code liften from Rapptz's (Danny) bot """ 
+
 # to expose to the eval command
 import datetime
 from collections import Counter
@@ -33,7 +35,7 @@ class Admin:
             return f'```py\n{e.__class__.__name__}: {e}\n```'
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
 
-    @commands.command(pass_context=True, hidden=True, name='pyval')
+    @commands.command(hidden=True, name='pyval')
     @commands.is_owner()
     async def _eval(self, ctx, *, body: str):
         """Evaluates a code"""
@@ -65,11 +67,7 @@ class Admin:
             await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
         else:
             value = stdout.getvalue()
-            try:
-                await ctx.message.add_reaction('\u2705')
-            except:
-                pass
-
+            
             if ret is None:
                 if value:
                     await ctx.send(f'```py\n{value}\n```')
