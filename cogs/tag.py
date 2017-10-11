@@ -9,6 +9,7 @@ class Tag:
     def __init__(self, bot):
        self.bot = bot
        self.pg_con = bot.pg_con
+       self.emoji_map = ['1\U000020e3', '2\U000020e3','3\U000020e3','4\U000020e3','5\U000020e3']
 
     async def get_tag(self, server_id: int, tag_name: str):
         """ Returns tag value or None """
@@ -133,9 +134,6 @@ class Tag:
 
         search_results = await self.bot.pg_con.fetch(execute, ctx.guild.id, query)
 
-
-        emoji_map = ['1\U000020e3', '2\U000020e3','3\U000020e3','4\U000020e3','5\U000020e3']
-
         # Do an embed for fun
         em = discord.Embed(title=':mag: Tag Search Results', color=discord.Color.blue())
 
@@ -147,7 +145,7 @@ class Tag:
             des_list = [f':warning: I could not find any matching tags for "{query}".']
         
         for idx, record in enumerate(search_results):
-            des_list.append(f'{emoji_map[idx]} {record["tag_name"]}')
+            des_list.append(f'{self.emoji_map[idx]} {record["tag_name"]}')
         
         em.description = '\n'.join(des_list)
 
@@ -159,10 +157,25 @@ class Tag:
         # Total tags
         # Total tag uses
         # Top 5 most used tags
-        em = discord.Embed(title=f'Tag Stats for <#{ctx.guild.id}>', color=discord.Color.blue())
+        em = discord.Embed(title=f':label: Tag Stats for {ctx.guild}', color=discord.Color.blue())
+
+        get_top_tags = '''SELECT tag_name, total_uses
+                            FROM tags 
+                            WHERE server_id = $1
+                            ORDER BY total_uses DESC
+                            LIMIT 5;'''
+
+        top_tag_list = await self.pg_con.fetch(get_top_tags, ctx.guild.id)
+
+        for idx, record in enumerate(top_tag_list):
+            em.add_field(name=f'{self.emoji_map[idx]} {record["tag_name"]}', 
+                value=f'Uses: {record["total_uses"]}', inline=False)
+
+        tt = await self.pg_con.fetch(f'''SELECT SUM(tag_name) FROM tags WHERE server_id = {ctx.guild.id}''')
+        em.add_field(name='Total Tags', value=tt['sum'])
 
         ttu = await self.pg_con.fetch(f'''SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}''')
-        em.add_field(name='Total Tag Uses', value=ttu)
+        em.add_field(name='Total Tag Uses', value=ttu['sum'])
 
         await ctx.send(embed=em)
 
