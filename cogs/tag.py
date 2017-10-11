@@ -143,7 +143,7 @@ class Tag:
         for idx, record in enumerate(search_results):
             des_list.append(f'{emoji_map[idx]} {record["tag_name"]}')
         
-        em.description = des.join('\n')
+        em.description = '\n'.join(des_list)
 
         await ctx.send(embed=em)
 
