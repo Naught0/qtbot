@@ -20,7 +20,7 @@ class Poll:
         elif len(option_list) > 9:
             return await ctx.send("That's too many options ")
 
-        if poll_name > 256:
+        if len(poll_name) > 256:
             return await ctx.send('Sorry, titles must be under 256 characters per Discord limits.')
 
         # Do a heckin good embed
