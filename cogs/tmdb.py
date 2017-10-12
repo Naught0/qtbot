@@ -53,7 +53,7 @@ class MyTMDb:
         base_image_uri = 'https://image.tmdb.org/t/p/w185{}'
 
         # Create embed
-        em = discord.Embed()
+        em = discord.Embed(color=discord.Color.greyple())
         em.title = f'{result["name"]} ({result["first_air_date"].split("-")[0]})'
         em.description = result['overview']
         em.set_thumbnail(url=base_image_uri.format(
@@ -83,7 +83,7 @@ class MyTMDb:
         base_image_uri = 'https://image.tmdb.org/t/p/w185{}'
 
         # Create embed
-        em = discord.Embed()
+        em = discord.Embed(color=discord.Color.greyple())
         em.title = f'{result["title"]} ({result["release_date"].split("-")[0]})'
         em.description = result['overview']
         em.set_thumbnail(url=base_image_uri.format(
