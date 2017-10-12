@@ -8,7 +8,7 @@ class Moderator:
         self.bot = bot
 
     async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.BadArgument)
+        if isinstance(error, commands.BadArgument):
             return await ctx.send(f'Sorry, I can not kick/ban that user.')
 
     @commands.command(aliases=['k'])
