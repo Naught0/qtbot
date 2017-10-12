@@ -24,9 +24,6 @@ class ErrorHandler:
         if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f'Command missing required argument `{error.param}`.')
 
-        if isinstance(error, commands.BadArgument):
-            return await ctx.send(f'Bad argument(s): `{", ".join(ctx.kwargs.values())}`.')
-
         if isinstance(error, commands.MissingPermissions):
             return await ctx.send(f'Sorry you need permissions: `{",".join(error.missing_perms)}` to do that.')
 
