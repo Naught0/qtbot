@@ -35,7 +35,7 @@ class Poll:
         em.set_footer(text=f'Poll created by {ctx.author}', icon_url=ctx.author.avatar_url)
 
         description_list = []
-        for idx, opt in enumerate(poll_options):
+        for idx, opt in enumerate(option_list):
             description_list.append(f'{self.emoji_map[idx]} {opt}')
 
         em.description = '\n'.join(description_list)
