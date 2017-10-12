@@ -16,7 +16,7 @@ class Poll:
 
         Usage:
         .poll 'A quoted name' 60 comma, delimited, options """ 
-        
+
         if timeout > (21600):
             return await ctx.send('Please choose a timeout time which is less than 6 hours.')
 
@@ -24,7 +24,7 @@ class Poll:
 
         if len(option_list) < 2:
             return await ctx.send('You need at least 2 options to call it a poll, jeez.')
-        elif len(option_list) > len(emoji_map):
+        elif len(option_list) > len(self.emoji_map):
             return await ctx.send("That's too many options ")
 
         if len(poll_name) > 256:
@@ -33,8 +33,6 @@ class Poll:
         # Do a heckin good embed
         em = discord.Embed(title=poll_name, color=discord.Color.teal())
         em.set_footer(text=f'Poll created by {ctx.author}', icon_url=ctx.author.avatar_url)
-
-
 
         description_list = []
         for idx, opt in enumerate(poll_options):
