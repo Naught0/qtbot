@@ -15,7 +15,7 @@ class MyTMDb:
     def __init__(self, bot):
         self.bot = bot
 
-    def sync_get_tmdb(query, type_search):
+    def sync_get_tmdb(query: str, type_search: str):
         """ Non async tmdb library function """
 
         # Initialize the search
@@ -23,13 +23,18 @@ class MyTMDb:
 
         # TMDb response & store
         if type_search == 'tv':
-            response = None or search.tv(query=query)['results'][0]
-        elif type_search == 'movie':
-            response = None or search.movie(query=query)['results'][0]
-        else:
-            raise NameError('type_search must be "tv" or "movie".')
+            try:
+                return search.tv(query=query)['results'][0]
+            except IndexError:
+                return None
 
-        return response
+        elif type_search == 'movie':
+            try:
+                return search.movie(query=query)['results'][0]
+            except IndexError:
+                return None
+
+        return None
 
     @commands.command(name='show', aliases=['ss', 'tv'])
     async def get_show(self, ctx, *, query):
