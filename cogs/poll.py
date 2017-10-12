@@ -30,13 +30,16 @@ class Poll:
         emoji_map = ['1\U000020e3','2\U000020e3','3\U000020e3', '4\U000020e3', '5\U000020e3',
                      '6\U000020e3', '7\U000020e3', '8\U000020e3', '9\U000020e3']
 
-        description_list = []
-        for idx, opt in enumerate(poll_options):
-            description_list.append(f'{emoji_map[idx]} {opt}')
+        return await ctx.send(f'Len emoji_map: {len(emoji_map)}\n'
+                                f'Len poll_options: {len(poll_options)}')
+        
+        # description_list = []
+        # for idx, opt in enumerate(poll_options):
+        #     description_list.append(f'{emoji_map[idx]} {opt}')
 
-        em.description = '\n'.join(description_list)
+        # em.description = '\n'.join(description_list)
 
-        poll_msg = await ctx.send(embed=em)
+        # poll_msg = await ctx.send(embed=em)
 
 
 def setup(bot):
