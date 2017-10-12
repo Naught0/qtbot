@@ -23,9 +23,9 @@ class MyTMDb:
 
         # TMDb response & store
         if type_search == 'tv':
-            response = search.tv(query=query)['results'][0]
+            response = None or search.tv(query=query)['results'][0]
         elif type_search == 'movie':
-            response = search.movie(query=query)['results'][0]
+            response = None or search.movie(query=query)['results'][0]
         else:
             raise NameError('type_search must be "tv" or "movie".')
 
