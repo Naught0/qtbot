@@ -32,7 +32,7 @@ class Poll:
 
         description_list = []
         for idx, opt in enumerate(poll_options):
-            description_list.append(f'{emoji_map[idx] opt}')
+            description_list.append(f'{emoji_map[idx]} {opt}')
 
         em.description = '\n'.join(description_list)
 
@@ -41,4 +41,3 @@ class Poll:
 
 def setup(bot):
     bot.add_cog(Poll(bot))
-    
