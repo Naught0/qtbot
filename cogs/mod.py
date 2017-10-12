@@ -9,7 +9,7 @@ class Moderator:
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
-            return await ctx.send(f'Sorry, I can not kick/ban that user.')
+            return await ctx.send(f'Sorry, I cannot kick/ban that user.')
 
     @commands.command(aliases=['k'])
     @commands.has_permissions(kick_members=True)
