@@ -13,7 +13,7 @@ class Poll:
         if timeout > (21600):
             return await ctx.send('Please choose a timeout time which is less than 6 hours.')
 
-        option_list = poll_options.split(' ')
+        option_list = poll_options.split(',')
 
         if len(option_list) < 2:
             return await ctx.send('You need at least 2 options to call it a poll, jeez.')
@@ -32,7 +32,7 @@ class Poll:
 
         return await ctx.send(f'Len emoji_map: {len(emoji_map)}\n'
                                 f'Len poll_options: {len(poll_options)}')
-        
+
         # description_list = []
         # for idx, opt in enumerate(poll_options):
         #     description_list.append(f'{emoji_map[idx]} {opt}')
