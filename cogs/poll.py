@@ -8,7 +8,7 @@ class Poll:
         self.bot = bot
 
     @commands.command(aliases=['survey'])
-    async def poll(self, ctx, poll_name: str, timeout: float, *, poll_options):
+    async def poll(self, ctx, poll_name: str, timeout: float, *, poll_options: str):
         """ Create a poll for the channel to vote on """ 
         if timeout > (21600):
             return await ctx.send('Please choose a timeout time which is less than 6 hours.')
@@ -31,7 +31,7 @@ class Poll:
                      '6\U000020e3', '7\U000020e3', '8\U000020e3', '9\U000020e3']
 
         return await ctx.send(f'Len emoji_map: {len(emoji_map)}\n'
-                                f'Len poll_options: {len(poll_options)}')
+                                f'Len poll_options: {len(option_list)}')
 
         # description_list = []
         # for idx, opt in enumerate(poll_options):
