@@ -15,9 +15,9 @@ class Poll:
 
         option_list = poll_options.split(' ')
 
-        if option_list < 2:
+        if len(option_list) < 2:
             return await ctx.send('You need at least 2 options to call it a poll, jeez.')
-        elif option_list > 9:
+        elif len(option_list) > 9:
             return await ctx.send("That's too many options ")
 
         if poll_name > 256:
