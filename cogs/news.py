@@ -48,7 +48,7 @@ class News:
         """ Get the top 5 articles from Google News (http://newsapi.org) (Paginated) """
 
         # Add Emojis for navigation
-        emoji_map = ['1\U000020e3',
+        emoji_tup = ('1\U000020e3',
                      '2\U000020e3',
                      '3\U000020e3',
                      '4\U000020e3',
@@ -56,7 +56,7 @@ class News:
                      '6\U000020e3',
                      '7\U000020e3',
                      '8\U000020e3',
-                     '9\U000020e3']
+                     '9\U000020e3')
 
         em_dict = {}
 
@@ -66,7 +66,7 @@ class News:
             article_list = raw_json_dict['articles']
 
             for idx, article in enumerate(article_list[:9]):
-                em_dict[emoji_map[idx]] = self.json_to_embed(article)
+                em_dict[emoji_tup[idx]] = self.json_to_embed(article)
 
         else:
             api_response = await aw.aio_get_json(self.aio_session, self.uri.format(self.api_key))
@@ -74,15 +74,15 @@ class News:
             await self.redis_client.set('news', json.dumps(api_response), ex=300)
 
             for idx, article in enumerate(article_list[:9]):
-                em_dict[emoji_map[idx]] = self.json_to_embed(article)
+                em_dict[emoji_tup[idx]] = self.json_to_embed(article)
 
-        bot_message = await ctx.send(embed=em_dict[emoji_map[0]])
+        bot_message = await ctx.send(embed=em_dict[emoji_tup[0]])
 
-        for emoji in emoji_map:
+        for emoji in emoji_tup:
             await bot_message.add_reaction(emoji)
 
         def check(reaction, user):
-            return user == ctx.author and reaction.emoji in emoji_map
+            return user == ctx.author and reaction.emoji in emoji_tup
 
         while True:
             try:
