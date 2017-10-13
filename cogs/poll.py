@@ -40,7 +40,7 @@ class Poll:
         poll_results = {}
         for idx, opt in enumerate(option_list):
             description_list.append(f'{self.emoji_map[idx]} {opt}')
-            poll_results[f'{emoji_map[idx]}'] = {'opt' = opt, total_votes=0}
+            poll_results[f'{emoji_map[idx]}'] = {'opt': opt, total_votes: 0}
 
         em.description = '\n'.join(description_list)
 
