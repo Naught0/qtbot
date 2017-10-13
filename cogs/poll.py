@@ -77,10 +77,11 @@ class Poll:
                 user_set.add(user)
                 poll_results[reaction.emoji]['votes'] += 1
 
+        # Thanks to Jared for this lamda / reduce
         predicate = lambda x, y: x if poll_results[x]['votes'] > poll_results[y]['votes'] else y
         chan_choice = reduce(predicate, poll_results.keys())
         await ctx.send('The channel has spoken!\n'
-                       f'The best option is {poll_results[chan_choice]["opt_text"]}  with {poll_results[chan_choice]["votes"]} vote(s).')
+                       f'The best option is "{poll_results[chan_choice]["opt_text"]}", with `{poll_results[chan_choice]["votes"]}` vote(s).')
         
 
 def setup(bot):
