@@ -24,7 +24,7 @@ class IPLookup:
         em.add_field(name='Location', value=f"{res['city']}, {res['regionName']}, {res['country']}", inline=False)
         em.add_field(name='Coordinates', value=f"({res['lat']:.3f}, {res['lon']:.3f})")
         em.add_field(name='ISP', value=res['as'])
-        em.set_thumbnail(url='http://www.iconsdb.com/icons/preview/white/wifi-xxl.png')
+        em.set_thumbnail(url='https://u.teknik.io/ySnYY.png')
         em.set_image(
             url=f"https://maps.googleapis.com/maps/api/staticmap?center={res['lat']},{res['lon']}&zoom=13&scale=false&size=255x255&maptype=roadmap&format=png&markers=size:mid%7Ccolor:0xAD1457%7Clabel:%7C{res['lat']},{res['lon']}#{int(time.time())}")
 
