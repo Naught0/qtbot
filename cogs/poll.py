@@ -72,10 +72,9 @@ class Poll:
             except asyncio.TimeoutError:
                 await poll_msg.clear_reactions()
                 break
-            
-            if reaction.emoji in poll_results:
-                user_set.add(user)
-                poll_results[reaction.emoji]['votes'] += 1
+
+            user_set.add(user)
+            poll_results[reaction.emoji]['votes'] += 1
 
         # Thanks to Jared for this lamda / reduce
         predicate = lambda x, y: x if poll_results[x]['votes'] > poll_results[y]['votes'] else y
