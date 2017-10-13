@@ -1,6 +1,6 @@
 #!/bin/env python3
-
 import discord
+from datetime import datetime
 from discord.ext import commands
 
 class Poll:
@@ -32,7 +32,9 @@ class Poll:
 
         # Do a heckin good embed
         em = discord.Embed(title=poll_name, color=discord.Color.teal())
-        em.set_footer(text=f'Poll created by {ctx.author}', icon_url=ctx.author.avatar_url)
+        em.set_author(name=f'Poll created by {ctx.author}', icon_url=ctx.author.avatar_url)
+        em.set_footer('Poll created at')
+        em.timestamp = datetime.now()
 
         description_list = []
         for idx, opt in enumerate(option_list):
@@ -41,6 +43,9 @@ class Poll:
         em.description = '\n'.join(description_list)
 
         poll_msg = await ctx.send(embed=em)
+
+        for e in self.emoji_map[:len(option_list)]:
+            await poll_msg.add_reaction(e)
 
 
 def setup(bot):
