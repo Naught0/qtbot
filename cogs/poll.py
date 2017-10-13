@@ -2,6 +2,7 @@
 import discord
 import asyncio
 from datetime import datetime
+from utils import dict_manip as dm
 from discord.ext import commands
 
 class Poll:
@@ -66,7 +67,7 @@ class Poll:
                 user_set.add(user)
                 poll_results[reaction.emoji]['total_votes'] += 1
 
-        chan_choice = max(poll_results, key=poll_results.get)
+        chan_choice = dm.key_with_max_value(poll_results)
         await ctx.send('The channel has spoken!\n'
                        f'The best option is {chan_choice} {poll_results[chan_choice]}')
         
