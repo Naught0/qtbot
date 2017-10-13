@@ -67,9 +67,10 @@ class Poll:
                 user_set.add(user)
                 poll_results[reaction.emoji]['total_votes'] += 1
 
-        chan_choice = dm.key_with_max_value(poll_results)
-        await ctx.send('The channel has spoken!\n'
-                       f'The best option is {chan_choice} {poll_results[chan_choice]}')
+        # chan_choice = dm.key_with_max_value(poll_results)
+        # await ctx.send('The channel has spoken!\n'
+        #                f'The best option is {chan_choice} {poll_results[chan_choice]}')
+        await ctx.send(poll_results)
         
 
 def setup(bot):
