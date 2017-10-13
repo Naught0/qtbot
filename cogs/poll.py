@@ -65,7 +65,7 @@ class Poll:
             
             if reaction.emoji in poll_votes:
                 user_set.add(user)
-                poll_votes[reaction.emoji]['total_votes'] += 1
+                poll_votes[reaction.emoji] += 1
 
         chan_choice = dm.key_with_max_value(poll_votes)
         await ctx.send('The channel has spoken!\n'
