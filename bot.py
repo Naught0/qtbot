@@ -18,7 +18,7 @@ class QTBot(commands.Bot):
             self.token = json.load(f)['discord']
 
         super().__init__(command_prefix='.', description=self.description,
-                         pm_help=True, *args, **kwargs)
+                         pm_help=None, *args, **kwargs)
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
 
