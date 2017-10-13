@@ -59,7 +59,7 @@ class Poll:
             try: 
                 reaction, user = await self.bot.wait_for('reaction_add', check=check, timeout=timeout)
             except asyncio.TimeoutError:
-                await bot_message.clear_reactions()
+                await poll_msg.clear_reactions()
                 break
             
             if reaction.emoji in poll_results:
