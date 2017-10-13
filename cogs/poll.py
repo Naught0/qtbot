@@ -39,10 +39,10 @@ class Poll:
         em.timestamp = datetime.now()
 
         description_list = []
-        poll_results = {}
+        poll_votes = {}
         for idx, opt in enumerate(option_list):
             description_list.append(f'{self.emoji_map[idx]} {opt}')
-            poll_results[f'{self.emoji_map[idx]}'] = {'opt': opt, 'total_votes': 0}
+            poll_votes[f'{self.emoji_map[idx]}'] = 0
 
         em.description = '\n'.join(description_list)
 
@@ -52,7 +52,7 @@ class Poll:
             await poll_msg.add_reaction(e)
 
         def check(reaction, user):
-            return user not in user_set and reaction.emoji in poll_results
+            return user not in user_set and reaction.emoji in poll_votes
 
         user_set = set()
 
@@ -63,14 +63,13 @@ class Poll:
                 await poll_msg.clear_reactions()
                 break
             
-            if reaction.emoji in poll_results:
+            if reaction.emoji in poll_votes:
                 user_set.add(user)
-                poll_results[reaction.emoji]['total_votes'] += 1
+                poll_votes[reaction.emoji]['total_votes'] += 1
 
-        # chan_choice = dm.key_with_max_value(poll_results)
-        # await ctx.send('The channel has spoken!\n'
-        #                f'The best option is {chan_choice} {poll_results[chan_choice]}')
-        await ctx.send(poll_results)
+        chan_choice = dm.key_with_max_value(poll_votes)
+        await ctx.send('The channel has spoken!\n'
+                       f'The best option is {chan_choice} with {poll_votes[chan_choice]} votes.')
         
 
 def setup(bot):
