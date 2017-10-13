@@ -37,8 +37,10 @@ class Poll:
         em.timestamp = datetime.now()
 
         description_list = []
+        poll_results = {}
         for idx, opt in enumerate(option_list):
             description_list.append(f'{self.emoji_map[idx]} {opt}')
+            poll_results[f'{emoji_map[idx]}'] = {'opt' = opt, total_votes=0}
 
         em.description = '\n'.join(description_list)
 
@@ -47,6 +49,26 @@ class Poll:
         for e in self.emoji_map[:len(option_list)]:
             await poll_msg.add_reaction(e)
 
+        def check(reaction, user):
+            return user not in user_set and reaction.emoji in poll_results
+
+        user_set = set()
+
+        while True:
+            try: 
+                reaction, user = await self.bot.wait_for('reaction_add', check=check, timeout=timeout)
+            except asyncio.TimeoutError:
+                await bot_message.clear_reactions()
+                break
+            
+            if reaction.emoji in poll_results:
+                user_set.add(user)
+                poll_results[reaction.emoji]['total_votes'] += 1
+
+        chan_choice = max(poll_results, key=poll_results.get)
+        await ctx.send('The channel has spoken!\n'
+                       f'The best option is {chan_choice} {poll_results[chan_choice]}')
+        
 
 def setup(bot):
     bot.add_cog(Poll(bot))
