@@ -48,15 +48,7 @@ class News:
         """ Get the top 5 articles from Google News (http://newsapi.org) (Paginated) """
 
         # Add Emojis for navigation
-        emoji_tup = ('1\U000020e3',
-                     '2\U000020e3',
-                     '3\U000020e3',
-                     '4\U000020e3',
-                     '5\U000020e3',
-                     '6\U000020e3',
-                     '7\U000020e3',
-                     '8\U000020e3',
-                     '9\U000020e3')
+        emoji_tup = tuple(f'{x}\U000020e3' for x in range(1,10))
 
         em_dict = {}
 
