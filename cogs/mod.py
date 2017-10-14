@@ -9,27 +9,27 @@ class Moderator:
 
     @commands.command(aliases=['k'])
     @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, user: discord.User, *, reason=None):
-        """ Kick a user from the server """
-        await ctx.guild.kick(user, reason=reason)
-        await ctx.send(f'User `{user}` kicked.\n'
+    async def kick(self, ctx, member: discord.Member, *, reason=None):
+        """ Kick a member from the server """
+        await ctx.guild.kick(member, reason=reason)
+        await ctx.send(f'Member `{member}` kicked.\n'
                        f'Reason: `{reason}`.')
 
     @commands.command(aliases=['kb'])
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, user: discord.User, *, reason=None):
-        """ Ban a user from the server """
-        await ctx.guild.ban(user, reason=reason, delete_message_days=0)
-        await ctx.send(f'User `{user}` banned.\n'
+    async def ban(self, ctx, member: discord.Member, *, reason=None):
+        """ Ban a member from the server """
+        await ctx.guild.ban(member, reason=reason, delete_message_days=0)
+        await ctx.send(f'Member `{member}` banned.\n'
                        f'Reason: `{reason}`.')
 
     @commands.command(aliases=['ub'])
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, user: discord.User, *, reason=None):
-        """ Unban a user from the server
+    async def unban(self, ctx, member: discord.Member, *, reason=None):
+        """ Unban a member from the server
         Since you can't highlight them anymore use their name#discrim """
-        await ctx.guild.unban(user, reason=reason)
-        await ctx.send(f'User `{user}` unbanned.\n'
+        await ctx.guild.unban(member, reason=reason)
+        await ctx.send(f'Member `{member}` unbanned.\n'
                        f'Reason: `{reason}`.')
 
     @commands.command(aliases=['purge'])
@@ -42,7 +42,7 @@ class Moderator:
 
         # Check so that only bot msgs are removed
         def check(message):
-            return message.author.id == self.bot.user.id
+            return message.author.id == self.bot.member.id
 
         try:
             await ctx.channel.purge(check=check, limit=num_msg)
