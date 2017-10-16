@@ -8,7 +8,7 @@ class RIS:
     def __init__(self, bot):
         self.bot = bot
         self.aiohttp_session = bot.aio_session
-        self.gyaku_url = 'localhost:8000/search'
+        self.gyaku_url = 'http://localhost:8000/search'
 
     @commands.command()
     async def reverse_image_search(self, ctx, *, url: str):
