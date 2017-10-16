@@ -10,7 +10,7 @@ class RIS:
         self.aiohttp_session = bot.aio_session
         self.gyaku_url = 'http://localhost:8000/search'
 
-    @commands.command()
+    @commands.command(aliases=['ris'])
     async def reverse_image_search(self, ctx, *, url: str):
         """ Do a google reverse image search """
         async with self.aiohttp_session.post(self.gyaku_url, data=url) as r:
