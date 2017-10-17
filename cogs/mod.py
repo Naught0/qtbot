@@ -48,15 +48,18 @@ class Moderator:
     async def unban(self, ctx, member: BannedMember, *, reason=None):
         """ Unban a member from the server
         Since you can't highlight them anymore use their name#discrim or ID """
-        await ctx.guild.unban(member.user, reason=reason)
-        await ctx.send(f'Member `{member.user}` unbanned.\n'
-                       f'Reason: `{reason}`.')
+        if member is not None:
+            await ctx.guild.unban(member.user, reason=reason)
+            await ctx.send(f'Member `{member.user}` unbanned.\n'
+                           f'Reason: `{reason}`.')
+
+        else:
+            await ctx.send("Sorry, I couldn't find that user. Maybe they're not banned :thinking:")
 
     @commands.command(aliases=['purge'])
     @commands.has_permissions(manage_messages=True)
     async def clean(self, ctx, num_msg: int):
         """ Remove bot messages from the last X messages """
-
         if num_msg > 100:
             return await ctx.send('Sorry, number of messages to be deleted must not exceed 100.')
 
