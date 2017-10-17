@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from utils import aiohttp_wrap as aw
 
 
-class AskAsk:
+class Google:
     def __init__(self, bot):
         self.bot = bot
         self.aio_session = bot.aio_session
@@ -62,4 +62,4 @@ class AskAsk:
 
 
 def setup(bot):
-    bot.add_cog(AskAsk(bot))
+    bot.add_cog(Google(bot))
