@@ -3,6 +3,26 @@
 import discord
 from discord.ext import commands
 
+
+# This bit allows me to more easily unban members via ID or name#discrim
+# Taken mostly from R. Danny
+# https://github.com/Rapptz/RoboDanny/blob/rewrite/cogs/mod.py#L83-L94
+class BannedMember(commands.Converter):
+    async def convert(self, ctx, arg):
+        bans = await ctx.guild.bans()
+
+        try:
+            member_id = int(arg)
+            user = discord.utils.find(lambda u: u.user.id == member_id, bans)
+        except ValueError:
+            user = discord.utils.find(lambda u: str(u.user) == arg, bans)
+
+        if user is None:
+            return None
+
+        return user
+
+
 class Moderator:
     def __init__(self, bot):
         self.bot = bot
@@ -25,9 +45,9 @@ class Moderator:
 
     @commands.command(aliases=['ub'])
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, member: discord.Member, *, reason=None):
+    async def unban(self, ctx, member: BannedMember, *, reason=None):
         """ Unban a member from the server
-        Since you can't highlight them anymore use their name#discrim """
+        Since you can't highlight them anymore use their name#discrim or ID """
         await ctx.guild.unban(member, reason=reason)
         await ctx.send(f'Member `{member}` unbanned.\n'
                        f'Reason: `{reason}`.')
