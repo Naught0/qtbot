@@ -48,8 +48,8 @@ class Moderator:
     async def unban(self, ctx, member: BannedMember, *, reason=None):
         """ Unban a member from the server
         Since you can't highlight them anymore use their name#discrim or ID """
-        await ctx.guild.unban(member, reason=reason)
-        await ctx.send(f'Member `{member}` unbanned.\n'
+        await ctx.guild.unban(member.user, reason=reason)
+        await ctx.send(f'Member `{member.user}` unbanned.\n'
                        f'Reason: `{reason}`.')
 
     @commands.command(aliases=['purge'])
