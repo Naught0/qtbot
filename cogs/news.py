@@ -25,19 +25,19 @@ class News:
         em.description = json_dict['description']
         em.url = json_dict['url']
 
-		# This field is empty sometimes -> handle it
-		if json_dict['urlToImage'] is None:
-			pass
-			
-		# The image is sometimes missing http:
+        # This field is empty sometimes -> handle it
+        if json_dict['urlToImage'] is None:
+            pass
+            
+        # The image is sometimes missing http:
         elif json_dict['urlToImage'].startswith('//'):
             em.set_image(url=f'http:{json_dict["urlToImage"]}')
-			
-		# No funny business in the URL
+            
+        # No funny business in the URL
         else:
             em.set_image(url=json_dict['urlToImage'])
-		
-		# This is just some cute news icon I found
+        
+        # This is just some cute news icon I found
         em.set_thumbnail(
             url='http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png')
 
