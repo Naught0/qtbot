@@ -22,7 +22,6 @@ class FindMeme:
 
         if await self.redis_client.exists(f'memecache:{f_search}'):
             link = await self.redis_client.get(f'memecache:{f_search}')
-            link = link.decode('utf8')
 
         else:
             request_html = await aw.aio_get_text(self.aio_session,
@@ -40,7 +39,7 @@ class FindMeme:
             else:
                 link = link_list[0]
                 # 1 day cache time as these pages are pretty much static
-                await self.redis_client.set(f'memecache:{f_search}', f'{link.encode("utf8")}', ex=86400)
+                await self.redis_client.set(f'memecache:{f_search}', f'{link}', ex=86400)
 
         await ctx.send(f'{link}')
 
