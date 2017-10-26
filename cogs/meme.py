@@ -22,6 +22,7 @@ class FindMeme:
 
         if await self.redis_client.exists(f'memecache:{f_search}'):
             link = await self.redis_client.get(f'memecache:{f_search}')
+            link = link.decode('utf8')
 
         else:
             request_html = await aw.aio_get_text(self.aio_session,
