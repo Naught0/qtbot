@@ -39,7 +39,7 @@ class FindMeme:
             else:
                 link = link_list[0]
                 # 1 day cache time as these pages are pretty much static
-                await self.redis_client.set(f'memecache:{f_search}', f'{link}', ex=86400)
+                await self.redis_client.set(f'memecache:{f_search}', f'{link.encode("utf8")}', ex=86400)
 
         await ctx.send(f'{link}')
 
