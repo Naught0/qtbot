@@ -159,7 +159,7 @@ class Tag:
 
         tt = await self.pg_con.fetchval(f'''SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}''')
         ttu = await self.pg_con.fetchval(f'''SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}''')
-        em.description = f'Totala Tags: {tt}\nTotal Tag Uses: {ttu}'
+        em.description = f'Total Tags: {tt}\nTotal Tag Uses: {ttu}'
 
         get_top_tags = '''SELECT tag_name, total_uses
                             FROM tags 
