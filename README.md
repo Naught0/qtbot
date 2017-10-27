@@ -22,7 +22,7 @@ Noteworthy categories are:
 
 ## Running the bot
 
-Don't. Just DM naught0#4417 and I'll join the bot to your server.
+Don't. Just DM naught0#4417 and I'll add the bot to your server.
 
 ### Disclaimer
 
