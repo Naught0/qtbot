@@ -215,11 +215,10 @@ class League:
             patch_summary = soup.find('blockquote').text.strip()
 
         # Create embed
-        em = discord.Embed(title='LoL Patch Notes', color=discord.Color.green(), url=newest_patch_url,
-                           description=patch_summary)
+        em = discord.Embed(color=discord.Color.green(), url=newest_patch_url, description=patch_summary)
         em.set_image(url=image_url)
-        em.set_author(
-            icon_url='http://2.bp.blogspot.com/-HqSOKIIV59A/U8WP4WFW28I/AAAAAAAAT5U/qTSiV9UgvUY/s1600/icon.png')
+        em.set_author(name='LoL Patch Notes',
+                      icon_url='http://2.bp.blogspot.com/-HqSOKIIV59A/U8WP4WFW28I/AAAAAAAAT5U/qTSiV9UgvUY/s1600/icon.png')
         await ctx.send(embed=em)
 
 
