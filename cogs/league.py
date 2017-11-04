@@ -1,7 +1,8 @@
 #!/bin/env python
 
-import discord
+import ast
 import json
+import discord
 from bs4 import BeautifulSoup
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
@@ -199,8 +200,9 @@ class League:
     @commands.command(aliases=['patch', 'pnotes'])
     async def patch_notes(self, ctx):
         """ Get the latest League of Legends patch notes """
-        if await self.redis_client.exists(f'league_pnotes'):
-            pass
+        if await self.redis_client.exists('league_pnotes'):
+            em_dict = ast.literal_eval(await self.redis_client.get('league_pnotes'))
+            em = discord.Embed.from_data(em_dict)
 
         else:
             # Initial request for the newest patch notes
@@ -214,11 +216,15 @@ class League:
             soup = BeautifulSoup(patch_page_html, 'lxml')
             patch_summary = soup.find('blockquote').text.strip()
 
-        # Create embed
-        em = discord.Embed(color=discord.Color.green(), url=newest_patch_url, description=patch_summary)
-        em.set_image(url=image_url)
-        em.set_author(name='LoL Patch Notes',
-                      icon_url='http://2.bp.blogspot.com/-HqSOKIIV59A/U8WP4WFW28I/AAAAAAAAT5U/qTSiV9UgvUY/s1600/icon.png')
+            # Create embed
+            em = discord.Embed(color=discord.Color.green(), url=newest_patch_url, description=patch_summary)
+            em.set_image(url=image_url)
+            em.set_author(name='LoL Patch Notes',
+                          icon_url='http://2.bp.blogspot.com/-HqSOKIIV59A/U8WP4WFW28I/AAAAAAAAT5U/qTSiV9UgvUY/s1600/icon.png')
+
+            # Store this embed for 3 hours for easy retrieval later
+            await self.redis_client.set(f'league_pnotes', str(em.to_dict()), ex=10800)
+
         await ctx.send(embed=em)
 
 
