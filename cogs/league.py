@@ -217,7 +217,7 @@ class League:
         # Create embed
         em = discord.Embed(title='LoL Patch Notes', color=discord.Color.green(), url=newest_patch_url,
                            description=patch_summary)
-        em.set_thumbnail(url=thumb_url)
+        em.set_imagel(url=thumb_url)
         await ctx.send(embed=em)
 
 
