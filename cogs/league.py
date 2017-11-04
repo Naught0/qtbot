@@ -204,12 +204,12 @@ class League:
 
         else:
             # Initial request for the newest patch notes
-            patch_main_html = await aw.aio_get_text(self.patch_url, headers=self.browser_headers)
+            patch_main_html = await aw.aio_get_text(self.session, self.patch_url, headers=self.browser_headers)
             soup = BeautifulSoup(patch_main_html, 'lxml')
             newest_patch_url = f'https://na.leagueoflegends.com{soup.find("h4").a["href"]}'
 
             # Scrape the actual patch notes page
-            patch_page_html = await aw.aio_get_text(newest_patch_url, headers=self.browser_headers)
+            patch_page_html = await aw.aio_get_text(self.session, newest_patch_url, headers=self.browser_headers)
 
         # Create embed
         em = discord.Embed(title='LoL Patch Notes', color=discord.Color.green(), url=newest_patch_url)
