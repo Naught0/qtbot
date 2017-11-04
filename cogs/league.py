@@ -2,6 +2,7 @@
 
 import discord
 import json
+from bs4 import BeautifulSoup
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
 from riot_observer import RiotObserver as ro
@@ -11,13 +12,20 @@ from utils.user_funcs import PGDB
 
 class League:
     def __init__(self, bot):
+        # Bot attrs
         self.bot = bot
-        self.aio_session = bot.aio_session
+        self.session = bot.aio_session
         self.redis_client = bot.redis_client
         self.db = PGDB(bot.pg_con)
+
+        # Request information
         self.elo_api_uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
         self.elo_headers = {'user-agent': 'qtbot/1.0'}
+        self.browser_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, '
+                                              'like Gecko) Chrome/64.0.3257.0 Safari/537.36'}
+        self.patch_url = 'https://na.leagueoflegends.com/en/news/game-updates/patch'
 
+        # API deets
         with open('data/apikeys.json') as fp:
             api_keys = json.load(fp)
 
@@ -56,7 +64,7 @@ class League:
 
         # Stores results if not found in cache for 6hrs (API only updates twice a day anyway)
         else:
-            res = await aw.aio_get_json(self.aio_session, uri.format(champ_id, self.champion_gg_api_key))
+            res = await aw.aio_get_json(self.session, uri.format(champ_id, self.champion_gg_api_key))
 
             # New champs have no data
             if not res:
@@ -141,7 +149,7 @@ class League:
             # Send typing because this can take a while
             await ctx.trigger_typing()
             elo_data = await aw.aio_get_json(
-                self.aio_session, self.elo_api_uri.format(f_summoner), headers=self.elo_headers)
+                self.session, self.elo_api_uri.format(f_summoner), headers=self.elo_headers)
 
             # No data found -- don't bother storing it
             if elo_data is None or 'error' in elo_data :
@@ -186,6 +194,25 @@ class League:
 
         em.set_footer(text="Powered by WhatIsMyMMR.com and Riot's API.")
 
+        await ctx.send(embed=em)
+        
+    @commands.command(aliases=['patch', 'pnotes'])
+    async def patch_notes(self, ctx):
+        """ Get the latest League of Legends patch notes """
+        if await self.redis_client.exists(f'league_pnotes'):
+            pass
+
+        else:
+            # Initial request for the newest patch notes
+            patch_main_html = await aw.aio_get_text(self.patch_url, headers=self.browser_headers)
+            soup = BeautifulSoup(patch_main_html, 'lxml')
+            newest_patch_url = f'https://na.leagueoflegends.com{soup.find("h4").a["href"]}'
+
+            # Scrape the actual patch notes page
+            patch_page_html = await aw.aio_get_text(newest_patch_url, headers=self.browser_headers)
+
+        # Create embed
+        em = discord.Embed(title='LoL Patch Notes', color=discord.Color.green(), url=newest_patch_url)
         await ctx.send(embed=em)
 
 
