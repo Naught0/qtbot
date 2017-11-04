@@ -207,8 +207,7 @@ class League:
             patch_main_html = await aw.aio_get_text(self.session, self.patch_url, headers=self.browser_headers)
             soup = BeautifulSoup(patch_main_html, 'lxml')
             newest_patch_url = f'https://na.leagueoflegends.com{soup.find("h4").a["href"]}'
-            thumb_url = f"https://na.leagueoflegends.com{soup.find('img', attrs={'typeof': 'foaf:Image'})}"
-            print(thumb_url)
+            thumb_url = f"https://na.leagueoflegends.com{soup.find('img', attrs={'typeof': 'foaf:Image'})['src']}"
 
             # Scrape the actual patch notes page
             patch_page_html = await aw.aio_get_text(self.session, newest_patch_url, headers=self.browser_headers)
@@ -218,7 +217,7 @@ class League:
         # Create embed
         em = discord.Embed(title='LoL Patch Notes', color=discord.Color.green(), url=newest_patch_url,
                            description=patch_summary)
-        # em.set_thumbnail(url=thumb_url)
+        em.set_thumbnail(url=thumb_url)
         await ctx.send(embed=em)
 
 
