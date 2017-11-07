@@ -223,7 +223,7 @@ class League:
                           icon_url='http://2.bp.blogspot.com/-HqSOKIIV59A/U8WP4WFW28I/AAAAAAAAT5U/qTSiV9UgvUY/s1600/icon.png')
 
             # Store this embed for 3 hours for easy retrieval later
-            await self.redis_client.set(f'league_pnotes', str(em.to_dict()), ex=10800)
+            await self.redis_client.set('league_pnotes', str(em.to_dict()), ex=10800)
 
         await ctx.send(embed=em)
 
