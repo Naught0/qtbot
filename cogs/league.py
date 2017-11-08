@@ -135,7 +135,9 @@ class League:
 
         # fetch_user_info() will return None if there is no summoner found
         if summoner is None:
-            return await ctx.send("Sorry you're not in my file. Use `aln` or `addl` to add your League of Legends summoner name, or supply a name to this command.")
+            return await ctx.send("Sorry you're not in my file. "
+                                  "Use `aln` or `addl` to add your League of Legends summoner name, "
+                                  "or supply a name to this command.")
 
         f_summoner = summoner.replace(' ', '%20')
 
@@ -157,8 +159,7 @@ class League:
                 return await ctx.send(f"Sorry, I can't find `{summoner}`\nResponse:```{elo_data}```")
 
             # Store in redis cache
-            await self.redis_client.set(f'elo:{f_summoner}', json.dumps(elo_data), ex=7200)
-
+            await self.redis_client.set(f'elo:{f_summoner}', json.dumps(elo_data), ex=2*60*60)
 
         # Replace 'None' with 0 for error margin because "+/- None" looks bad
         for kind in elo_data:
@@ -181,13 +182,11 @@ class League:
 
             # Add to embed field
             em.add_field(name='Approximate rank', value=rank_str)
-            em.add_field(name='Ranked MMR',
-                value=f"{elo_data['ranked']['avg']}±{elo_data['ranked']['err']}")
+            em.add_field(name='Ranked MMR', value=f"{elo_data['ranked']['avg']}±{elo_data['ranked']['err']}")
 
         # Display normal MMR
         if elo_data['normal']['avg']:
-            em.add_field(name='Normal MMR',
-                value=f"{elo_data['normal']['avg']}±{elo_data['normal']['err']}")
+            em.add_field(name='Normal MMR', value=f"{elo_data['normal']['avg']}±{elo_data['normal']['err']}")
 
         # Display ARAM MMR
         if elo_data['ARAM']['avg']:

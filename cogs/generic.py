@@ -43,15 +43,15 @@ class Generic:
 
     @commands.command()
     async def same(self, ctx):
-        await ctx.send('\n[✓] same\n[ ] unsame')
+        await ctx.send('```[✓] same\n[ ] unsame```')
 
     @commands.command()
     async def unsame(self, ctx):
-        await ctx.send('\n[ ] same\n[✓] unsame')
+        await ctx.send('```[ ] same\n[✓] unsame```')
 
     @commands.command()
     async def resame(self, ctx):
-        await ctx.send('\n[✓] same\n [✓] re:same\n [ ] unsame')
+        await ctx.send('```[✓] same\n [✓] re:same\n [ ] unsame```')
 
     @commands.command()
     async def slap(self, ctx, *, target=None):
