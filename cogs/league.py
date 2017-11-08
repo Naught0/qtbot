@@ -3,6 +3,7 @@
 import ast
 import json
 import discord
+from textwrap import shorten
 from bs4 import BeautifulSoup
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
@@ -216,7 +217,9 @@ class League:
             patch_summary = soup.find('blockquote').text.strip()
 
             # Create embed
-            em = discord.Embed(color=discord.Color.green(), url=newest_patch_url, description=patch_summary)
+            em = discord.Embed(color=discord.Color.green(), url=newest_patch_url,
+                               # This will hit the char limit from time to time -> shorten
+                               description=shorten(patch_summary, width=1950, placeholder='...'))
             em.set_image(url=image_url)
             em.set_author(name='LoL Patch Notes',
                           icon_url='http://2.bp.blogspot.com/-HqSOKIIV59A/U8WP4WFW28I/AAAAAAAAT5U/qTSiV9UgvUY/s1600/icon.png')
