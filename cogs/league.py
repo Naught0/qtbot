@@ -214,7 +214,7 @@ class League:
             # Scrape the actual patch notes page
             patch_page_html = await aw.aio_get_text(self.session, newest_patch_url, headers=self.browser_headers)
             soup = BeautifulSoup(patch_page_html, 'lxml')
-            patch_summary = textwrap.shorten(soup.find('blockquote').text.strip(), width=1000, placeholder='...')
+            patch_summary = textwrap.shorten(soup.find('blockquote').text, width=1000, placeholder='...')
 
             # Create embed
             em = discord.Embed(color=discord.Color.green(), url=newest_patch_url,
