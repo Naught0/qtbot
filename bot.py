@@ -17,7 +17,7 @@ class QTBot(commands.Bot):
         with open(self.config_file) as f:
             self.token = json.load(f)['discord']
 
-        super().__init__(command_prefix='.', description=self.description,
+        super().__init__(command_prefix=self.get_prefix, description=self.description,
                          pm_help=None, *args, **kwargs)
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
@@ -37,7 +37,7 @@ class QTBot(commands.Bot):
     def get_prefix(self, message):
         try:
             return self.pre_dict[message.guild.id]
-        except (IndexError, AttributeError):
+        except (KeyError, AttributeError):
             return 'qt.'
 
     async def create_db_pool(self):
