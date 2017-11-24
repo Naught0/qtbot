@@ -26,6 +26,7 @@ class BannedMember(commands.Converter):
 class Moderator:
     def __init__(self, bot):
         self.bot = bot
+        self.pg = bot.pg_con
 
     @commands.command(aliases=['k'])
     @commands.has_permissions(kick_members=True)
@@ -71,6 +72,24 @@ class Moderator:
             await ctx.channel.purge(check=check, limit=num_msg)
         except Exception as e:
             await ctx.send(f'Failed to delete messages.\n ```py\n{e}```')
+
+    @commands.command(name='prefix', aliases=['set_pre', 'pre'])
+    @commands.has_permissions(manage_guild=True)
+    async def set_prefix(self, ctx, *, prefix):
+        """ Set the server's command prefix for qtbot """
+        execute = f'''INSERT INTO custom_prefix (guild_id, prefix) VALUES ({ctx.guild.id}, $1)
+                      ON CONFLICT (guild_id) DO 
+                          UPDATE SET prefix = $1;'''
+        try:
+            await self.pg.execute(execute, prefix)
+        except Exception as e:
+            print(e)
+            await ctx.send(f"Sorry, couldn't change prefix to `{prefix}`.")
+        else:
+            # Update the prefix dict
+            self.bot.pre_dict[ctx.guild.id] = prefix
+
+
 
 
 def setup(bot):

@@ -217,9 +217,7 @@ class League:
             patch_summary = textwrap.shorten(soup.find('blockquote').text, width=1000, placeholder='...')
 
             # Create embed
-            em = discord.Embed(color=discord.Color.green(), url=newest_patch_url,
-                               # This will hit the char limit from time to time -> shorten
-                               description=patch_summary)
+            em = discord.Embed(color=discord.Color.green(), url=newest_patch_url, description=patch_summary)
             em.set_image(url=image_url)
             em.set_author(name='LoL Patch Notes',
                           icon_url='http://2.bp.blogspot.com/-HqSOKIIV59A/U8WP4WFW28I/AAAAAAAAT5U/qTSiV9UgvUY/s1600/icon.png')

@@ -21,21 +21,29 @@ class QTBot(commands.Bot):
                          pm_help=None, *args, **kwargs)
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
-
         self.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
-
         self.startup_extensions = [x.stem for x in Path('cogs').glob('*.py')]
-
         self.loop.run_until_complete(self.create_db_pool())
+        self.loop.run_until_complete(self.load_all_prefixes())
 
     def run(self):
         super().run(self.token)
 
+    async def load_all_prefixes(self) -> list:
+        pres = await self.pg_con.fetch('SELECT * from custom_prefix')
+        # Load custom prefixes into a dict
+        self.pre_dict = {r['guild_id']: r['prefix'] for r in pres}
+
+    def get_prefix(self, message):
+        try:
+            return self.pre_dict[message.guild.id]
+        except (IndexError, AttributeError):
+            return 'qt.'
+
     async def create_db_pool(self):
         with open(self.config_file) as f:
             self.pg_pw = json.load(f)['postgres']
-        self.pg_con = await asyncpg.create_pool(user='james', password=self.pg_pw,
-                                                database='discord_testing')
+        self.pg_con = await asyncpg.create_pool(user='james', password=self.pg_pw, database='discord_testing')
 
     async def on_ready(self):
         if not hasattr(self, 'start_time'):
