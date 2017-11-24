@@ -89,7 +89,7 @@ class Moderator:
             # Update the prefix dict
             self.bot.pre_dict[ctx.guild.id] = prefix
 
-
+        await ctx.send(f'Changed command prefix to `{prefix}`.')
 
 
 def setup(bot):
