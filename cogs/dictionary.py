@@ -49,7 +49,7 @@ class Dictionary:
     async def urban_dictionary(self, ctx, *, word):
         """ Consult the world's leading dictionary """
         try:
-            result = await urban.get_word(word)
+            result = await self.urban.get_word(word)
         except AsyncUrban.errors.WordNotFoundError:
             return await ctx.send(f"Sorry, couldn't find anything on `{word}`.")
         except ConnectionError:
@@ -60,7 +60,7 @@ class Dictionary:
     @urban_dictionary.command(name='random', aliases=['-r', 'rand'])
     async def _random(self, ctx):
         """ Get a random word from UrbanDictionary """
-        word = await urban.get_random()
+        word = await self.urban.get_random()
 
         await ctx.send(f'{word.title()}: `{word.definition}`')
 
