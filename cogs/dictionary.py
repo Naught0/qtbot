@@ -1,13 +1,15 @@
 import discord
 import json
+import AsyncUrban
 from discord.ext import commands
+from AsyncUrban.urbandictionary import UrbanDictionary
 from wordnik import *
-import urbandictionary as urbdic
 
 
 class Dictionary:
     def __init__(self, bot):
         self.bot = bot
+        self.urban = UrbanDictionary(loop=bot.loop, session=bot.aio_session)
 
     # Load API key
     with open('data/apikeys.json') as f:
@@ -42,16 +44,25 @@ class Dictionary:
 
         await ctx.send(f'{word.title()} _{word_pos}_ `{final_result.text}`')
 
-    # Urban dictionary
-    @commands.command(name='ud')
-    async def get_urban_def(self, ctx, *, word):
+
+    @commands.group(invoke_without_subcommand=True, name='urbdic', aliases=['ud'])
+    async def urban_dictionary(self, ctx, *, word):
         """ Consult the world's leading dictionary """
-        result = urbdic.define(word)
+        try:
+            result = await urban.get_word(word)
+        except AsyncUrban.errors.WordNotFoundError:
+            return await ctx.send(f"Sorry, couldn't find anything on `{word}`.")
+        except ConnectionError:
+            return await ctx.send(f"Sorry, the UrbanDicitonary API buggered off.")
 
-        if not result:
-            return await ctx.send("Sorry, couldn't find that one.")
+        await ctx.send(f'{word.title()}: `{result.definition}`')
 
-        await ctx.send(f'{word.title()}: `{result[0].definition}`')
+    @urban_dictionary.command(name='random', aliases=['-r', 'rand'])
+    async def _random(self, ctx):
+        """ Get a random word from UrbanDictionary """
+        word = await urban.get_random()
+
+        await ctx.send(f'{word.title()}: `{word.definition}`')
 
 
 def setup(bot):
