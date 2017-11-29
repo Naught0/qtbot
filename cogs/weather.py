@@ -13,8 +13,11 @@ class Weather:
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
         self.db = PGDB(bot.pg_con)
-        self.api_url = 'http://api.openweathermap.org/data/2.5/weather?zip={},{}&APPID={}'
-        self.wunder_api_url = 'http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json'
+        self.locale_abv_dict = {'metric': {'temp': '°C', 'dt': 'm/s'}, 
+                                'imperial': {'temp': '°F', 'dt': 'mph'}, 
+                                'kelvin': {'temp': 'K', 'dt': 'm/s'}}
+        self.owm_url = 'http://api.openweathermap.org/data/2.5/weather'
+        self.wunder_url = 'http://api.wunderground.com/api/{}/forecast/geolookup/conditions/q/{}.json'
 
         with open('data/apikeys.json') as fp:
             api_keys = json.load(fp)
@@ -45,6 +48,10 @@ class Weather:
             return await ctx.send(
                 "Sorry, you're not in my file. Please use `az` to add your zipcode, or supply one to the command.")
 
+        # Get the OWM units param for the call if one is to be made
+        # This is also used later to determine °F or °C and m/s vs mph
+        units = 'imperial' if region_abv == 'us' else 'metric'
+
         # Check for cached results in redis server
         if await self.redis_client.exists(f'{zip_code}:weather'):
             owm_data = await self.redis_client.get(f'{zip_code}:weather')
@@ -53,7 +60,8 @@ class Weather:
         # Store reults in cache for 7200 seconds
         # This is the frequency with which the API updates so there's no use in querying at a faster rate
         else:
-            owm_data = await aw.aio_get_json(self.aio_session, self.api_url.format(zip_code, region_abv, self.api_key))
+            params = {'zip': zip_code, 'APPID': self.api_key, 'units': units}
+            owm_data = await aw.aio_get_json(self.aio_session, self.owm_url, params=params)
 
             if not owm_data:
                 return await ctx.send(f"Sorry, I couldn't find weather for `{zip_code}`.")
@@ -63,11 +71,11 @@ class Weather:
         # Create the embed
         em = discord.Embed(title=f"Weather for {owm_data['name']}", color=discord.Color.dark_orange())
 
-        # Yeah this converts from Kevlin to Fahrenheit...
-        em.add_field(name='Temperature', value=f"{float((owm_data['main']['temp'] - 273) * 1.8 + 32):.1f}°F")
+        em.add_field(name='Temperature', 
+                     value=f"{float(owm_data['main']['temp']):.2f}{self.locale_abv_dict[units]['temp']}") 
         em.add_field(name='Conditions', value=f"{owm_data['weather'][0]['description'].capitalize()}")
         em.add_field(name='Humidity', value=f"{owm_data['main']['humidity']}%")
-        em.add_field(name='Winds', value=f"{float(owm_data['wind']['speed']) * 2.237:.2f}mph")
+        em.add_field(name='Winds', value=f"{float(owm_data['wind']['speed']):.2f} {self.locale_abv_dict[units]['dt']}")
         em.set_thumbnail(url=f"http://openweathermap.org/img/w/{owm_data['weather'][0]['icon']}.png")
 
         await ctx.send(embed=em)
@@ -90,7 +98,7 @@ class Weather:
         # Store reults in cache for 7200 seconds
         # This is the frequency with which the API updates so there's no use in querying at a faster rate
         else:
-            resp = await aw.aio_get_json(self.aio_session, self.wunder_api_url.format(self.wunder_api_key, zip_code))
+            resp = await aw.aio_get_json(self.aio_session, self.wunder_url.format(self.wunder_api_key, zip_code))
 
             # Handling CityNotFound exception
             if not ('location' in resp and 'city' in resp['location']):
