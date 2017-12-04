@@ -23,19 +23,22 @@ class Weather:
     def get_weather_json(html: str) -> dict:
         """ Returns a dict representation of Bing weather """ 
         soup = BeautifulSoup(html, 'lxml')
-        return {
-                'weather': {
-                    'loc': soup.find('div', class_='wtr_locTitle').text.split(', '),
-                    'temp': int(soup.find('div', class_='wtr_currTemp').text),
-                    'precip': soup.find('div', class_='wtr_currPerci').text.split(': ')[-1],
-                    'img_url': soup.find('img', class_='wtr_currImg')['src'],
-                    'curr_cond': soup.find('div', class_='wtr_caption').text,
-                    'wind': soup.find('div', class_='wtr_currWind').text.split(': ')[-1],
-                    'humidity': soup.find('div', class_='wtr_currHumi').text.split(': ')[-1]
-                },
-                'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
-            }
-    
+        data = {
+                   'weather': {
+                       'loc': soup.find('div', class_='wtr_locTitle').text.split(', '),
+                       'temp': int(soup.find('div', class_='wtr_currTemp').text),
+                       'precip': soup.find('div', class_='wtr_currPerci').text.split(': ')[-1],
+                       'img_url': soup.find('img', class_='wtr_currImg')['src'],
+                       'curr_cond': soup.find('div', class_='wtr_caption').text,
+                       'wind': soup.find('div', class_='wtr_currWind').text.split(': ')[-1],
+                       'humidity': soup.find('div', class_='wtr_currHumi').text.split(': ')[-1] },
+
+                   'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
+        }
+        data['needs_conversion'] = True if len(data['weather']['loc'][-1]) == 2 else False
+
+        return data
+
     @staticmethod
     def f2c(weather_data: dict) -> dict:
         """ Converts F to C and returns the dict anew """
@@ -77,16 +80,14 @@ class Weather:
                                          params={'q': f'weather {location}'})
             weather_data = self.get_weather_json(resp)
 
-            # This is a janky way to determine whether to use F vs C
-            # Non-US locations will have the state name in caps, so we check for that
-            if weather_data['weather']['loc'][-1].upper() != weather_data['weather']['loc'][-1]:
-                celsius = True
-                weather_data = self.f2c(weather_data)
-            else:
-                celsius = False
-
-            # Set the redis cache for this specific location
             await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
+
+        # Make SI conversions if needed
+        if weather_data['needs_conversion']:
+            celsius = True
+            weather_data = self.f2c(weather_data)
+        else:
+            celsius = False
 
         c_wt = weather_data['weather']
         # Create the embed
