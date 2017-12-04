@@ -73,7 +73,7 @@ class Weather:
             raw_weather_str = await self.redis_client.get(redis_key)
             weather_data = json.loads(raw_weather_str)
         else:
-            resp = await aw.aio_get_json(self.aio_session, self.url, headers=self.headers, params={'q': location}).text
+            resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers, params={'q': location})
             weather_data = self.get_weather_json(resp)
 
             # This is a janky way to determine whether to use F vs C
