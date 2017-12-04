@@ -1,5 +1,6 @@
 import discord
 import json
+from bs4 import BeautifulSoup
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
 from utils.user_funcs import PGDB
@@ -31,7 +32,7 @@ class Weather:
                     'curr_cond': soup.find('div', class_='wtr_caption').text,
                     'wind': soup.find('div', class_='wtr_currWind').text.split(': ')[-1],
                     'humidity': soup.find('div', class_='wtr_currHumi').text.split(': ')[-1]
-                }
+                },
                 'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
             }
     
