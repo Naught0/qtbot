@@ -95,7 +95,7 @@ class Weather:
 
         c_wt = weather_data['weather']
         # Create the embed
-        em = discord.Embed(title=', '.join(c_wt['loc']))
+        em = discord.Embed(title=c_wt['loc'])
         em.add_field(name='Temperature',
                      value=f"{c_wt['temp']}°F" if not celsius else f"{c_wt['temp']}°C")
         em.add_field(name='Conditions', value=c_wt['curr_cond'])
