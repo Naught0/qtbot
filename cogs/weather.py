@@ -82,6 +82,8 @@ class Weather:
             if weather_data['weather']['loc'][-1].upper() != weather_data['weather']['loc'][-1]:
                 celsius = True
                 weather_data = self.f2c(weather_data)
+            else:
+                celsius = False
 
             # Set the redis cache for this specific location
             await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
