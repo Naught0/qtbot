@@ -25,7 +25,8 @@ class Giphy:
         """ Thank your overlord, qtbot """
         gif_result = await gwrap.rand_search(self.aio_session, query='blushing')
 
-        em = discord.Embed(image_url=gif_result['fixed_width_downsampled_url'])
+        em = discord.Embed()
+        em.set_image(url=gif_result['fixed_width_downsampled_url'])
         await ctx.send(embed=em)
 
 def setup(bot):
