@@ -62,42 +62,44 @@ class Weather:
     @commands.command(aliases=['wt'])
     async def weather(self, ctx, location: str = None):
         """ Get the weather of a given area (zipcode, city, etc.) """
-        if location is None:
-            location = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
-            if location is None:
-                return await ctx.error("Sorry, you don't have a location saved.\n"
-                                       "Feel free to use `al` to add your location, or supply one to the command")
+        # if location is None:
+        #     location = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
+        #     if location is None:
+        #         return await ctx.error("Sorry, you don't have a location saved.\n"
+        #                                "Feel free to use `al` to add your location, or supply one to the command")
         
-        redis_key = f'{location}:weather'
-        if await self.redis_client.exists(redis_key):
-            raw_weather_str = await self.redis_client.get(redis_key)
-            weather_data = json.loads(raw_weather_str)
-        else:
-            resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers, params={'q': location})
-            weather_data = self.get_weather_json(resp)
+        # redis_key = f'{location}:weather'
+        # if await self.redis_client.exists(redis_key):
+        #     raw_weather_str = await self.redis_client.get(redis_key)
+        #     weather_data = json.loads(raw_weather_str)
+        # else:
+        #     resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers, params={'q': location})
+        #     weather_data = self.get_weather_json(resp)
 
-            # This is a janky way to determine whether to use F vs C
-            # Non-US locations will have the state name in caps, so we check for that
-            if weather_data['weather']['loc'][-1].upper() != weather_data['weather']['loc'][-1]:
-                celsius = True
-                weather_data = self.f2c(weather_data) 
+        #     # This is a janky way to determine whether to use F vs C
+        #     # Non-US locations will have the state name in caps, so we check for that
+        #     if weather_data['weather']['loc'][-1].upper() != weather_data['weather']['loc'][-1]:
+        #         celsius = True
+        #         weather_data = self.f2c(weather_data) 
 
-            # Set the redis cache for this specific location
-            await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
+        #     # Set the redis cache for this specific location
+        #     await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
 
-        c_wt = weather_data['weather'] 
-        # Create the embed
-        em = discord.Embed(title=', '.join(c_wt['loc']))
-        em.add_field(name='Temperature',
-                     value=f"{c_wt['temp']}°F" if not celsius else f"{c_wt['temp']}°C")
-        em.add_field(name='Conditions', value=c_wt['curr_cond'])
-        em.add_field(name='Wind',
-                     value=f"{c_wt['wind']} MPH" if not celsius else f"{c_wt['wind']} m/s")
-        em.add_field(name='Chance of precipitation', value=c_wt['precip'])
-        em.add_field(name='Humidity', value=c_wt['humidity'])
-        em.set_thumbnail(url=c_wt['img_url'])
+        # c_wt = weather_data['weather'] 
+        # # Create the embed
+        # em = discord.Embed(title=', '.join(c_wt['loc']))
+        # em.add_field(name='Temperature',
+        #              value=f"{c_wt['temp']}°F" if not celsius else f"{c_wt['temp']}°C")
+        # em.add_field(name='Conditions', value=c_wt['curr_cond'])
+        # em.add_field(name='Wind',
+        #              value=f"{c_wt['wind']} MPH" if not celsius else f"{c_wt['wind']} m/s")
+        # em.add_field(name='Chance of precipitation', value=c_wt['precip'])
+        # em.add_field(name='Humidity', value=c_wt['humidity'])
+        # em.set_thumbnail(url=c_wt['img_url'])
 
-        await ctx.send(embed=em)
+        # await ctx.send(embed=em)
+        resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers, params={'q': location})
+        print(resp)
 
 
     @commands.command(name='fc')
