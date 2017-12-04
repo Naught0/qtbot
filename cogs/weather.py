@@ -20,20 +20,20 @@ class Weather:
 
     @staticmethod
     def get_weather_json(html: str) -> dict:
-    """ Returns a dict representation of Bing weather """ 
-    soup = BeautifulSoup(html, 'lxml')
-    return {
-            'weather': {
-                'loc': soup.find('div', class_='wtr_locTitle').text.split(', '),
-                'temp': int(soup.find('div', class_='wtr_currTemp').text),
-                'precip': soup.find('div', class_='wtr_currPerci').text.split(': ')[-1],
-                'img_url': soup.find('img', class_='wtr_currImg')['src'],
-                'curr_cond': soup.find('div', class_='wtr_caption').text,
-                'wind': soup.find('div', class_='wtr_currWind').text.split(': ')[-1],
-                'humidity': soup.find('div', class_='wtr_currHumi').text.split(': ')[-1]
+        """ Returns a dict representation of Bing weather """ 
+        soup = BeautifulSoup(html, 'lxml')
+        return {
+                'weather': {
+                    'loc': soup.find('div', class_='wtr_locTitle').text.split(', '),
+                    'temp': int(soup.find('div', class_='wtr_currTemp').text),
+                    'precip': soup.find('div', class_='wtr_currPerci').text.split(': ')[-1],
+                    'img_url': soup.find('img', class_='wtr_currImg')['src'],
+                    'curr_cond': soup.find('div', class_='wtr_caption').text,
+                    'wind': soup.find('div', class_='wtr_currWind').text.split(': ')[-1],
+                    'humidity': soup.find('div', class_='wtr_currHumi').text.split(': ')[-1]
+                }
+                'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
             }
-            'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
-        }
     
     @staticmethod
     def f2c(weather_data: dict) -> dict:
