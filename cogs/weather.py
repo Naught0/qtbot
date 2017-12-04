@@ -128,7 +128,7 @@ class Weather:
 
             await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
 
-        await ctx.send('\n'.join(weather_data['forecast'][:2]))
+        await ctx.send('\n'.join([x.replace('°', '°F') for x in weather_data['forecast'][:2]]))
 
 
 def setup(bot):
