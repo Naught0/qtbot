@@ -35,7 +35,7 @@ class Weather:
 
                    'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
         }
-        data['needs_conversion'] = False if len(data['weather']['loc'][-1]) == 2 else True
+        data['needs_conversion'] = False if len(data['weather']['loc'][1]) == 2 else True
 
         return data
 
