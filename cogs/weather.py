@@ -72,8 +72,8 @@ class Weather:
         if location is None:
             location = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
             if location is None:
-                return await ctx.error("Sorry, you don't have a location saved.\n"
-                                       "Feel free to use `al` to add your location, or supply one to the command")
+                return await ctx.send("Sorry, you don't have a location saved.\n"
+                                      "Feel free to use `al` to add your location, or supply one to the command")
         
         redis_key = f'{location}:weather'
         if await self.redis_client.exists(redis_key):
@@ -108,27 +108,27 @@ class Weather:
         await ctx.send(embed=em)
 
 
-    # @commands.command(name='fc')
-    # async def get_forecast(self, ctx, location: str = None):
-    #     """ Get the forecast of a given location """
-    #     if location is None:
-    #         zip_code = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
-    #
-    #         if zip_code is None:
-    #             return await ctx.send("Sorry, you're not in my file. Please use `al` to add your location, "
-    #                                   "or supply one to the command.")
-    #
-    #     # Check for cached results in redis server
-    #     if await self.redis_client.exists(f'{zip_code}:forecast'):
-    #         forecast_data = await self.redis_client.get(f'{zip_code}:forecast')
-    #         forecast_data = json.loads(forecast_data)
-    #
-    #     # Store results in cache
-    #     else:
-    #         pass
-    #
-    #     await ctx.send(f"Tomorrow: `{forecast_data[2]['fcttext']}`\n"
-    #                    f"Tomorrow Evening: `{forecast_data[3]['fcttext']}`")
+    @commands.command(aliases=['fc'])
+    async def forecast(self, ctx, location: str = None):
+        """ Get the forecast of a given location """
+        if location is None:
+            location = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
+            if location is None:
+                return await ctx.send("Sorry, you don't have a location saved.\n"
+                                      "Feel free to use `al` to add your location, or supply one to the command")
+
+        redis_key = f'{location}:weather'
+        if await self.redis_client.exists(redis_key):
+            raw_weather_str = await self.redis_client.get(redis_key)
+            weather_data = json.loads(raw_weather_str)
+        else:
+            resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers,
+                                         params={'q': f'weather {location}'})
+            weather_data = self.get_weather_json(resp)
+
+            await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
+
+        await ctx.send('\n'.join(weather_data['forecast'][:2]))
 
 
 def setup(bot):
