@@ -108,41 +108,27 @@ class Weather:
         await ctx.send(embed=em)
 
 
-    @commands.command(name='fc')
-    async def get_forecast(self, ctx, zip_code=''):
-        """ Get the forecast via zipcode """
-        if zip_code == '':
-            zip_code = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
-
-        if zip_code is None:
-            return await ctx.send("Sorry, you're not in my file. Please use "
-                                  "`az` to add your zipcode, or supply one to "
-                                  "the command.")
-
-        # Check for cached results in redis server
-        if await self.redis_client.exists(f'{zip_code}:forecast'):
-            forecast_data = await self.redis_client.get(f'{zip_code}:forecast')
-            forecast_data = json.loads(forecast_data)
-
-        # Store reults in cache 
-        else:
-            resp = await aw.aio_get_json(self.aio_session, 
-                                         self.wunder_url.format(
-                                             self.wunder_api_key, zip_code))
-
-            # Handling CityNotFound exception
-            if not ('location' in resp and 'city' in resp['location']):
-                return await ctx.send("Sorry, I'm having trouble finding your location.")
-
-            # Compresses the call into something more managable and less 
-            # wasteful than the whole mess of json it gives
-            forecast_data = resp['forecast']['txt_forecast']['forecastday']
-            await self.redis_client.set(f'{zip_code}:forecast', 
-                                        json.dumps(forecast_data), 
-                                        ex=self.cache_ttl)
-
-        await ctx.send(f"Tomorrow: `{forecast_data[2]['fcttext']}`\n"
-                       f"Tomorrow Evening: `{forecast_data[3]['fcttext']}`")
+    # @commands.command(name='fc')
+    # async def get_forecast(self, ctx, location: str = None):
+    #     """ Get the forecast of a given location """
+    #     if location is None:
+    #         zip_code = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
+    #
+    #         if zip_code is None:
+    #             return await ctx.send("Sorry, you're not in my file. Please use `al` to add your location, "
+    #                                   "or supply one to the command.")
+    #
+    #     # Check for cached results in redis server
+    #     if await self.redis_client.exists(f'{zip_code}:forecast'):
+    #         forecast_data = await self.redis_client.get(f'{zip_code}:forecast')
+    #         forecast_data = json.loads(forecast_data)
+    #
+    #     # Store results in cache
+    #     else:
+    #         pass
+    #
+    #     await ctx.send(f"Tomorrow: `{forecast_data[2]['fcttext']}`\n"
+    #                    f"Tomorrow Evening: `{forecast_data[3]['fcttext']}`")
 
 
 def setup(bot):
