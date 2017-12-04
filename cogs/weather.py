@@ -63,7 +63,7 @@ class Weather:
     async def weather(self, ctx, location: str = None):
         """ Get the weather of a given area (zipcode, city, etc.) """
         if location is None:
-            location = await self.db.fetch_user_info(ctx.author.id, 'location')
+            location = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
             if location is None:
                 return await ctx.error("Sorry, you don't have a location saved.\n"
                                        "Feel free to use `al` to add your location, or supply one to the command")
