@@ -49,7 +49,7 @@ class Weather:
 
                    'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
         }
-        data['needs_conversion'] = False if self.states & set(data['weather']['loc']) else True
+        data['needs_conversion'] = False if self.states & set(data['weather']['loc'].split(' ')) else True
 
         return data
 
