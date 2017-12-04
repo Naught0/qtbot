@@ -30,12 +30,12 @@ class Weather:
                        'precip': soup.find('div', class_='wtr_currPerci').text.split(': ')[-1],
                        'img_url': soup.find('img', class_='wtr_currImg')['src'],
                        'curr_cond': soup.find('div', class_='wtr_caption').text,
-                       'wind': soup.find('div', class_='wtr_currWind').text.split(': ')[-1],
+                       'wind': int(soup.find('div', class_='wtr_currWind').text.split(': ')[-1].split(' ')[0]),
                        'humidity': soup.find('div', class_='wtr_currHumi').text.split(': ')[-1] },
 
                    'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
         }
-        data['needs_conversion'] = True if len(data['weather']['loc'][-1]) == 2 else False
+        data['needs_conversion'] = False if len(data['weather']['loc'][-1]) == 2 else True
 
         return data
 
@@ -63,7 +63,7 @@ class Weather:
         await ctx.send(f'Successfully removed location for `{ctx.author}`.')
     
     @commands.command(aliases=['wt'])
-    async def weather(self, ctx, location: str = None):
+    async def weather(self, ctx, *, location: str = None):
         """ Get the weather of a given area (zipcode, city, etc.) """
         if location is None:
             location = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
