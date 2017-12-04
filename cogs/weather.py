@@ -14,13 +14,27 @@ class Weather:
         self.db = PGDB(bot.pg_con)
         self.cache_ttl = 3600
         self.url = 'http://bing.com/search'
+        # Oh uh, this will make more sense later
+        self.states = {'AK', 'AL', 'AR', 'AZ', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'IA', 'ID', 'IL', 'IN', 'KS',
+                       'KY', 'LA', 'MA', 'MD', 'ME', 'MI', 'MN', 'MO', 'MS', 'MT', 'NC', 'ND', 'NE', 'NH', 'NJ', 'NM',
+                       'NV', 'NY', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VA', 'VT', 'WA', 'WI',
+                       'WV', 'WY'}
         # These are some old IE headers that give an easier page to scrape
         self.headers = {'User-Agent': 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; GTB6.5; SLCC2; '
                                       '.NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0;'
                                       ' .NET4.0C; TheWorld)'}
 
     @staticmethod
-    def get_weather_json(html: str) -> dict:
+    def f2c(weather_data: dict) -> dict:
+        """ Converts F to C and returns the dict anew """
+        # Celsius conversion
+        weather_data['weather']['temp'] = int((weather_data['weather']['temp'] - 32) * (5 / 9))
+        # MPH -> M/s
+        weather_data['weather']['wind'] = int(weather_data['weather']['wind'] * 0.44704)
+
+        return weather_data
+
+    def get_weather_json(self, html: str) -> dict:
         """ Returns a dict representation of Bing weather """ 
         soup = BeautifulSoup(html, 'lxml')
         data = {
@@ -35,19 +49,9 @@ class Weather:
 
                    'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
         }
-        data['needs_conversion'] = False if len(data['weather']['loc'][1]) == 2 else True
+        data['needs_conversion'] = False if self.states & set(data['loc']) else True
 
         return data
-
-    @staticmethod
-    def f2c(weather_data: dict) -> dict:
-        """ Converts F to C and returns the dict anew """
-        # Celsius conversion
-        weather_data['weather']['temp'] = (weather_data['weather']['temp'] - 32) * (5 / 9)
-        # MPH -> M/s
-        weather_data['weather']['wind'] = weather_data['weather']['wind'] * 0.44704
-
-        return weather_data
 
     @commands.command(aliases=['az', 'al'])
     async def add_location(self, ctx, location: str):
