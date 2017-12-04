@@ -39,7 +39,7 @@ class Weather:
         soup = BeautifulSoup(html, 'lxml')
         data = {
                    'weather': {
-                       'loc': soup.find('div', class_='wtr_locTitle').text.split(', '),
+                       'loc': soup.find('div', class_='wtr_locTitle').text,
                        'temp': int(soup.find('div', class_='wtr_currTemp').text),
                        'precip': soup.find('div', class_='wtr_currPerci').text.split(': ')[-1],
                        'img_url': soup.find('img', class_='wtr_currImg')['src'],
@@ -49,7 +49,7 @@ class Weather:
 
                    'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
         }
-        data['needs_conversion'] = False if self.states & set([x.split(' ') for x in data['weather']['loc']]) else True
+        data['needs_conversion'] = False if self.states & set(data['weather']['loc'].split(' ')) else True
 
         return data
 
