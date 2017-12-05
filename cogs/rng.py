@@ -37,7 +37,7 @@ class RNG:
         """ Have qtbot react with something inane """
         # Have to get text because it has the wrong content-type
         resp = await aw.aio_get_text(self.session, self.react_url)
-        reaction = json.loads(resp)
+        reaction = json.loads(resp)[0]
         await ctx.send(f'{reaction}!')
 
 
