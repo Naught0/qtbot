@@ -14,7 +14,7 @@ class Facts:
     @commands.command(aliases=['facts'])
     async def fact(self, ctx):
         """ Get a random fun fact (potentially NSFW) """
-        html = aw.aio_get_text(self.url)
+        html = await aw.aio_get_text(self.url)
         soup = BeautifulSoup(html, 'lxml')
 
         try:
@@ -26,7 +26,7 @@ class Facts:
                                                  'This is no time for fun or facts.']))
 
         # Create embed
-        em = discord.Embed(title=fun_fact)
+        em = discord.Embed(description=fun_fact)
         em.set_thumbnail(url='https://i.imgur.com/c36rUx9.png')
 
         await ctx.send(embed=em)
