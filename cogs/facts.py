@@ -14,7 +14,7 @@ class Facts:
     @commands.command(aliases=['facts'])
     async def fact(self, ctx):
         """ Get a random fun fact (potentially NSFW) """
-        html = await aw.aio_get_text(self.url)
+        html = await aw.aio_get_text(self.session, self.url)
         soup = BeautifulSoup(html, 'lxml')
 
         try:
