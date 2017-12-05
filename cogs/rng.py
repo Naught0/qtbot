@@ -35,8 +35,9 @@ class RNG:
     @commands.command(aliases=['re'])
     async def react(self, ctx):
         """ Have qtbot react with something inane """
-        reaction = (await aw.aio_get_json(self.session, self.react_url))[0]
-
+        # Have to get text because it has the wrong content-type
+        resp = await aw.aio_get_text(self.session, self.react_url)
+        reaction = json.loads(resp)
         await ctx.send(f'{reaction}!')
 
 
