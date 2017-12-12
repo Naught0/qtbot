@@ -12,8 +12,7 @@ class Trump:
     THUMB_URLS = ('https://i.imgur.com/36idZdn.png',
                  'https://eastscroll.com/wp-content/uploads/2017/02/Donald-Trump-cutout.png',
                  'http://pngimg.com/uploads/donald_trump/donald_trump_PNG20.png',
-                 'https://basicgestalt.files.wordpress.com/2017/07/trumphead3.png?w=234&h=333',
-                 'https://images.dailykos.com/images/306720/large/TrumpHead01.png?1475400183')
+                 'https://basicgestalt.files.wordpress.com/2017/07/trumphead3.png?w=234&h=333')
     FOOTER_URL = 'http://icons.iconarchive.com/icons/uiconstock/socialmedia/512/Twitter-icon.png'
     TWITTER_STATUS_URL = 'https://twitter.com/statuses/{}'
 
