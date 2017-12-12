@@ -6,7 +6,7 @@ from utils import aiohttp_wrap as aw
 
 
 class Crypto:
-    """ Allows users to track bitcoin and other currencies """
+    """ Allows users to track bitcoin and other currencies (eventually) """
     URL_BTC = 'https://api.coinmarketcap.com/v1/ticker/bitcoin' 
     BTC_LOGO_URL = 'https://en.bitcoin.it/w/images/en/2/29/BC_Logo_.png'
     
@@ -31,7 +31,7 @@ class Crypto:
         # Create a neat embed with the information
         em = discord.Embed(color=discord.Color.gold())
         em.set_author(name='Bitcoin', icon_url=self.BTC_LOGO_URL)
-        em.add_field(name='Price USD', value=f"${resp['price_usd']}", inline=False)
+        em.add_field(name='Price USD', value=f"${int(resp['price_usd']):,}", inline=False)
         em.set_footer(text='Last updated')
         em.timestamp = datetime.datetime.fromtimestamp(int(resp['last_updated']))
 
