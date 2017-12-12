@@ -103,7 +103,7 @@ class Weather:
         em.add_field(name='Conditions', value=c_wt['curr_cond'])
         em.add_field(name='Wind',
                      value=f"{c_wt['wind']} MPH" if not celsius else f"{c_wt['wind']} m/s")
-        em.add_field(name='Chance of precipitation', value=c_wt['precip'])
+        em.add_field(name='Precip.', value=c_wt['precip'])
         em.add_field(name='Humidity', value=c_wt['humidity'])
         em.set_thumbnail(url=c_wt['img_url'])
 
