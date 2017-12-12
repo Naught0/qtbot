@@ -22,11 +22,23 @@ class Crypto:
         em = discord.Embed(color=discord.Color.gold())
         em.set_author(name='Bitcoin', icon_url=self.BTC_LOGO_URL)
         em.add_field(name='Price USD', value=f"${resp['price_usd']}")
+        em.set_footer(text='Last updated')
+        em.timestamp = datetime.datetime.fromtimestamp(int(resp['last_updated']))
 
-        # Add some arrows here, so we need some logic
+        # Hourly trend
         change_1h = resp['percent_change_1h']
-        change_1h_str = f":arrow_up: {change_1h}" if '-' in change_1h else f":arrow_down: {change_1h}"
-        em.add_field(name='Percent Change 1h', value=change_1h_str)
+        change_1h_str = f":arrow_up: {change_1h}%" if '-' not in change_1h else f":arrow_down: {change_1h}%"
+        em.add_field(name='Hourly trend', value=change_1h_str)
+
+        # Daily trend
+        change_24h = resp['percent_change_24h']
+        change_24h_str = f":arrow_up: {change_24h}%" if '-' not in change_24h else f":arrow_down: {change_24h}%"
+        em.add_field(name='Daily trend', value=change_24h_str)
+
+        # Weekly trend
+        change_7d = resp['percent_change_7d']
+        change_7d_str = f":arrow_up: {change_7d}%" if '-' not in change_7d else f":arrow_down: {change_7d}%"
+        em.add_field(name='Weekly trend', value=change_7d_str)
 
         await ctx.send(embed=em)
 
