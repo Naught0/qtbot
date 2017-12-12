@@ -20,13 +20,13 @@ class Crypto:
         """ Get current information regarding the value of bitcoin """
 
         # Check the cache for this information
-        if await self.redis_client.exists('btc'):
-            resp = json.loads(await self.redis_client.get('btc'))
+        if await self.redis.exists('btc'):
+            resp = json.loads(await self.redis.get('btc'))
 
         # If not found, cache for 5 minutes
         else:
             resp = (await aw.aio_get_json(self.session, self.URL_BTC))[0]
-            await self.redis_client.set('btc', json.dumps(resp), ex=5*60)
+            await self.redis.set('btc', json.dumps(resp), ex=5*60)
 
         # Create a neat embed with the information
         em = discord.Embed(color=discord.Color.gold())
