@@ -49,7 +49,9 @@ class Weather:
 
                    'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
         }
-        data['needs_conversion'] = False if self.states & set(data['weather']['loc'].split(' ')) else True
+        # This bit checks for a union of the sets
+        # Evaluates to False if the union is not an empty set, True otherwise
+        data['needs_conversion'] = not self.states & set(data['weather']['loc'].split(' '))
 
         return data
 
