@@ -24,7 +24,7 @@ class Crypto:
         em.add_field(name='Price USD', value=f"${resp['price_usd']}")
 
         # Add some arrows here, so we need some logic
-        change_1h = r['percent_change_1h']
+        change_1h = resp['percent_change_1h']
         change_1h_str = f":arrow_up: {change_1h}" if '-' in change_1h else f":arrow_down: {change_1h}"
         em.add_field(name='Percent Change 1h', value=change_1h_str)
 
