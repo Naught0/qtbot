@@ -26,7 +26,7 @@ class Trump:
         
         Relevant SO answer found here 
         https://stackoverflow.com/questions/7703865/going-from-twitter-date-to-python-datetime-date"""
-        return datetime.strptime(time, '%a %b %d %H:%M:%S %z %Y').replace(tzinfo=timezone.utc))
+        return datetime.strptime(time, '%a %b %d %H:%M:%S %z %Y').replace(tzinfo=timezone.utc)
 
     @commands.command(aliases=['tweet', 'twit', 'tt'])
     async def trump(self, ctx):
