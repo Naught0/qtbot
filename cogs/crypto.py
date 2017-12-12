@@ -1,5 +1,6 @@
 import discord
 import datetime
+import json
 from discord.ext import commands
 from utils import aiohttp_wrap as aw
 
@@ -12,11 +13,20 @@ class Crypto:
     def __init__(self, bot):
         self.bot = bot
         self.session = bot.aio_session
+        self.redis = bot.redis_client
 
     @commands.command(aliases=['btc'])
     async def bitcoin(self, ctx):
         """ Get current information regarding the value of bitcoin """
-        resp = (await aw.aio_get_json(self.session, self.URL_BTC))[0]
+
+        # Check the cache for this information
+        if await self.redis_client.exists('btc'):
+            resp = json.loads(await self.redis_client.get('btc'))
+
+        # If not found, cache for 5 minutes
+        else:
+            resp = (await aw.aio_get_json(self.session, self.URL_BTC))[0]
+            await self.redis_client.set('btc', json.dumps(resp), ex=5*60)
 
         # Create a neat embed with the information
         em = discord.Embed(color=discord.Color.gold())
