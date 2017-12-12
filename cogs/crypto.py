@@ -21,7 +21,7 @@ class Crypto:
         # Create a neat embed with the information
         em = discord.Embed(color=discord.Color.gold())
         em.set_author(name='Bitcoin', icon_url=self.BTC_LOGO_URL)
-        em.add_field(name='Price USD', value=f"${resp['price_usd']}")
+        em.add_field(name='Price USD', value=f"${resp['price_usd']}", inline=False)
         em.set_footer(text='Last updated')
         em.timestamp = datetime.datetime.fromtimestamp(int(resp['last_updated']))
 
