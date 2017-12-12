@@ -1,6 +1,7 @@
 import discord 
 import json
 import random
+import html
 from datetime import datetime, timezone
 from discord.ext import commands
 
@@ -35,7 +36,7 @@ class Trump:
 
         # Create the embed
         em = discord.Embed(color=discord.Color.blue(), url=self.TWITTER_STATUS_URL.format(tweet_json['id_str']))
-        em.description = tweet_json['text']
+        em.description = html.unescape(tweet_json['text'])
         em.set_author(name='Donald J. Trump \U00002611', icon_url=icon_url)
         em.add_field(name='Retweets', value=tweet_json['retweet_count'])
         em.add_field(name='Likes', value=tweet_json['favorite_count'])
