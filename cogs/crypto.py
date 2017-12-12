@@ -16,7 +16,7 @@ class Crypto:
     @commands.command(aliases=['btc'])
     async def bitcoin(self, ctx):
         """ Get current information regarding the value of bitcoin """
-        resp = (await aw.aio_get_json(self.session, URL_BTC))[0]
+        resp = (await aw.aio_get_json(self.session, self.URL_BTC))[0]
 
         # Create a neat embed with the information
         em = discord.Embed(color=discord.Color.gold())
