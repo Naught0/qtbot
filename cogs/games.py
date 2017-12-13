@@ -25,7 +25,7 @@ class Game:
         params = {'search': query, 
                   'fields': 'name,summary,first_release_date,aggregated_rating,cover'}
         
-        resp = await aw.aio_get_json(self.session, url, headers=headers, params=params)
+        resp = (await aw.aio_get_json(self.session, url, headers=headers, params=params))[0]
 
         # Create embed
         em = discord.Embed(timestamp=datetime.fromtimestamp(resp['first_released_date']), 
