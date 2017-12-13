@@ -15,7 +15,9 @@ class QTBot(commands.Bot):
         self.description = 'qtbot is a big qt written in python3 and love.'
         
         with open(self.config_file) as f:
-            self.token = json.load(f)['discord']
+            self.api_keys = json.load(f)
+        
+        self.token = self.api_keys['discord']
 
         super().__init__(command_prefix=self.get_prefix, description=self.description,
                          pm_help=None, *args, **kwargs)
