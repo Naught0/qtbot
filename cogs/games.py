@@ -24,7 +24,7 @@ class Game:
         params = {'search': query, 
                   'fields': 'name,summary,first_release_date,aggregated_rating,cover'}
         
-        resp = await aw.session_get(self.session, url, headers=headers, params=params).json()
+        resp = await aw.aio_get_json(self.session, url, headers=headers, params=params)
 
         await ctx.send(f'{resp}'[:500])
 
