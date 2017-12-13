@@ -23,7 +23,7 @@ class Game:
         url = self.IG_URL.format('games')
         headers = {'user-key': self.KEY}
         params = {'search': query, 
-                  'fields': 'name,url,summary,first_release_date,aggregated_rating,cover'}
+                  'fields': 'name,url,summary,first_release_date,total_rating,cover'}
         
         resp = (await aw.aio_get_json(self.session, url, headers=headers, params=params))[0]
 
@@ -34,7 +34,7 @@ class Game:
         em.description = resp['summary']
         em.set_author(name=resp['name'], icon_url=self.IG_ICON_URL)
         em.set_thumbnail(url=resp['cover']['url'])
-        em.add_field(name='Rating', value=resp['aggregated_rating'])
+        em.add_field(name='Rating', value=resp['total_rating'])
         em.set_footer(text='First released')
 
         await ctx.send(embed=em)
