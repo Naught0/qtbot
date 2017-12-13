@@ -23,11 +23,9 @@ class Game:
         url = self.IG_URL.format('games')
         headers = {'user-key': self.KEY}
         params = {'search': query, 
-                  'fields': 'name,summary,first_release_date,aggregated_rating,cover'}
+                  'fields': 'name,url,summary,first_release_date,aggregated_rating,cover'}
         
         resp = (await aw.aio_get_json(self.session, url, headers=headers, params=params))[0]
-
-        return print(resp.keys())
 
         # Create embed
         em = discord.Embed(timestamp=datetime.fromtimestamp(resp['first_release_date']//1000), 
