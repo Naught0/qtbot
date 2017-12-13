@@ -16,7 +16,7 @@ class Game:
         self.bot = bot
         self.session = bot.aio_session
     
-    @commands.comand(aliases=['games'])
+    @commands.command(aliases=['games'])
     async def game(self, ctx, *, query: str):
         """ Search for some information about a game """
         url = self.IG_URL.format('games')
