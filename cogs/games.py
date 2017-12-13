@@ -27,6 +27,8 @@ class Game:
         
         resp = (await aw.aio_get_json(self.session, url, headers=headers, params=params))[0]
 
+        return print(resp.keys())
+
         # Create embed
         em = discord.Embed(timestamp=datetime.fromtimestamp(resp['first_release_date']//1000), 
                            url=resp['url'],
