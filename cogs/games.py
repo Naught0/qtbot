@@ -1,4 +1,5 @@
 import discord 
+import json
 from discord.ext import commands
 from datetime import datetime 
 
@@ -23,7 +24,7 @@ class Game:
         params = {'search': query, 
                   'fields': 'name,summary,first_release_date,aggregated_rating,cover'}
         
-        resp = await aw.aio_get_json(self.session, url, headers=headers, params=params)
+        resp = await aw.session_get(self.session, url, headers=headers, params=params).json()
 
         await ctx.send(f'{resp}'[:500])
 
