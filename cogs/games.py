@@ -10,7 +10,7 @@ class Game:
     """ Cog which allows fetching of video game information """
     IG_URL = 'https://api-2445582011268.apicast.io/{}/'
     with open('data/apikeys.json') as f:
-        KEY = json.load(f)['pgdb']
+        KEY = json.load(f)['igdb']
 
     def __init__(self, bot):
         self.bot = bot
