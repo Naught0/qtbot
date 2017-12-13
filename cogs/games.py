@@ -28,7 +28,7 @@ class Game:
         resp = (await aw.aio_get_json(self.session, url, headers=headers, params=params))[0]
 
         # Create embed
-        em = discord.Embed(timestamp=datetime.fromtimestamp(resp['first_released_date']), 
+        em = discord.Embed(timestamp=datetime.fromtimestamp(resp['first_release_date']), 
                            url=resp['url'],
                            color=discord.Color.green())
         em.set_author(name=resp['name'], icon_url=self.IG_ICON_URL)
