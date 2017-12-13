@@ -28,9 +28,10 @@ class Game:
         resp = (await aw.aio_get_json(self.session, url, headers=headers, params=params))[0]
 
         # Create embed
-        em = discord.Embed(timestamp=datetime.fromtimestamp(resp['first_release_date']), 
+        em = discord.Embed(timestamp=datetime.fromtimestamp(resp['first_release_date']//1000), 
                            url=resp['url'],
                            color=discord.Color.green())
+        em.description = resp['summary']
         em.set_author(name=resp['name'], icon_url=self.IG_ICON_URL)
         em.set_thumbnail(url=resp['cover']['url'])
         em.add_field(name='Rating', value=resp['aggregated_rating'])
