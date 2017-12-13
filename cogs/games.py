@@ -9,6 +9,7 @@ from utils import aiohttp_wrap as aw
 class Game:
     """ Cog which allows fetching of video game information """
     IG_URL = 'https://api-2445582011268.apicast.io/{}/'
+    IG_ICON_URL = 'https://www.igdb.com/favicon-196x196.png'
     with open('data/apikeys.json') as f:
         KEY = json.load(f)['igdb']
 
@@ -26,7 +27,16 @@ class Game:
         
         resp = await aw.aio_get_json(self.session, url, headers=headers, params=params)
 
-        await ctx.send(f'{resp}'[:500])
+        # Create embed
+        em = discord.Embed(timestamp=datetime.fromtimestamp(resp['first_released_date']), 
+                           url=resp['url'],
+                           color=discord.Color.green())
+        em.set_author(name=resp['name'], icon_url=self.IG_ICON_URL)
+        em.set_thumbnail(url=resp['cover']['url'])
+        em.add_field(name='Rating', value=resp['aggregated_rating'])
+        em.set_footer(text='First released')
+
+        await ctx.send(embed=em)
 
 def setup(bot):
     bot.add_cog(Game(bot))
