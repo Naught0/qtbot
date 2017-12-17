@@ -51,7 +51,7 @@ class League:
     async def get_champ_info(self, ctx, *, champ):
         """ Return play, ban, and win rate for a champ """
         uri = 'http://api.champion.gg/v2/champions/{}?sort=playRate-desc&api_key={}'
-        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/{}.png'
+        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.1/img/champion/{}.png'
 
         champ = champ.replace(' ', '')
         riot_champ_name = lu.get_riot_champ_name(champ)
