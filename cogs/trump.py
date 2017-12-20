@@ -35,7 +35,7 @@ class Trump:
         tweet_json = random.choice(self.TRUMP_JSON)
 
         # Create the embed
-        em = discord.Embed(color=discord.Color.blue(), url=self.TWITTER_STATUS_URL.format(tweet_json['id_str']))
+        em = discord.Embed(color=0x00bef5, url=self.TWITTER_STATUS_URL.format(tweet_json['id_str']))
         em.description = html.unescape(tweet_json['text'])
         em.set_author(name='Donald J. Trump \U00002611', icon_url=icon_url)
         em.add_field(name='Retweets', value=tweet_json['retweet_count'])
