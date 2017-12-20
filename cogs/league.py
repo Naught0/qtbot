@@ -41,7 +41,7 @@ class League:
         await self.db.insert_user_info(ctx.author.id, 'league_name', summoner_name)
         await ctx.send(f'Successfully added `{summoner_name}` for `{ctx.author}`.')
 
-    @commands.command(name='rmln')
+    @commands.command(name='rln')
     async def remove_league_name(self, ctx):
         """ Remove your summoner name from the database """
         await self.db.remove_user_info(ctx.author.id, 'league_name')
@@ -51,7 +51,7 @@ class League:
     async def get_champ_info(self, ctx, *, champ):
         """ Return play, ban, and win rate for a champ """
         uri = 'http://api.champion.gg/v2/champions/{}?sort=playRate-desc&api_key={}'
-        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/{}.png'
+        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.1/img/champion/{}.png'
 
         champ = champ.replace(' ', '')
         riot_champ_name = lu.get_riot_champ_name(champ)
@@ -78,14 +78,10 @@ class League:
         em = discord.Embed(color=discord.Color.green())
         em.title = '{} "{}"'.format(fancy_champ_name, champ_title)
         em.description = None
-        em.add_field(name='Role',
-                     value=f'{res[0]["role"].split("_")[0].title()} ({res[0]["percentRolePlayed"]:.2%})')
-        em.add_field(name='Play rate',
-                     value=f'{res[0]["playRate"]:.2%}')
-        em.add_field(name='Win rate',
-                     value=f'{res[0]["winRate"]:.2%}')
-        em.add_field(name='Ban rate',
-                     value=f'{res[0]["banRate"]:.2%}')
+        em.add_field(name='Role', value=f'{res[0]["role"].split("_")[0].title()} ({res[0]["percentRolePlayed"]:.2%})')
+        em.add_field(name='Play rate', value=f'{res[0]["playRate"]:.2%}')
+        em.add_field(name='Win rate', value=f'{res[0]["winRate"]:.2%}')
+        em.add_field(name='Ban rate', value=f'{res[0]["banRate"]:.2%}')
         em.set_thumbnail(url=icon_uri.format(riot_champ_name))
         em.url = f'http://champion.gg/champion/{riot_champ_name}'
         em.set_footer(text="Powered by Champion.gg and Riot's API.")
@@ -226,6 +222,10 @@ class League:
             await self.redis_client.set('league_pnotes', str(em.to_dict()), ex=10800)
 
         await ctx.send(embed=em)
+
+    @commands.command(aliases=['rune'])
+    async def runes(self, ctx, *, champion: str):
+        """ Get the LoL runes for a particular champion """
 
 
 def setup(bot):

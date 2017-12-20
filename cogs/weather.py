@@ -56,7 +56,7 @@ class Weather:
         return data
 
     @commands.command(aliases=['az', 'al'])
-    async def add_location(self, ctx, location: str):
+    async def add_location(self, ctx, *, location: str):
         """ Add your location (zip, city, etc) to qtbot's database so 
         you don't have to supply it later """
         await self.db.insert_user_info(ctx.author.id, 'zipcode', location)
@@ -111,7 +111,7 @@ class Weather:
 
 
     @commands.command(aliases=['fc'])
-    async def forecast(self, ctx, location: str = None):
+    async def forecast(self, ctx, *, location: str = None):
         """ Get the forecast of a given location """
         if location is None:
             location = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
