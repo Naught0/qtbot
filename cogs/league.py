@@ -264,6 +264,8 @@ class League:
         if len(em_list) < 2:
             return await ctx.send(embed=em_list[0])
 
+        em_dict = {x: y for x, y in zip(self.NUM_REACTION_LIST[:2], em_list)}
+
         bot_message = await ctx.send(embed=em_list[0])
         for emoji in self.NUM_REACTION_LIST[:2]:
             await bot_message.add_reaction(emoji)
@@ -278,7 +280,7 @@ class League:
             except asyncio.TimeoutError:
                 return await bot_message.clear_reactions()
 
-            await bot_message.edit(embed=em_list[em_list.index(reaction.emoji)])
+            await bot_message.edit(embed=em_dict[reaction.emoji])
             await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
 
