@@ -25,7 +25,7 @@ class League:
         self.db = PGDB(bot.pg_con)
 
         # Optional RuneClient
-        self.rune_client = rune_client or AioRuneClient(loop=bot.loop, session=bot.aio_session)
+        self.rune_client = rune_client or lolrune.AioRuneClient(loop=bot.loop, session=bot.aio_session)
 
         # Request information
         self.elo_api_uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
