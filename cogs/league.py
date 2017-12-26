@@ -1,24 +1,31 @@
 #!/bin/env python
 
 import ast
-import textwrap
 import json
+import textwrap
+
 import discord
+import lolrune
 from bs4 import BeautifulSoup
-from utils import aiohttp_wrap as aw
 from discord.ext import commands
 from riot_observer import RiotObserver as ro
+
+from utils import aiohttp_wrap as aw
+from utils import dict_manip as dm
 from utils import league as lu
 from utils.user_funcs import PGDB
 
 
 class League:
-    def __init__(self, bot):
+    def __init__(self, bot, rune_client: lolrune.AioRuneClient = None):
         # Bot attrs
         self.bot = bot
         self.session = bot.aio_session
         self.redis_client = bot.redis_client
         self.db = PGDB(bot.pg_con)
+
+        # Optional RuneClient
+        self.rune_client = rune_client or AioRuneClient(loop=bot.loop, session=bot.aio_session)
 
         # Request information
         self.elo_api_uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
@@ -152,11 +159,11 @@ class League:
                 self.session, self.elo_api_uri.format(f_summoner), headers=self.elo_headers)
 
             # No data found -- don't bother storing it
-            if elo_data is None or 'error' in elo_data :
+            if elo_data is None or 'error' in elo_data:
                 return await ctx.send(f"Sorry, I can't find `{summoner}`\nResponse:```{elo_data}```")
 
             # Store in redis cache
-            await self.redis_client.set(f'elo:{f_summoner}', json.dumps(elo_data), ex=2*60*60)
+            await self.redis_client.set(f'elo:{f_summoner}', json.dumps(elo_data), ex=2 * 60 * 60)
 
         # Replace 'None' with 0 for error margin because "+/- None" looks bad
         for kind in elo_data:
@@ -192,7 +199,7 @@ class League:
         em.set_footer(text="Powered by WhatIsMyMMR.com and Riot's API.")
 
         await ctx.send(embed=em)
-        
+
     @commands.command(aliases=['patch', 'pnotes'])
     async def patch_notes(self, ctx):
         """ Get the latest League of Legends patch notes """
@@ -226,6 +233,27 @@ class League:
     @commands.command(aliases=['rune'])
     async def runes(self, ctx, *, champion: str):
         """ Get the LoL runes for a particular champion """
+        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.1/img/champion/{}.png'
+        if champion not in self.rune_client.rune_links:
+            champion = dm.get_closest(self.rune_client.rune_links, champion)
+
+        # TODO:
+        # Add pagination
+        champ = (await self.rune_client.get_runes(champion))[0]
+        runes = champ.runes
+        riot_champ_name = lu.get_riot_champ_name(champion)
+
+        # Create the embed
+        em = discord.Embed(title=champ.name, color=discord.Color.green())
+        em.description = champ.description
+        em.set_thumbnail(url=icon_uri.format(riot_champ_name))
+        primary_runes = tuple(f'{runes.keystone}',) + runes.primary.runes
+        em.add_field(name=f'Primary: {runes.primary.name}',
+                     value='\n'.join([f'\u2022 {x}' for x in primary_runes]))
+        em.add_field(name=f'Secondary: {runes.secondary.name}',
+                     value='\n'.join([f'\u2022 {x}' for x in runes.secondary.runes]))
+
+        await ctx.send(embed=em)
 
 
 def setup(bot):
