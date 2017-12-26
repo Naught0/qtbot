@@ -1,6 +1,6 @@
-import discord
 import datetime
 import json
+import discord
 from discord.ext import commands
 from utils import aiohttp_wrap as aw
 
@@ -29,7 +29,7 @@ class Crypto:
             await self.redis.set('btc', json.dumps(resp), ex=5*60)
 
         # Create a neat embed with the information
-        em = discord.Embed(color=discord.Color.gold())
+        em = discord.Embed(color=0xF7931A)
         em.set_author(name='Bitcoin', icon_url=self.BTC_LOGO_URL)
         em.add_field(name='Price USD', value=f"${float(resp['price_usd']):,}", inline=False)
         em.set_footer(text='Last updated')
