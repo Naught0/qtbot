@@ -252,7 +252,7 @@ class League:
         champ = None
         if champion not in self.rune_client.rune_links:
             champ = dm.get_closest(self.rune_client.rune_links, champion)
-
+        champ = champ or champion
         riot_name = lu.get_riot_champ_name(champ or champion)
 
         pages_raw = await self.rune_client.get_runes(champ)
