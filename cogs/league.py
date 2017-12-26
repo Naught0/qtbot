@@ -246,9 +246,9 @@ class League:
         riot_champ_name = lu.get_riot_champ_name(champion)
 
         # Create the embed
-        em = discord.Embed(title=champ.name, color=discord.Color.green())
+        em = discord.Embed(title=champ.title, color=discord.Color.green())
         em.description = champ.description
-        em.set_author(icon_url=self.FORGE_FAVICON_URL)
+        em.set_author(name=champ.name, icon_url=self.FORGE_FAVICON_URL)
         em.set_thumbnail(url=icon_uri.format(riot_champ_name))
         primary_runes = runes.primary.runes[:]
         primary_runes.insert(0, runes.keystone)
