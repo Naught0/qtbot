@@ -246,6 +246,8 @@ class League:
         em.add_field(name=f'Secondary: {runes.secondary.name}',
                      value='\n'.join([f'\u2022 {x}' for x in runes.secondary.runes]))
 
+        return em
+
     @commands.command(aliases=['rune'])
     async def runes(self, ctx, *, champion: str):
         """ Get the LoL runes for a particular champion """
