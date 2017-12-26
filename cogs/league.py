@@ -238,7 +238,7 @@ class League:
         em = discord.Embed(title=champ.title, color=discord.Color.green())
         em.description = champ.description
         em.set_author(name=champ.name, icon_url=self.FORGE_FAVICON_URL,
-                      url=self.rune_client.rune_links[riot_name][index])
+                      url=self.rune_client.rune_links[riot_name.lower()][index])
         em.set_thumbnail(url=icon_uri.format(riot_name))
         em.add_field(name='Keystone', value=runes.keystone, inline=False)
         em.add_field(name=f'Primary: {runes.primary.name}',
@@ -249,9 +249,11 @@ class League:
     @commands.command(aliases=['rune'])
     async def runes(self, ctx, *, champion: str):
         """ Get the LoL runes for a particular champion """
+        champ = None
         if champion not in self.rune_client.rune_links:
             champ = dm.get_closest(self.rune_client.rune_links, champion)
-        riot_name = lu.get_riot_champ_name(champ)
+
+        riot_name = lu.get_riot_champ_name(champ or champion)
 
         pages_raw = await self.rune_client.get_runes(champ)
 
