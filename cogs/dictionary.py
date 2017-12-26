@@ -1,8 +1,7 @@
-import discord
 import json
-import AsyncUrban
-from discord.ext import commands
+
 from asyncurban import UrbanDictionary, WordNotFoundError
+from discord.ext import commands
 from wordnik import *
 
 
@@ -26,7 +25,8 @@ class Dictionary:
         wordApi = WordApi.WordApi(Dictionary.WordClient)
 
         parts_of_speech = {'noun': 'n.', 'verb': 'v.', 'adjective': 'adj.', 'adverb': 'adv.',
-                           'interjection': 'interj.', 'conjunction': 'conj.', 'preposition': 'prep.', 'pronoun': 'pron.'}
+                           'interjection': 'interj.', 'conjunction': 'conj.', 'preposition': 'prep.',
+                           'pronoun': 'pron.'}
 
         result = wordApi.getDefinitions(word)
 
