@@ -1,6 +1,5 @@
-#!/bin/env python
-
 import ast
+import asyncio
 import json
 import textwrap
 
@@ -18,16 +17,15 @@ from utils.user_funcs import PGDB
 
 class League:
     FORGE_FAVICON_URL = 'http://d181w3hxxigzvh.cloudfront.net/wp-content/themes/rune_forge/favicon-96x96.png'
+    NUM_REACTION_LIST = [f'{x}\U000020e3' for x in range(1, 10)]
 
-    def __init__(self, bot, rune_client: lolrune.AioRuneClient = None):
+    def __init__(self, bot):
         # Bot attrs
         self.bot = bot
         self.session = bot.aio_session
         self.redis_client = bot.redis_client
         self.db = PGDB(bot.pg_con)
-
-        # Optional RuneClient
-        self.rune_client = rune_client or lolrune.AioRuneClient(loop=bot.loop, session=bot.aio_session)
+        self.rune_client = bot.rune_client
 
         # Request information
         self.elo_api_uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
@@ -232,32 +230,51 @@ class League:
 
         await ctx.send(embed=em)
 
-    @commands.command(aliases=['rune'])
-    async def runes(self, ctx, *, champion: str):
-        """ Get the LoL runes for a particular champion """
+    def rune_to_embed(self, champ: lolrune.Champion) -> discord.Embed:
+        """A nice helper method which returns an embed based on Champion input."""
         icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.1/img/champion/{}.png'
-        if champion not in self.rune_client.rune_links:
-            champion = dm.get_closest(self.rune_client.rune_links, champion)
-
-        # TODO:
-        # Add pagination
-        champ = (await self.rune_client.get_runes(champion))[0]
+        if champ not in self.rune_client.rune_links:
+            champ = dm.get_closest(self.rune_client.rune_links, champ)
+        riot_champ_name = lu.get_riot_champ_name(champ)
         runes = champ.runes
-        riot_champ_name = lu.get_riot_champ_name(champion)
 
-        # Create the embed
         em = discord.Embed(title=champ.title, color=discord.Color.green())
         em.description = champ.description
-        em.set_author(name=champ.name, icon_url=self.FORGE_FAVICON_URL, url=self.rune_client.rune_links[riot_champ_name.lower()][0])
+        em.set_author(name=champ.name, icon_url=self.FORGE_FAVICON_URL,
+                      url=self.rune_client.rune_links[riot_champ_name.lower()][0])
         em.set_thumbnail(url=icon_uri.format(riot_champ_name))
-        primary_runes = runes.primary.runes[:]
-        primary_runes.insert(0, runes.keystone)
+        em.add_field(name='Keystone', value=runes.keystone, inline=False)
         em.add_field(name=f'Primary: {runes.primary.name}',
-                     value='\n'.join([f'\u2022 {x}' for x in primary_runes]))
+                     value='\n'.join([f'\u2022 {x}' for x in runes.primary.runes]))
         em.add_field(name=f'Secondary: {runes.secondary.name}',
                      value='\n'.join([f'\u2022 {x}' for x in runes.secondary.runes]))
 
-        await ctx.send(embed=em)
+    @commands.command(aliases=['rune'])
+    async def runes(self, ctx, *, champion: str):
+        """ Get the LoL runes for a particular champion """
+        champ_pages = await self.rune_client.get_runes(champion)
+        em_list = [self.rune_to_embed(x) for x in champ_pages]
+        if len(champ_pages) < 2:
+            return await ctx.send(embed=em_list[0])
+
+        bot_message = await ctx.send(embed=em_list[0])
+        for emoji in self.NUM_REACTION_LIST[:2]:
+            await bot_message.add_reaction(emoji)
+
+        em_dict = {x: y for x, y in zip(self.NUM_REACTION_LIST[:2], em_list)}
+
+        # Pagination checks and funny business
+        def check(reaction, user):
+            return user == ctx.author and reaction.emoji in self.NUM_REACTION_LIST[:2]
+
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for('reaction_add', check=check, timeout=60.0)
+            except asyncio.TimeoutError:
+                return await bot_message.clear_reactions()
+
+            await bot_message.edit(embed=em_list[reaction.emoji])
+            await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
 
 def setup(bot):

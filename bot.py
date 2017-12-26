@@ -1,28 +1,30 @@
 import json
-import aredis
-import discord
-import aiohttp
-import asyncpg
 import traceback
 from datetime import datetime
-from discord.ext import commands
 from pathlib import Path
+
+import aiohttp
+import aredis
+import asyncpg
+import lolrune
+from discord.ext import commands
 
 
 class QTBot(commands.Bot):
     def __init__(self, config_file, *args, **kwargs):
         self.config_file = config_file
         self.description = 'qtbot is a big qt written in python3 and love.'
-        
+
         with open(self.config_file) as f:
             self.api_keys = json.load(f)
-        
+
         self.token = self.api_keys['discord']
 
         super().__init__(command_prefix=self.get_prefix, description=self.description,
                          pm_help=None, *args, **kwargs)
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
+        self.rune_client = lolrune.AioRuneClient()
         self.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
         self.startup_extensions = [x.stem for x in Path('cogs').glob('*.py')]
         self.loop.run_until_complete(self.create_db_pool())
