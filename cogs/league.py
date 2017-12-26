@@ -248,7 +248,7 @@ class League:
         # Create the embed
         em = discord.Embed(title=champ.title, color=discord.Color.green())
         em.description = champ.description
-        em.set_author(name=champ.name, icon_url=self.FORGE_FAVICON_URL, url=self.rune_client.rune_links[riot_champ_name][0])
+        em.set_author(name=champ.name, icon_url=self.FORGE_FAVICON_URL, url=self.rune_client.rune_links[riot_champ_name.lower()][0])
         em.set_thumbnail(url=icon_uri.format(riot_champ_name))
         primary_runes = runes.primary.runes[:]
         primary_runes.insert(0, runes.keystone)
