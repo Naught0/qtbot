@@ -247,7 +247,7 @@ class League:
         em = discord.Embed(title=champ.name, color=discord.Color.green())
         em.description = champ.description
         em.set_thumbnail(url=icon_uri.format(riot_champ_name))
-        primary_runes = runes.primary.runes.insert(0, runes.keystone)
+        primary_runes = runes.primary.runes[:].insert(0, runes.keystone)
         em.add_field(name=f'Primary: {runes.primary.name}',
                      value='\n'.join([f'\u2022 {x}' for x in primary_runes]))
         em.add_field(name=f'Secondary: {runes.secondary.name}',
