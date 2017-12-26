@@ -230,19 +230,16 @@ class League:
 
         await ctx.send(embed=em)
 
-    def rune_to_embed(self, champ: lolrune.Champion) -> discord.Embed:
+    def rune_to_embed(self, champ: lolrune.Champion, riot_name: str, index: int) -> discord.Embed:
         """A nice helper method which returns an embed based on Champion input."""
         icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.1/img/champion/{}.png'
-        if champ not in self.rune_client.rune_links:
-            champ = dm.get_closest(self.rune_client.rune_links, champ)
-        riot_champ_name = lu.get_riot_champ_name(champ)
         runes = champ.runes
 
         em = discord.Embed(title=champ.title, color=discord.Color.green())
         em.description = champ.description
         em.set_author(name=champ.name, icon_url=self.FORGE_FAVICON_URL,
-                      url=self.rune_client.rune_links[riot_champ_name.lower()][0])
-        em.set_thumbnail(url=icon_uri.format(riot_champ_name))
+                      url=self.rune_client.rune_links[riot_name][index])
+        em.set_thumbnail(url=icon_uri.format(riot_name))
         em.add_field(name='Keystone', value=runes.keystone, inline=False)
         em.add_field(name=f'Primary: {runes.primary.name}',
                      value='\n'.join([f'\u2022 {x}' for x in runes.primary.runes]))
@@ -252,16 +249,20 @@ class League:
     @commands.command(aliases=['rune'])
     async def runes(self, ctx, *, champion: str):
         """ Get the LoL runes for a particular champion """
-        champ_pages = await self.rune_client.get_runes(champion)
-        em_list = [self.rune_to_embed(x) for x in champ_pages]
-        if len(champ_pages) < 2:
+        if champion not in self.rune_client.rune_links:
+            champ = dm.get_closest(self.rune_client.rune_links, champion)
+        riot_name = lu.get_riot_champ_name(champ)
+
+        pages_raw = await self.rune_client.get_runes(champ)
+
+        em_list = [self.rune_to_embed(x, riot_name, idx) for idx, x in enumerate(pages_raw)]
+
+        if len(em_list) < 2:
             return await ctx.send(embed=em_list[0])
 
         bot_message = await ctx.send(embed=em_list[0])
         for emoji in self.NUM_REACTION_LIST[:2]:
             await bot_message.add_reaction(emoji)
-
-        em_dict = {x: y for x, y in zip(self.NUM_REACTION_LIST[:2], em_list)}
 
         # Pagination checks and funny business
         def check(reaction, user):
@@ -273,7 +274,7 @@ class League:
             except asyncio.TimeoutError:
                 return await bot_message.clear_reactions()
 
-            await bot_message.edit(embed=em_list[reaction.emoji])
+            await bot_message.edit(embed=em_list[em_list.index(reaction.emoji)])
             await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
 
