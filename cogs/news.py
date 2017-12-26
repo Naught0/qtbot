@@ -79,7 +79,9 @@ class News:
             await bot_message.add_reaction(emoji)
 
         def check(reaction, user):
-            return user == ctx.author and reaction.emoji in emoji_tup
+            return (user == ctx.author
+                    and reaction.emoji in emoji_tup
+                    and reaction.message.id == bot_message.id)
 
         while True:
             try:

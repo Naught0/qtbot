@@ -272,7 +272,9 @@ class League:
 
         # Pagination checks and funny business
         def check(reaction, user):
-            return user == ctx.author and reaction.emoji in self.NUM_REACTION_LIST[:2]
+            return (user == ctx.author
+                    and reaction.emoji in self.NUM_REACTION_LIST[:2]
+                    and reaction.message.id == bot_message.id)
 
         while True:
             try:
