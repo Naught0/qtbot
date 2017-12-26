@@ -2,7 +2,7 @@ import discord
 import json
 import AsyncUrban
 from discord.ext import commands
-from AsyncUrban.urbandictionary import UrbanDictionary
+from asyncurban import UrbanDictionary, WordNotFoundError
 from wordnik import *
 
 
@@ -44,16 +44,15 @@ class Dictionary:
 
         await ctx.send(f'{word.title()} _{word_pos}_ `{final_result.text}`')
 
-
     @commands.group(invoke_without_subcommand=True, name='urbdic', aliases=['ud'])
     async def urban_dictionary(self, ctx, *, word):
         """ Consult the world's leading dictionary """
         try:
             result = await self.urban.get_word(word)
-        except AsyncUrban.errors.WordNotFoundError:
+        except WordNotFoundError:
             return await ctx.send(f"Sorry, couldn't find anything on `{word}`.")
         except ConnectionError:
-            return await ctx.send(f"Sorry, the UrbanDicitonary API buggered off.")
+            return await ctx.send(f"Sorry, the UrbanDictionary API buggered off.")
 
         await ctx.send(f'{word.title()}: `{result.definition}`')
 
