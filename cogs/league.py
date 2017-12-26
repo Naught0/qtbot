@@ -17,6 +17,8 @@ from utils.user_funcs import PGDB
 
 
 class League:
+    FORGE_FAVICON_URL = 'http://d181w3hxxigzvh.cloudfront.net/wp-content/themes/rune_forge/favicon-96x96.png'
+
     def __init__(self, bot, rune_client: lolrune.AioRuneClient = None):
         # Bot attrs
         self.bot = bot
@@ -246,6 +248,7 @@ class League:
         # Create the embed
         em = discord.Embed(title=champ.name, color=discord.Color.green())
         em.description = champ.description
+        em.set_author(icon_url=self.FORGE_FAVICON_URL)
         em.set_thumbnail(url=icon_uri.format(riot_champ_name))
         primary_runes = runes.primary.runes[:]
         primary_runes.insert(0, runes.keystone)
