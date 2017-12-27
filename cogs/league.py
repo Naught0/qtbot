@@ -230,14 +230,8 @@ class League:
     @commands.command(aliases=['rune'])
     async def runes(self, ctx, *, champion: str):
         """ Get the LoL runes for a particular champion """
-        champ = None
-        if champion not in self.rune_client.rune_links:
-            champ = dm.get_closest(self.rune_client.rune_links, champion)
-
-        champ = champ or champion
-
+        champ = lu.get_riot_champ_name(champion)
         pages_raw = await self.rune_client.get_runes(champ)
-
         em_list = [self.rune_to_embed(x, champ, idx) for idx, x in enumerate(pages_raw)]
 
         if len(em_list) < 2:
