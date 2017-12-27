@@ -7,7 +7,7 @@ import discord
 import lolrune
 from bs4 import BeautifulSoup
 from discord.ext import commands
-from riot_observer import RiotObserver as ro
+from riotwatcher import RiotWatcher
 
 from utils import aiohttp_wrap as aw
 from utils import dict_manip as dm
@@ -40,7 +40,7 @@ class League:
 
         self.champion_gg_api_key = api_keys['champion.gg']
         self.riot_api_key = api_keys['riot']
-        self.riot_observer = ro(self.riot_api_key)
+        self.riot_watcher = RiotWatcher(self.riot_api_key)
 
     @commands.command(name='aln', aliases=['addl'])
     async def add_league_name(self, ctx, *, summoner_name):
@@ -99,33 +99,12 @@ class League:
     @commands.is_owner()
     async def update_champ_file(self, ctx):
         """ Creates / updates a json file containing champion IDs, names, titles, etc. """
+        new_champ_list = await self.bot.loop.run_in_executor(None, self.riot_watcher.static_data.champions('na1'))
 
-        # Case where champ data found
-        if lu.found_champ_file():
-            with open('data/champ_data.json') as f:
-                file_champ_list = json.load(f)
+        with open('data/champ_data.json', 'w') as f:
+            json.dump(new_champ_list, f)
 
-            # Get champ list from Riot's API
-            new_champ_list = await self.bot.loop.run_in_executor(None, ro.static_get_champion_list())
-
-            # If file is up to date, don't update
-            if len(new_champ_list['data']) == len(file_champ_list['data']):
-                return await ctx.send('Champion information file already up to date.')
-
-            # File needs updating
-            else:
-                with open('data/champ_data.json', 'w') as f:
-                    json.dump(new_champ_list, f)
-                return await ctx.send('Champion file updated.')
-
-        # Create champion data file if not found
-        else:
-            new_champ_list = await self.bot.loop.run_in_executor(None, ro.static_get_champion_list())
-
-            with open('data/champ_data.json', 'w') as f:
-                json.dump(new_champ_list, f)
-
-        await ctx.send('Creating chamption information file.')
+        await ctx.send('Creating champion information file.')
 
     @commands.command(name='elo', aliases=['mmr'])
     async def get_league_elo(self, ctx, *, summoner=''):
@@ -254,12 +233,12 @@ class League:
         champ = None
         if champion not in self.rune_client.rune_links:
             champ = dm.get_closest(self.rune_client.rune_links, champion)
+
         champ = champ or champion
-        riot_name = lu.get_riot_champ_name(champ or champion)
 
         pages_raw = await self.rune_client.get_runes(champ)
 
-        em_list = [self.rune_to_embed(x, riot_name, idx) for idx, x in enumerate(pages_raw)]
+        em_list = [self.rune_to_embed(x, champ, idx) for idx, x in enumerate(pages_raw)]
 
         if len(em_list) < 2:
             return await ctx.send(embed=em_list[0])

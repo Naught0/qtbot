@@ -5,17 +5,6 @@ import json
 from utils import dict_manip as dm
 
 
-def found_champ_file():
-    """ checks for valid league file and returns t/f """
-    try:
-        with open('data/champ_data.json') as f:
-            _ = json.load(f)
-    except:
-        return False
-
-    return True
-
-
 def get_champ_id(champ):
     """
     note:
