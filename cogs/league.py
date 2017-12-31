@@ -102,7 +102,7 @@ class League:
     @commands.is_owner()
     async def update_champ_file(self, ctx):
         """ Creates / updates a json file containing champion IDs, names, titles, etc. """
-        func = partial(self.riot_watcher.static_data.champion, 'na1')
+        func = partial(self.riot_watcher.static_data.champions, 'na1')
         new_champ_list = await self.bot.loop.run_in_executor(None, func)
 
         with open('data/champ_data.json', 'w') as f:
