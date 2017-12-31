@@ -30,6 +30,10 @@ class League:
         self.db = PGDB(bot.pg_con)
         self.rune_client = bot.rune_client
 
+        # Champion data
+        with open('data/champ_data.json') as f:
+            self.champ_data = json.load(f)
+
         # Request information
         self.elo_api_uri = 'https://na.whatismymmr.com/api/v1/summoner?name={}'
         self.elo_headers = {'user-agent': 'qtbot/1.0'}
@@ -64,10 +68,10 @@ class League:
         icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.1/img/champion/{}.png'
 
         champ = champ.replace(' ', '')
-        riot_champ_name = lu.get_riot_champ_name(champ)
-        fancy_champ_name = lu.get_fancy_champ_name(riot_champ_name)
-        champ_title = lu.get_champ_title(riot_champ_name)
-        champ_id = lu.get_champ_id(riot_champ_name)
+        riot_champ_name = lu.get_riot_champ_name(self.champ_data, champ)
+        fancy_champ_name = lu.get_fancy_champ_name(self.champ_data, riot_champ_name)
+        champ_title = lu.get_champ_title(self.champ_data, riot_champ_name)
+        champ_id = lu.get_champ_id(self.champ_data, riot_champ_name)
 
         # Check for cached results
         if await self.redis_client.exists(f'champ_info:{champ_id}'):
@@ -237,7 +241,7 @@ class League:
         if champion.lower() == 'wukong':
             champ = 'MonkeyKing'
         else:
-            champ = lu.get_riot_champ_name(champion)
+            champ = lu.get_riot_champ_name(self.champ_data, champion)
 
         pages_raw = await self.rune_client.get_runes(champ)
         em_list = [self.rune_to_embed(x, champ) for x in pages_raw]

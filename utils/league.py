@@ -5,44 +5,32 @@ import json
 from utils import dict_manip as dm
 
 
-def get_champ_id(champ):
+def get_champ_id(champ_data: dict, champ: str):
     """
     note:
     must use get_riot_champ_name to pass `champ`
     if the name formatting is in question.
     i.e. vel'koz is formatted to velkoz and lee sin is leesin in riot's eyes.
     """
-    with open('data/champ_data.json') as f:
-        champ_dict = json.load(f)
-
-    return champ_dict['data'][champ]['id']
+    return champ_data['data'][champ]['id']
 
 
-def get_fancy_champ_name(champ):
-    with open('data/champ_data.json') as f:
-        champ_dict = json.load(f)
-
-    return champ_dict['data'][champ]['name']
+def get_fancy_champ_name(champ_data: dict, champ: str):
+    return champ_data['data'][champ]['name']
 
 
-def get_riot_champ_name(champ):
-    with open('data/champ_data.json') as f:
-        champ_dict = json.load(f)
-
-    if champ in champ_dict['data']:
+def get_riot_champ_name(champ_data: dict, champ: str):
+    if champ in champ_data['data']:
         return champ
 
-    return dm.get_closest(champ_dict['data'], champ)
+    return dm.get_closest(champ_data['data'], champ)
 
 
-def get_champ_title(champ):
-    with open('data/champ_data.json') as f:
-        champ_dict = json.load(f)
-
-    return champ_dict['data'][champ]['title']
+def get_champ_title(champ_data: dict, champ: str):
+    return champ_data['data'][champ]['title']
 
 
-def get_summoner_icon(summoner, region='na'):
+def get_summoner_icon(summoner: str, region: str = 'na'):
     return f'https://avatar.leagueoflegends.com/{region}/{summoner}.png'
 
 
