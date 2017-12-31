@@ -233,7 +233,12 @@ class League:
     @commands.command(aliases=['rune'])
     async def runes(self, ctx, *, champion: str):
         """ Get the LoL runes for a particular champion """
-        champ = lu.get_riot_champ_name(champion)
+        # Riot thinks it's funny to have Wukong's name as Monkey King and have a nice, inconsistent API experience.
+        if champion.lower() == 'wukong':
+            champ = 'MonkeyKing'
+        else:
+            champ = lu.get_riot_champ_name(champion)
+
         pages_raw = await self.rune_client.get_runes(champ)
         em_list = [self.rune_to_embed(x, champ) for x in pages_raw]
 
