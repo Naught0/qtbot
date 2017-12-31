@@ -26,17 +26,17 @@ def get_fancy_champ_name(champ):
 
 
 def get_riot_champ_name(champ):
-    with open('data/champ_data.json', 'r') as f:
+    with open('data/champ_data.json') as f:
         champ_dict = json.load(f)
 
     if champ in champ_dict['data']:
-        return champ_dict['data'][champ]['name']
+        return champ
 
     return dm.get_closest(champ_dict['data'], champ)
 
 
 def get_champ_title(champ):
-    with open('data/champ_data.json', 'r') as f:
+    with open('data/champ_data.json') as f:
         champ_dict = json.load(f)
 
     return champ_dict['data'][champ]['title']

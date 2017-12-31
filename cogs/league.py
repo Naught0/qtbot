@@ -2,6 +2,7 @@ import ast
 import asyncio
 import json
 import textwrap
+from functools import partial
 
 import discord
 import lolrune
@@ -10,12 +11,14 @@ from discord.ext import commands
 from riotwatcher import RiotWatcher
 
 from utils import aiohttp_wrap as aw
-from utils import dict_manip as dm
 from utils import league as lu
 from utils.user_funcs import PGDB
 
 
 class League:
+    """
+    This thing is HUGE and I should probably chop it into little bits at some point.
+    """
     FORGE_FAVICON_URL = 'http://d181w3hxxigzvh.cloudfront.net/wp-content/themes/rune_forge/favicon-96x96.png'
     NUM_REACTION_LIST = [f'{x}\U000020e3' for x in range(1, 10)]
 
@@ -99,12 +102,13 @@ class League:
     @commands.is_owner()
     async def update_champ_file(self, ctx):
         """ Creates / updates a json file containing champion IDs, names, titles, etc. """
-        new_champ_list = await self.bot.loop.run_in_executor(None, self.riot_watcher.static_data.champions, 'na1')
+        func = partial(self.riot_watcher.static_data.champion, 'na1')
+        new_champ_list = await self.bot.loop.run_in_executor(None, func)
 
         with open('data/champ_data.json', 'w') as f:
             json.dump(new_champ_list, f)
 
-        await ctx.send('Creating champion information file.')
+        await ctx.send('Updated champion information file.')
 
     @commands.command(name='elo', aliases=['mmr'])
     async def get_league_elo(self, ctx, *, summoner=''):
@@ -209,15 +213,14 @@ class League:
 
         await ctx.send(embed=em)
 
-    def rune_to_embed(self, champ: lolrune.Champion, riot_name: str, index: int) -> discord.Embed:
+    def rune_to_embed(self, champ: lolrune.Champion, riot_name: str) -> discord.Embed:
         """A nice helper method which returns an embed based on Champion input."""
-        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.1/img/champion/{}.png'
+        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.2/img/champion/{}.png'
         runes = champ.runes
 
         em = discord.Embed(title=champ.title, color=discord.Color.green())
         em.description = champ.description
-        em.set_author(name=champ.name, icon_url=self.FORGE_FAVICON_URL,
-                      url=self.rune_client.rune_links[riot_name.lower()][index])
+        em.set_author(name=champ.name, icon_url=self.FORGE_FAVICON_URL, url=champ.url)
         em.set_thumbnail(url=icon_uri.format(riot_name))
         em.add_field(name='Keystone', value=runes.keystone, inline=False)
         em.add_field(name=f'Primary: {runes.primary.name}',
@@ -232,7 +235,7 @@ class League:
         """ Get the LoL runes for a particular champion """
         champ = lu.get_riot_champ_name(champion)
         pages_raw = await self.rune_client.get_runes(champ)
-        em_list = [self.rune_to_embed(x, champ, idx) for idx, x in enumerate(pages_raw)]
+        em_list = [self.rune_to_embed(x, champ) for x in pages_raw]
 
         if len(em_list) < 2:
             return await ctx.send(embed=em_list[0])
