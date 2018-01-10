@@ -1,7 +1,7 @@
 import json
 import random
 import re
-from datetime import date
+from datetime import datetime
 from typing import Union, Tuple
 
 import discord
@@ -49,7 +49,7 @@ class Comics:
         if comic['link'] != '':
             em.url = comic['link']
         em.set_footer(text='Random comic' if id_tup is None else f'Matched with {id_tup[0]} hit(s)')
-        em.timestamp = date(int(comic['year']),
+        em.timestamp = datetime(int(comic['year']),
                             int(comic['month']),
                             int(comic['day']))
 
