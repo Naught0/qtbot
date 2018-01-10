@@ -45,6 +45,8 @@ class Comics:
 
         em = discord.Embed()
         em.title = comic['safe_title']
+        em.set_author(name='XKCD', icon_url='https://cdn.shopify.com/s/files/1/0149/3544/products/'
+                                            'hoodie_1_7f9223f9-6933-47c6-9af5-d06b8227774a_1024x1024.png?v=1479786341')
         em.set_image(url=comic['img'])
         em.url = comic['link'] or f'https://xkcd.com/{comic["num"]}/'
         em.set_footer(text='Random comic' if id_tup is None else f'Matched with {id_tup[0]} hit(s)')
