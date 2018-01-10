@@ -49,7 +49,9 @@ class Comics:
         if comic['link'] != '':
             em.url = comic['link']
         em.set_footer(text='Random comic' if id_tup is None else f'Matched with {id_tup[0]} hit(s)')
-        em.timestamp(date(int(comic['year']), int(comic['month']), int(comic['day'])))
+        em.timestamp = date(int(comic['year']),
+                            int(comic['month']),
+                            int(comic['day']))
 
         return em
 
