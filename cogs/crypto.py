@@ -15,7 +15,7 @@ class Crypto:
         self.session = bot.aio_session
         self.redis = bot.redis_client
 
-    @commands.command(aliases=['btc'])
+    @commands.command(aliases=['btc', 'buttcoin'])
     async def bitcoin(self, ctx):
         """ Get current information regarding the value of bitcoin """
 
