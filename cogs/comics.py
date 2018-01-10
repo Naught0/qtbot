@@ -122,8 +122,8 @@ class Comics:
         # Determines what kind of footer to display
         em.set_footer(text='Random comic' if id_tup is None else f'Matched with {id_tup[0]} hit(s)')
         em.timestamp = datetime(int(comic['year']),
-                            int(comic['month']),
-                            int(comic['day']))
+                                int(comic['month']),
+                                int(comic['day']))
 
         return em
 
