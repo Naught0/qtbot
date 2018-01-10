@@ -39,7 +39,7 @@ class Comics:
 
     def _comic_to_embed(self, id_tup: tuple):
         if id_tup is None:
-            comic = random.choice(self.COMICS)
+            comic = self.COMICS[random.choice(self.COMICS)]
         else:
             comic = self.COMICS[id_tup[1]]
 
