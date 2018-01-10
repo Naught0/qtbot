@@ -46,8 +46,7 @@ class Comics:
         em = discord.Embed()
         em.title = comic['safe_title']
         em.set_image(url=comic['img'])
-        if comic['link'] != '':
-            em.url = comic['link']
+        em.url = comic['link'] or f'https://xkcd.com/{comic["num"]}/'
         em.set_footer(text='Random comic' if id_tup is None else f'Matched with {id_tup[0]} hit(s)')
         em.timestamp = datetime(int(comic['year']),
                             int(comic['month']),
