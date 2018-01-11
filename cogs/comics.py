@@ -83,7 +83,8 @@ class Comics:
             match_list.append((strength, self.BLOB[key]))
 
         # Sort the match list based on # of matches and select the first result.
-        best_match = sorted(match_list, key=lambda x: x[0], reverse=True)[0]
+        match_list.sort(key=lambda x: x[0], reverse=True)
+        best_match = match_list[0]
         if best_match[0] == 0:
             # If None, _comic_to_embed will select a random comic
             return None
