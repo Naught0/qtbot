@@ -7,7 +7,7 @@ import textwrap
 from contextlib import redirect_stdout
 import io
 
-""" This bit of code liften from Rapptz's (Danny) bot """ 
+""" This bit of code lifted from Rapptz's (Danny) bot """ 
 
 # to expose to the eval command
 import datetime

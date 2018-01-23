@@ -1,8 +1,10 @@
-#!/bin/env python3
-
 import discord
 from discord.ext import commands
 
+"""
+This would work if I wasn't hosting my bot with Digital Ocean.
+Google blocks me because they hate me personally.
+"""
 
 class RIS:
     def __init__(self, bot):
