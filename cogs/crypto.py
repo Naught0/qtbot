@@ -50,6 +50,9 @@ class Crypto:
         change_7d_str = f":arrow_up: {change_7d}%" if '-' not in change_7d else f":arrow_down: {change_7d}%"
         em.add_field(name='Weekly trend', value=change_7d_str)
 
+        # Ticker graph
+        em.set_image(url='https://files.coinmarketcap.com/generated/sparklines/1.png')
+
         await ctx.send(embed=em)
 
 
