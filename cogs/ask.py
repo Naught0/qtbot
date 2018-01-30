@@ -69,7 +69,6 @@ class Google:
         else:
             await ctx.send(f'**Top result:**\n{link_list[0]}')
 
-    @staticmethod
     def _make_image_embed(query: str, html: str) -> List[discord.Embed]:
         """Helper method to create a list of embeds of the image results"""
         root = etree.fromstring(html, etree.HTMLParser())
