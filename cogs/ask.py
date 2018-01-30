@@ -91,10 +91,30 @@ class Google:
 
         params = {'q': query}
         html = await aw.aio_get_text(self.aio_session, self.BING_URI, params=params, headers=self.BING_H)
-        em_dict = self._make_image_embed(query, html)
+        try:
+            em_dict = self._make_image_embed(query, html)
+        except KeyError:
+            return await ctx.send(f"Oops! I couldn't find anything for `{query}`.")
 
-        await ctx.send(embed=em_dict[self.EMOJIS[0]])
+        message = await ctx.send(embed=em_dict[self.EMOJIS[0]])
 
+        for emoji in self.EMOJIS[:len(em_dict)]:
+            await message.add_reaction(emoji)
+
+        def check(reaction, user):
+            return (user == ctx.author
+                    and reaction.emoji in emoji_tup
+                    and reaction.message.id == message.id)
+
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for('reaction_add', check=check, timeout=30.0)
+            except asyncio.TimeoutError:
+                return await bot_message.clear_reactions()
+
+            if reaction.emoji in em_dict:
+                await bot_message.edit(embed=em_dict[reaction.emoji])
+                
 
 def setup(bot):
     bot.add_cog(Google(bot))
