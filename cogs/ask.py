@@ -35,7 +35,7 @@ class Google:
 
         return link_list or None
 
-    @commands.command(name='ask', aliases=['g'])
+    @commands.group(invoke_without_subcommand=True, name='ask', aliases=['g'])
     async def ask_search(self, ctx, *query):
         """ Get search results from [REDACTED], now that Google hates me. """
 
@@ -82,7 +82,7 @@ class Google:
 
         return em_dict
 
-    @ask.command(name='images', aliases=['image', 'img', 'i'])
+    @ask_search.command(name='images', aliases=['-i'])
     async def bing_image_search(self, ctx, *, query):
         """Search for some fantastic imagery my guy"""
         # No input
