@@ -1,18 +1,26 @@
-#!/bin/env python
-
 import ast
+
+from typing import List
+
+from lxml import etree
 from discord.ext import commands
 from bs4 import BeautifulSoup
 from utils import aiohttp_wrap as aw
 
 
 class Google:
+    BING_URI = 'https://wwww.bing.com/images/search'
+    BING_H = {'User-Agent': 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/4.0; GTB7.4; '
+                                 'InfoPath.1; SV1; .NET CLR 2.8.52393; WOW64; en-US)'}
+    EMOJIS = [f'{x}\U000020e3' for x in range(1,10)]
+
     def __init__(self, bot):
         self.bot = bot
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
         self.scrape_uri = 'http://www.ask.com/web?q={}&o=0&qo=homepageSearchBox'
-        self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
+        self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) '
+                                      'Chrome/41.0.2228.0 Safari/537.36'}
 
     @staticmethod
     def _get_ask_links(html):
@@ -59,6 +67,33 @@ class Google:
             await ctx.send(f'**Top result:**\n{link_list[0]}\n**See Also:**\n1. <{link_list[1]}>')
         else:
             await ctx.send(f'**Top result:**\n{link_list[0]}')
+
+    @staticmethod
+    def _make_image_embed(query: str, html: str) -> List[discord.Embed]:
+        """Helper method to create a list of embeds of the image results"""
+        root = etree.fromstring(html, etree.HTMLParser())
+        link_list = [x.get('href') for x in root.xpath('//div[@class="content"]//a[@class="thumb"]')]
+
+        em_dict = {}
+        for idx, link in enumerate(link_list[:5]):
+            em = discord.Embed(title=f'Results for: `{query}`')
+            em.set_image(url=link)
+            em_dict[self.EMOJIS[idx]] = em
+
+        return em_dict
+
+    @ask.command(name='images', aliases=['image', 'img', 'i'])
+    async def bing_image_search(self, ctx, *, query):
+        """Search for some fantastic imagery my guy"""
+        # No input
+        if not query:
+            return await ctx.send('You have to actually search for something.')
+
+        params = {'q': query}
+        html = await aw.aio_get_text(self.aio_session, self.BING_URI, params=params, headers=self.BING_H)
+        em_dict = self._make_image_embed(query, html)
+
+        await ctx.send(embed=em_dict[0])
 
 
 def setup(bot):
