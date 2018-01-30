@@ -91,12 +91,13 @@ class Google:
 
         params = {'q': query}
         html = await aw.aio_get_text(self.aio_session, self.BING_URI, params=params, headers=self.BING_H)
+        em_dict = self._make_image_embed(query, html)
+
+        # Handle no results
         try:
-            em_dict = self._make_image_embed(query, html)
+            message = await ctx.send(embed=em_dict[self.EMOJIS[0]])
         except KeyError:
             return await ctx.send(f"Oops! I couldn't find anything for `{query}`.")
-
-        message = await ctx.send(embed=em_dict[self.EMOJIS[0]])
 
         for emoji in self.EMOJIS[:len(em_dict)]:
             await message.add_reaction(emoji)
@@ -113,8 +114,9 @@ class Google:
                 return await bot_message.clear_reactions()
 
             if reaction.emoji in em_dict:
-                await bot_message.edit(embed=em_dict[reaction.emoji])
-                
+                await message.edit(embed=em_dict[reaction.emoji])
+                await message.remove_reaction(reaction.emoji, ctx.author)
+
 
 def setup(bot):
     bot.add_cog(Google(bot))
