@@ -36,7 +36,7 @@ class Google:
 
         return link_list or None
 
-    @commands.group(invoke_without_subcommand=True, name='ask', aliases=['g'])
+    @commands.group(invoke_without_command=True, name='ask', aliases=['g'])
     async def ask_search(self, ctx, *query):
         """ Get search results from [REDACTED], now that Google hates me. """
 
