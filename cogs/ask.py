@@ -1,4 +1,5 @@
 import ast
+import asyncio
 import discord
 
 from typing import List
@@ -95,16 +96,16 @@ class Google:
 
         # Handle no results
         try:
-            message = await ctx.send(embed=em_dict[self.EMOJIS[0]])
+            bot_message = await ctx.send(embed=em_dict[self.EMOJIS[0]])
         except KeyError:
             return await ctx.send(f"Oops! I couldn't find anything for `{query}`.")
 
         for emoji in self.EMOJIS[:len(em_dict)]:
-            await message.add_reaction(emoji)
+            await bot_message.add_reaction(emoji)
 
         def check(reaction, user):
             return (user == ctx.author
-                    and reaction.emoji in emoji_tup
+                    and reaction.emoji in self.EMOJIS
                     and reaction.message.id == message.id)
 
         while True:
@@ -114,8 +115,8 @@ class Google:
                 return await bot_message.clear_reactions()
 
             if reaction.emoji in em_dict:
-                await message.edit(embed=em_dict[reaction.emoji])
-                await message.remove_reaction(reaction.emoji, ctx.author)
+                await bot_message.edit(embed=em_dict[reaction.emoji])
+                await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
 
 def setup(bot):
