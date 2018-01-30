@@ -93,7 +93,7 @@ class Google:
         html = await aw.aio_get_text(self.aio_session, self.BING_URI, params=params, headers=self.BING_H)
         em_dict = self._make_image_embed(query, html)
 
-        await ctx.send(embed=em_dict[0])
+        await ctx.send(embed=em_dict[self.EMOJIS[0]])
 
 
 def setup(bot):
