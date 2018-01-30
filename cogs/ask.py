@@ -106,7 +106,7 @@ class Google:
         def check(reaction, user):
             return (user == ctx.author
                     and reaction.emoji in self.EMOJIS
-                    and reaction.message.id == message.id)
+                    and reaction.message.id == bot_message.id)
 
         while True:
             try:
