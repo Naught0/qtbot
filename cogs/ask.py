@@ -69,7 +69,7 @@ class Google:
         else:
             await ctx.send(f'**Top result:**\n{link_list[0]}')
 
-    def _make_image_embed(query: str, html: str) -> List[discord.Embed]:
+    def _make_image_embed(self, query: str, html: str) -> List[discord.Embed]:
         """Helper method to create a list of embeds of the image results"""
         root = etree.fromstring(html, etree.HTMLParser())
         link_list = [x.get('href') for x in root.xpath('//div[@class="content"]//a[@class="thumb"]')]
