@@ -61,11 +61,33 @@ class League:
         await self.db.remove_user_info(ctx.author.id, 'league_name')
         await ctx.send(f'Successfully removed League name for `{ctx.author}`.')
 
+    @staticmethod
+    def _make_champ_embed(champ_dict: dict, riot_champ_name: str, fancy_champ_name: str,
+                          champ_title: str) -> discord.Embed:
+        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.1/img/champion/{}.png'
+        em = discord.Embed(color=discord.Color.green())
+        em.title = '{} "{}"'.format(fancy_champ_name, champ_title)
+        em.add_field(name='Role', value=f'{champ_dict["role"].split("_")[0].title()}'
+        em.add_field(name='Play rate', value=f'{champ_dict["playRate"]:.2%}')
+        em.add_field(name='Win rate', value=f'{champ_dict["winRate"]:.2%}')
+        em.add_field(name='Ban rate', value=f'{champ_dict["banRate"]:.2%}')
+        em.set_thumbnail(url=icon_uri.format(riot_champ_name))
+        em.url = f'http://champion.gg/champion/{riot_champ_name}'
+        em.set_footer(text="Powered by Champion.gg and Riot's API.")
+
+        return em
+
     @commands.command(name='ci', aliases=['champ'])
     async def get_champ_info(self, ctx, *, champ):
         """ Return play, ban, and win rate for a champ """
+        # TODO:
+        # It's already split
+        # Just add pagination
         uri = 'http://api.champion.gg/v2/champions/{}?sort=playRate-desc&api_key={}'
-        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.1/img/champion/{}.png'
+        if champ.lower() == 'wukong':
+            champ = 'MonkeyKing'
+
+        
 
         champ = champ.replace(' ', '')
         riot_champ_name = lu.get_riot_champ_name(self.champ_data, champ)
@@ -86,19 +108,7 @@ class League:
             if not res:
                 return await ctx.send('Sorry, no data for `{}`, yet.'.format(fancy_champ_name))
 
-            await self.redis_client.set(f'champ_info:{champ_id}', json.dumps(res), ex=21600)
-
-        # Create embed
-        em = discord.Embed(color=discord.Color.green())
-        em.title = '{} "{}"'.format(fancy_champ_name, champ_title)
-        em.description = None
-        em.add_field(name='Role', value=f'{res[0]["role"].split("_")[0].title()} ({res[0]["percentRolePlayed"]:.2%})')
-        em.add_field(name='Play rate', value=f'{res[0]["playRate"]:.2%}')
-        em.add_field(name='Win rate', value=f'{res[0]["winRate"]:.2%}')
-        em.add_field(name='Ban rate', value=f'{res[0]["banRate"]:.2%}')
-        em.set_thumbnail(url=icon_uri.format(riot_champ_name))
-        em.url = f'http://champion.gg/champion/{riot_champ_name}'
-        em.set_footer(text="Powered by Champion.gg and Riot's API.")
+            await self.redis_client.set(f'champ_info:{champ_id}', json.dumps(res), ex=60*60*6)
 
         return await ctx.send(embed=em)
 
