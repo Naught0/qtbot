@@ -1,5 +1,3 @@
-#!/bin/env python3
-
 import discord
 import asyncio
 from datetime import datetime
@@ -10,9 +8,7 @@ from discord.ext import commands
 class Poll:
     def __init__(self, bot):
         self.bot = bot
-        self.emoji_tup = ('1\U000020e3', '2\U000020e3', '3\U000020e3', '4\U000020e3',
-                          '5\U000020e3', '6\U000020e3', '7\U000020e3', '8\U000020e3', 
-                          '9\U000020e3')
+        self.emoji_tup = tuple([f'{x}\U000020e3' for x in range(1, 10)])
 
     @commands.command(aliases=['survey'])
     async def poll(self, ctx, poll_name: str, timeout: float, *, poll_options: str):
