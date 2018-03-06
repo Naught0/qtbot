@@ -61,7 +61,7 @@ class Google:
             if link_list:
                 await self.redis_client.set(f'ask:{search_query}', f'{link_list}', ex=21600)
             else:
-                return await ctx.send(f"Sorry, I couldn't find anything for `{query}``.")
+                return await ctx.send(f"Sorry, I couldn't find anything for `{query}`.")
 
         if len(link_list) >= 3:
             await ctx.send(f'**Top result:**\n{link_list[0]}\n**See Also:**\n1. <{link_list[1]}>\n2. <{link_list[2]}>')
