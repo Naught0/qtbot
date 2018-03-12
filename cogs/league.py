@@ -84,7 +84,7 @@ class League:
         # TODO:
         # It's already split
         # Just add pagination
-        uri = 'http://api.champion.gg/v2/champions/{}?sort=playRate-desc&api_key={}'
+        uri = 'http://api.champion.gg/v2/champions/{}?api_key={}'
         if champ.lower() == 'wukong':
             champ = 'MonkeyKing'
 
@@ -109,22 +109,27 @@ class League:
 
             await self.redis_client.set(f'champ_info:{champ_id}', json.dumps(res), ex=60 * 60 * 6)
 
+        # Decide whether we actually need pagination here
         if len(res) > 1:
             em_list = [self._make_champ_embed(x, riot_champ_name, fancy_champ_name, champ_title) for x in res]
         else:
             em = self._make_champ_embed(res[0], riot_champ_name, fancy_champ_name, champ_title)
             return await ctx.send(embed=em)
 
+        # This creates a dict mapping of the emojis to the list of champ info "pages"
         em_dict = dict(zip(self.NUM_REACTION_LIST, em_list))
 
         bot_msg = await ctx.send(embed=em_list[0])
 
+        # Actually add the reactions to the bot message
         for emoji in em_dict:
             await bot_msg.add_reaction(emoji)
 
+        # Make sure only author reactions are counted on the correct message
         def check(reaction, user):
             return user == ctx.author and reaction.emoji in em_dict and reaction.message.id == bot_msg.id
 
+        # Pagination loop
         while True:
             try:
                 reaction, user = await ctx.bot.wait_for('reaction_add', check=check, timeout=30.0)
@@ -132,7 +137,7 @@ class League:
                 return await bot_msg.clear_reactions()
 
             await bot_msg.edit(embed=em_dict[reaction.emoji])
-
+            await bot_msg.remove_reaction(reaction.emoji, ctx.author)
 
     @commands.command(name='ucf', hidden=True)
     @commands.is_owner()
