@@ -64,10 +64,11 @@ class League:
     @staticmethod
     def _make_champ_embed(champ_dict: dict, riot_champ_name: str, fancy_champ_name: str,
                           champ_title: str) -> discord.Embed:
-        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/7.24.1/img/champion/{}.png'
+        icon_uri = 'https://ddragon.leagueoflegends.com/cdn/8.5.2/img/champion/{}.png'
         em = discord.Embed(color=discord.Color.green())
         em.title = '{} "{}"'.format(fancy_champ_name, champ_title)
-        em.add_field(name='Role', value=f'{champ_dict["role"].split("_")[0].title()}'
+        em.add_field(name='Role',
+                     value=f'{champ_dict["role"].split("_")[0].title()} ({champ_dict["percentRolePlayed"]:.2%})')
         em.add_field(name='Play rate', value=f'{champ_dict["playRate"]:.2%}')
         em.add_field(name='Win rate', value=f'{champ_dict["winRate"]:.2%}')
         em.add_field(name='Ban rate', value=f'{champ_dict["banRate"]:.2%}')
@@ -86,8 +87,6 @@ class League:
         uri = 'http://api.champion.gg/v2/champions/{}?sort=playRate-desc&api_key={}'
         if champ.lower() == 'wukong':
             champ = 'MonkeyKing'
-
-        
 
         champ = champ.replace(' ', '')
         riot_champ_name = lu.get_riot_champ_name(self.champ_data, champ)
@@ -108,9 +107,28 @@ class League:
             if not res:
                 return await ctx.send('Sorry, no data for `{}`, yet.'.format(fancy_champ_name))
 
-            await self.redis_client.set(f'champ_info:{champ_id}', json.dumps(res), ex=60*60*6)
+            await self.redis_client.set(f'champ_info:{champ_id}', json.dumps(res), ex=60 * 60 * 6)
+        if len(res) > 1:
+            em_list = [self._make_champ_embed(x, riot_champ_name, fancy_champ_name, champ_title) for x in res]
+        else:
+            em = self._make_champ_embed(res[0], riot_champ_name, fancy_champ_name, champ_title)
+            return await ctx.send(embed=em)
 
-        return await ctx.send(embed=em)
+        em_dict = dict(zip(self.NUM_REACTION_LIST, em_list))
+
+        bot_msg = await ctx.send(embed=em_list[0])
+
+        def check(reaction, user):
+            return user == ctx.author and reaction.emoji in em_dict and reaction.message.id == bot_msg.id
+
+        while True:
+            try:
+                reaction, user = await ctx.bot.wait_for('reaction_add', check=check, timeout=30.0)
+            except asyncio.TimeoutError:
+                return await bot_msg.clear_reactions()
+
+            await bot_msg.edit(embed=em_dict[reaction.emoji])
+
 
     @commands.command(name='ucf', hidden=True)
     @commands.is_owner()
