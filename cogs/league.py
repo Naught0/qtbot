@@ -108,6 +108,7 @@ class League:
                 return await ctx.send('Sorry, no data for `{}`, yet.'.format(fancy_champ_name))
 
             await self.redis_client.set(f'champ_info:{champ_id}', json.dumps(res), ex=60 * 60 * 6)
+
         if len(res) > 1:
             em_list = [self._make_champ_embed(x, riot_champ_name, fancy_champ_name, champ_title) for x in res]
         else:
@@ -117,6 +118,9 @@ class League:
         em_dict = dict(zip(self.NUM_REACTION_LIST, em_list))
 
         bot_msg = await ctx.send(embed=em_list[0])
+
+        for emoji in em_dict:
+            await bot_msg.add_reaction(emoji)
 
         def check(reaction, user):
             return user == ctx.author and reaction.emoji in em_dict and reaction.message.id == bot_msg.id
