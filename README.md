@@ -8,7 +8,7 @@ A Discord bot with some neat functionality.
 
 ## Commands
 
-Qtbot has a lot of commands which you can find by either calling `qt.help`.
+Qtbot has a lot of commands which you can find by calling `qt.help`.
 
 Noteworthy categories are: 
 - Google
