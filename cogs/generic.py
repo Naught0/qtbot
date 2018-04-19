@@ -1,12 +1,17 @@
 #!/bin/env python3
 
 import random
+import re
+from datetime import datetime
+
 import discord
 from discord.ext import commands
-from datetime import datetime
 
 
 class Generic:
+    GOT_AIR_DATE = datetime.fromtimestamp(1554685200)
+    GOT_LOGO = 'https://upload.wikimedia.org/wikipedia/en/d/d8/Game_of_Thrones_title_card.jpg'
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -65,7 +70,7 @@ class Generic:
     async def report(self, ctx):
         """ Report a user """
         await ctx.send(
-            f'Thank you for your service. This incident has been reported to the proper authorities.' 
+            f'Thank you for your service. This incident has been reported to the proper authorities.'
             "We'll take it from here.")
 
     @commands.command()
@@ -98,6 +103,23 @@ class Generic:
         await ctx.send(f'Initialized `{self.bot.start_time_str}`\n'
                        f'Current Time: `{current_time_str}`\n'
                        f'Uptime: `{str(current_time - self.bot.start_time).split(".")[0]}`')
+
+    @commands.command(aliases=['gameofthrones', 'gotwhen'])
+    async def got(self, ctx):
+        """How long til the next Game of Thrones episode?"""
+
+        delta = str(self.GOT_AIR_DATE - datetime.now())
+
+        # Days hours minutes seconds miliseconds
+        delta_list = re.sub('[^0-9 ]', ' ', delta).split()
+        time_til = '`{}` days, `{}` hours, `{}` minutes, `{}` seconds'.format(*delta_list)
+        air_date = f"On {self.GOT_AIR_DATE.strftime('%A, %B %d, %Y at %I:%M%p')}"
+
+        em = discord.Embed(title='How long til Game of Thrones?')
+        em.description = f'{time_til}\n{air_date}'
+        em.set_thumbnail(url=self.GOT_LOGO)
+
+        await ctx.send(embed=em)
 
 
 def setup(bot):
