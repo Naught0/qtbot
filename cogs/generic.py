@@ -113,7 +113,7 @@ class Generic:
         # Days hours minutes seconds miliseconds
         delta_list = re.sub('[^0-9 ]', ' ', delta).split()
 
-        em = discord.Embed(title='How long til Game of Thrones?', color=discord.Color.greyple())
+        em = discord.Embed(title='How long til Game of Thrones?', color=discord.Color.orange())
         em.description = '`{}` days, `{}` hours, `{}` minutes, `{}` seconds'.format(*delta_list)
         em.set_thumbnail(url=self.GOT_LOGO)
         em.set_footer(text='First episode airs')
