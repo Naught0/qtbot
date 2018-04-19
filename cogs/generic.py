@@ -112,12 +112,12 @@ class Generic:
 
         # Days hours minutes seconds miliseconds
         delta_list = re.sub('[^0-9 ]', ' ', delta).split()
-        time_til = '`{}` days, `{}` hours, `{}` minutes, `{}` seconds'.format(*delta_list)
-        air_date = f"On {self.GOT_AIR_DATE.strftime('%A, %B %d, %Y at %I:%M%p')}"
 
-        em = discord.Embed(title='How long til Game of Thrones?')
-        em.description = f'{time_til}\n{air_date}'
+        em = discord.Embed(title='How long til Game of Thrones?', color=discord.Color.greyple())
+        em.description = '`{}` days, `{}` hours, `{}` minutes, `{}` seconds'.format(*delta_list)
         em.set_thumbnail(url=self.GOT_LOGO)
+        em.set_footer(text='First episode airs')
+        em.timestamp = self.GOT_AIR_DATE
 
         await ctx.send(embed=em)
 
