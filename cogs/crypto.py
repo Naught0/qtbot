@@ -51,7 +51,7 @@ class Crypto:
         em.add_field(name='Weekly trend', value=change_7d_str)
 
         # Ticker graph
-        em.set_image(url='https://s2.coinmarketcap.com/generated/sparklines/1.png')
+        em.set_image(url='https://s2.coinmarketcap.com/generated/sparklines/web/7d/usd/1.png')
 
         await ctx.send(embed=em)
 
