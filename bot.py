@@ -21,7 +21,7 @@ class QTBot(commands.Bot):
         self.token = self.api_keys['discord']
 
         super().__init__(command_prefix=self.get_prefix, description=self.description,
-                         pm_help=None, *args, **kwargs)
+                         pm_help=None, case_insensitive=True, *args, **kwargs)
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
         self.rune_client = lolrune.AioRuneClient()
@@ -33,14 +33,14 @@ class QTBot(commands.Bot):
     def run(self):
         super().run(self.token)
 
-    async def load_all_prefixes(self) -> list:
+    async def load_all_prefixes(self):
         pres = await self.pg_con.fetch('SELECT * from custom_prefix')
         # Load custom prefixes into a dict
         self.pre_dict = {r['guild_id']: r['prefix'] for r in pres}
 
     async def get_prefix(self, message):
         try:
-            return self.pre_dict[message.guild.id]
+            return ('qt.', self.pre_dict[message.guild.id])
         except (KeyError, AttributeError):
             return 'qt.'
 
