@@ -24,7 +24,7 @@ class QTBot(commands.Bot):
                          pm_help=None, case_insensitive=True, *args, **kwargs)
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
-        self.rune_client = lolrune.AioRuneClient()
+        # self.rune_client = lolrune.AioRuneClient()
         self.redis_client = aredis.StrictRedis(host='localhost', decode_responses=True)
         self.startup_extensions = [x.stem for x in Path('cogs').glob('*.py')]
         self.loop.run_until_complete(self.create_db_pool())
