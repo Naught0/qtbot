@@ -44,8 +44,8 @@ class Dictionary:
 
         await ctx.send(f'{word.title()} _{word_pos}_ `{final_result.text}`')
 
-    @commands.group(invoke_without_subcommand=True, aliases=['ud'])
-    async def urban(self, ctx, *, word):
+    @commands.group(invoke_without_subcommand=True, name='urban', aliases=['ud', 'urband'])
+    async def _urban(self, ctx, *, word):
         """ Consult the world's leading dictionary """
         try:
             result = await self.urban.get_word(word)
@@ -56,7 +56,7 @@ class Dictionary:
 
         await ctx.send(f'{word.title()}: `{result.definition}`')
 
-    @urban.command(name='-r')
+    @_urban.command(name='-r')
     async def _random(self, ctx):
         """ Get a random word from UrbanDictionary """
         word = await self.urban.get_random()
