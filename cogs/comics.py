@@ -169,7 +169,17 @@ class Comics:
                                color=discord.Color.dark_red())
             return await ctx.send(embed=em)
 
-        await ctx.send('Comics need updating boss!')
+        comics_to_update = list(range(most_recent_in_file, current_comic['num'] + 1))
+        url = 'http://xkcd.com/{}/info.0.json'
+        for num_comic in comics_to_update:
+            async with self.session.get(url.format(num_comic)) as r:
+                self.COMICS[str(num_comic)] = await r.json()
+
+        with open('data/xkcd_comics.json', 'w', encoding='utf8') as f:
+            json.dump(self.COMICS, f)
+
+        em = discord.Embed(title=f':white_check_mark: Updated {len(comics_to_update)} comics!')
+        await ctx.send(embed=em)
 
 
 def setup(bot):
