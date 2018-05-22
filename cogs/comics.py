@@ -40,6 +40,7 @@ class Comics:
         COMICS = json.load(f)
     with open('data/xkcd_blob.json') as f:
         BLOB = json.load(f)
+    CURRENT_URL = 'https://xkcd.com/info.0.json'
 
     def __init__(self, bot):
         self.bot = bot
@@ -112,32 +113,63 @@ class Comics:
 
         # Creates the embed
         em = discord.Embed()
-        em.title = comic['safe_title']
-        # Some random icon I found
-        em.set_author(name='XKCD', icon_url='https://cdn.shopify.com/s/files/1/0149/3544/products/'
-                                            'hoodie_1_7f9223f9-6933-47c6-9af5-d06b8227774a_1024x1024.png?v=1479786341')
+        em.title = f"XKCD {comic['num']}: {comic['safe_title']}"
         em.set_image(url=comic['img'])
         # Some responses don't contain links
-        # Thanks xkcd
         em.url = comic['link'] or f'https://xkcd.com/{comic["num"]}/'
+
         # Determines what kind of footer to display
-        em.set_footer(text='Random comic' if id_tup is None else f'Matched with {id_tup[0]} hit(s)')
+        # If id_tup is None, then it's a random comic
+        if id_tup is None:
+            footer = f'(Random comic) {comic["alt"]}'
+        # If id_tup[0] is None, then the user searched an exact comic number
+        elif id_tup[0] is None:
+            footer = comic['alt']
+        # The user searched via text
+        else:
+            footer = f'Matched with {id_tup[0]} hit(s)'
+        em.set_footer(text=footer)
         em.timestamp = datetime(int(comic['year']),
                                 int(comic['month']),
                                 int(comic['day']))
 
         return em
 
-    @commands.command(aliases=['xk'])
-    async def xkcd(self, ctx, *, query: str = None):
-        """Search for an xkcd, or get a random one"""
-        if query is None:
+    @commands.group(aliases=['xk'], invoke_without_subcommand=True)
+    async def xkcd(self, ctx, number: str = None):
+        """Search for an xkcd by its number, or get a random one"""
+        if number is None:
             return await ctx.send(embed=self._comic_to_embed(None))
 
-        stripped_query = self._process_text(query)
-        best_match = self._get_best_match(stripped_query)
+        if number in self.COMICS:
+            return await ctx.send(embed=self._comic_to_embed((None, number)))
+        else:
+            em = discord.Embed(title=':no_entry_sign: Comic not found')
+            await ctx.send(embed=em)
 
-        return await ctx.send(embed=self._comic_to_embed(best_match))
+    @xkcd.command(aliases=['s'])
+    async def search(self, ctx, *, query):
+        """Search for an xkcd comic with text"""
+        best_match = self._get_best_match(query)
+        comic = self._comic_to_embed(best_match)
+        await ctx.send(embed=comic)
+
+    @xkcd.command(name='update', aliases=['up'])
+    @commands.is_owner()
+    async def _update(self, ctx):
+        """Update the xkcd file"""
+        # Get the most recent comic
+        async with self.session.get(self.CURRENT_URL) as r:
+            current_comic = await r.json()
+
+        most_recent_in_file = max([int(x) for x in self.COMICS])
+        # If comics are already updated
+        if current_comic['num'] == most_recent_in_file:
+            em = discord.Embed(title=':no_entry_sign: Comics already up-to-date boss!',
+                               color=discord.Color.dark_red())
+            return await ctx.send(embed=em)
+
+        await ctx.send('Comics need updating boss!')
 
 
 def setup(bot):
