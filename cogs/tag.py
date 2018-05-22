@@ -55,7 +55,8 @@ class Tag:
             await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, tag_name, contents, 0)
             await ctx.send(f'Tag `{tag_name}` created.')
         except asyncpg.UniqueViolationError:
-            return await ctx.send(f'Sorry, tag `{tag_name}` already exists. If you own it, feel free to `.tag edit` it.')
+            return await ctx.send(f'Sorry, tag `{tag_name}` already exists. '
+                                  f'If you own it, feel free to `qt.tag edit` it.')
 
     @tag.command(aliases=['del', 'delet'])
     async def delete(self, ctx, *, tag_name):
