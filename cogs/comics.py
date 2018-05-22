@@ -174,7 +174,8 @@ class Comics:
             async with self.session.get(url.format(num_comic)) as r:
                 self.COMICS[str(num_comic)] = await r.json()
 
-            self.BLOB[self.process_text(f"{self.COMICS['safe_title']} {self.COMICS['alt']}")] = str(num_comic)
+            self.BLOB[self.process_text(f"{self.COMICS[str(num_comic)]['safe_title']} \
+                                        {self.COMICS[str(num_comic)]['alt']}")] = str(num_comic)
 
         # Update comic file
         with open('data/xkcd_comics.json', 'w', encoding='utf8') as f:
