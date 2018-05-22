@@ -36,7 +36,7 @@ class Comics:
     based on the # of whole-word matches present in the keys of the blob file.
     """
     STOPWORDS = set(stopwords.words('english'))
-    with open('data/xkcd_comics.json') as f:
+    with open('data/xkcd_comics.json', encoding='utf8') as f:
         COMICS = json.load(f)
     with open('data/xkcd_blob.json') as f:
         BLOB = json.load(f)
