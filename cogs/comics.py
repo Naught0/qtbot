@@ -135,7 +135,7 @@ class Comics:
 
         return em
 
-    @commands.group(aliases=['xk'], invoke_without_subcommand=True)
+    @commands.group(aliases=['xk'], invoke_without_command=True)
     async def xkcd(self, ctx, number: str = None):
         """Search for an xkcd by its number, or get a random one"""
         if number is None:
