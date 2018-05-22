@@ -168,7 +168,7 @@ class Comics:
             return await ctx.send(embed=em)
 
         # Gather comics to update and download them
-        comics_to_update = list(range(most_recent_in_file, current_comic['num'] + 1))
+        comics_to_update = list(range(most_recent_in_file + 1, current_comic['num'] + 1))
         url = 'http://xkcd.com/{}/info.0.json'
         for num_comic in comics_to_update:
             async with self.session.get(url.format(num_comic)) as r:
