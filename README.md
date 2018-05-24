@@ -4,7 +4,7 @@
 
 ## Qtbot
 
-A Discord bot with some neat functionality.
+A Discord bot with some neat functionality. Its prefix is `qt.`
 
 ## Commands
 
@@ -18,7 +18,7 @@ Noteworthy categories are:
 - League of Legends
 - OSRS GE Checker
 - Moderator commands
-- [Many more](http://definitelynaught.me)
+- Many more!
 
 ## Running the bot
 
