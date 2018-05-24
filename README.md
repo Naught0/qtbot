@@ -36,3 +36,7 @@ For random other stuff to work:
 ### Disclaimer
 
 Qtbot is still very much a work in progress, so commands are being added and changed often. Despite this, the bot is up 99% of the time.
+
+### Got problems?
+
+Don't we all. If you've questions about the bot or there's a problem, feel free to open an issue and/or message me on Discord (naught0#4417) 
