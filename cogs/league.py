@@ -28,7 +28,7 @@ class League:
         self.session = bot.aio_session
         self.redis_client = bot.redis_client
         self.db = PGDB(bot.pg_con)
-        self.rune_client = bot.rune_client
+        # self.rune_client = bot.rune_client
 
         # Champion data
         with open('data/champ_data.json') as f:
