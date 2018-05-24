@@ -22,7 +22,16 @@ Noteworthy categories are:
 
 ## Running the bot
 
-Don't. Just DM naught0#4417 and I'll add the bot to your server.
+You don't have to! Follow [this link](https://discordapp.com/oauth2/authorize?client_id=293151704126586880&scope=bot&permissions=0) and join him in. 
+
+For mod commands to work, give him access to:
+* Kick
+* Ban
+
+For random other stuff to work:
+* Manage messages
+* Add reactions
+
 
 ### Disclaimer
 
