@@ -1,6 +1,7 @@
 import json
 import random
 import re
+
 from datetime import datetime
 from typing import Union, Tuple
 
@@ -142,12 +143,13 @@ class Comics:
         if number in self.COMICS:
             return await ctx.send(embed=self.comic_to_embed((None, number)))
         else:
-            em = discord.Embed(title=':no_entry_sign: Comic not found')
+            em = discord.Embed(title=':no_entry_sign: Comic not found',
+                               color=discord.Color.dark_red())
             await ctx.send(embed=em)
 
     @xkcd.command(aliases=['s'])
     async def search(self, ctx, *, query):
-        """Search for an xkcd comic with text"""
+        """Search for an xkcd comic with keywords"""
         best_match = self.get_best_match(query)
         comic = self.comic_to_embed(best_match)
         await ctx.send(embed=comic)
@@ -185,7 +187,8 @@ class Comics:
         with open('data/xkcd_blob.json', 'w', encoding='utf8') as f:
             json.dump(self.BLOB, f)
 
-        em = discord.Embed(title=f':white_check_mark: Updated {len(comics_to_update)} comics!')
+        em = discord.Embed(title=f':white_check_mark: Updated {len(comics_to_update)} comics!',
+                           color=discord.Color.dark_green())
         await ctx.send(embed=em)
 
 
