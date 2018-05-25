@@ -88,6 +88,15 @@ class OSRS:
         em = discord.Embed(title=':white_check_mark: Check here',
                            url='https://rsbuddy.com/exchange/names.json',
                            color=discord.Color.dark_gold())
+        em.description = \
+        """
+        ```py
+        data = requests.get('https://rsbuddy.com/exchange/names.json').json()
+        d = {}
+        for item in data:
+            d[data[item]['name'].lower()] = {'id': item, 'name': data[item]['name']}
+        ```
+        """
 
         await ctx.send(embed=em)
 
