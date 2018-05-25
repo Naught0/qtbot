@@ -1,9 +1,10 @@
-import discord
 import json
+
+import discord
+from discord.ext import commands
+
 from utils import aiohttp_wrap as aw
 from utils import dict_manip as dm
-from discord.ext import commands
-from pathlib import Path
 
 
 class OSRS:
@@ -11,30 +12,26 @@ class OSRS:
         self.bot = bot
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
+        self.items_uri = 'https://rsbuddy.com/exchange/names.json'
         self.api_uri = 'https://api.rsbuddy.com/grandExchange?a=guidePrice&i={}'
 
-    def check_osrs_json_file(ctx):
-        return Path('data/item-data.json').is_file()
+        with open('data/item-data.json') as f:
+            self.item_data = json.load(f)
 
-    @commands.command(name='ge')
-    @commands.check(check_osrs_json_file)
+    @commands.group(name='ge', invoke_without_command=True)
     async def ge_search(self, ctx, *, query):
         """ Get the buying/selling price and quantity of an OSRS item """
 
-        # Json item data
-        with open('data/item-data.json') as f:
-            item_data = json.load(f)
-
-        # All items in DB are lowercase
+        # All items in the JSON are lowercase
         item = query.lower()
 
         # Checks whether item in json file
-        if item in item_data:
-            item_id = item_data[item]['id']
+        if item in self.item_data:
+            item_id = self.item_data[item]['id']
         # Uses closest match to said item if no exact match
         else:
-            item = dm.get_closest(item_data, item)
-            item_id = item_data[item]['id']
+            item = dm.get_closest(self.item_data, item)
+            item_id = self.item_data[item]['id']
 
         # Check our handy-dandy redis cache
         if await self.redis_client.exists(f'osrs:{item_id}'):
@@ -44,20 +41,39 @@ class OSRS:
             item_pricing_dict = await aw.aio_get_json(self.aio_session, self.api_uri.format(item_id))
 
             if not item_pricing_dict:
-                return await ctx.send('Sorry, I was unable to communicate with the RSBuddy API. Please try again later.')
+                return await ctx.send(
+                    'Sorry, I was unable to communicate with the RSBuddy API. Please try again later.')
 
             await self.redis_client.set(f'osrs:{item_id}', json.dumps(item_pricing_dict), ex=(10 * 60))
 
         # Create pretty embed
-        em = discord.Embed()
-        em.color = discord.Colour.dark_gold()
-        em.title = item.title()
+        em = discord.Embed(title=item.title(), color=discord.Color.dark_gold())
         em.url = f'https://rsbuddy.com/exchange?id={item_id}'
-        em.set_thumbnail(url= f'https://services.runescape.com/m=itemdb_oldschool/obj_big.gif?id={item_id}')
+        em.set_thumbnail(url=f'https://services.runescape.com/m=itemdb_oldschool/obj_big.gif?id={item_id}')
         em.add_field(name='Buying Price', value=f'{item_pricing_dict["buying"]:,}gp')
         em.add_field(name='Selling Price', value=f'{item_pricing_dict["selling"]:,}gp')
         em.add_field(name='Buying Quantity', value=f'{item_pricing_dict["buyingQuantity"]:,}/hr')
         em.add_field(name='Selling Quantity', value=f'{item_pricing_dict["sellingQuantity"]:,}/hr')
+
+        await ctx.send(embed=em)
+
+    @ge_search.command(name='update')
+    @commands.is_owner()
+    async def _update(self, ctx):
+        """A command to update the OSRS GE item list"""
+        new_items = await aw.aio_get_json(self.items_uri)
+        if len(new_items) == len(self.item_data):
+            em = discord.Embed(title=':no_entry_sign: Items already up-to-date boss!',
+                               color=discord.Color.dark_red())
+
+            return await ctx.send(embed=em)
+
+        with open('data/item-data.json', 'w') as f:
+            json.dump(new_items, f, indent=2)
+
+        num_updated = len(new_items) - len(self.item_data)
+        em = discord.Embed(title=f':white_check_mark: {num_updated} Item(s) updated!',
+                           color=discord.Color.dark_green())
 
         await ctx.send(embed=em)
 
