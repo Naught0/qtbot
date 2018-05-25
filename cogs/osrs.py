@@ -61,7 +61,7 @@ class OSRS:
     @commands.is_owner()
     async def _update(self, ctx):
         """A command to update the OSRS GE item list"""
-        new_items = await aw.aio_get_json(self.items_uri)
+        new_items = await aw.aio_get_json(self.aio_session, self.items_uri)
         if len(new_items) == len(self.item_data):
             em = discord.Embed(title=':no_entry_sign: Items already up-to-date boss!',
                                color=discord.Color.dark_red())
