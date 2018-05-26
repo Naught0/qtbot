@@ -115,10 +115,10 @@ class OSRS:
 
         stats = dict(zip(self.skills, player_data.split()))
 
-        em = discord.Embed(color=discord.Color.dark_gold())
-        em.set_author(name=username, icon_url='https://king4rs.com/31-large_default/novice-osrs-quest.jpg',
-                      url=f'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={username}')
-        em.set_thumbnail(url='https://www.runescape.com/img/rsp777/social-share-fb.jpg')
+        em = discord.Embed(color=discord.Color.dark_gold(),
+                           title=username,
+                           url=f'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={username}')
+        em.set_thumbnail(url='https://vignette.wikia.nocookie.net/runescape2/images/4/41/Old_School_RuneScape_logo.png/revision/latest?cb=20170613204946')
 
         for field in stats:
             if field == 'Overall':
