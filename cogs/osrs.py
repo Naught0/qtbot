@@ -120,6 +120,7 @@ class OSRS:
 
         for stat in stats:
             em.add_field(name=stat, value=stats[stat])
+            break
 
         await ctx.send(embed=em)
 
