@@ -106,7 +106,7 @@ class OSRS:
 
         await ctx.send(embed=em)
 
-    @commands.command(names='osrs', aliases=['hiscores', 'hiscore'])
+    @commands.command(names='osrs', aliases=['hiscores', 'hiscore'], invoke_without_command=True)
     async def _osrs(self, ctx, *, username):
         """Get information about your OSRS stats"""
         player_data = await aw.aio_get_text(self.player_uri.format(username))
