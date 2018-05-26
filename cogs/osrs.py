@@ -254,9 +254,11 @@ class OSRS:
                            color=self.color)
         em.add_field(name=':heart: Hitpoints', value=str(self.get_level(user_info['Hitpoints'])))
         em.add_field(name=':crossed_swords: Attack', value=str(self.get_level(user_info['Attack'])))
-        em.add_field(name=':fist: Strength', value=str(self.get_level(user_info['Strength'])))
+        em.add_field(name=':fist: Strength', value=str(self.get_level(user_info['Strength'])),
+                     inline=False)
         em.add_field(name=':shield: Defence', value=str(self.get_level(user_info['Defense'])))
-        em.add_field(name=':bow_and_arrow: Range', value=str(self.get_level(user_info['Ranged'])))
+        em.add_field(name=':bow_and_arrow: Range', value=str(self.get_level(user_info['Ranged'])),
+                     inline=False)
         em.add_field(name=':sparkles: Magic', value=str(self.get_level(user_info['Magic'])))
         em.add_field(name=':pray: Prayer', value=str(self.get_level(user_info['Prayer'])))
 
