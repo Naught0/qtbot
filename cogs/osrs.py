@@ -118,9 +118,7 @@ class OSRS:
         em = discord.Embed(title=f'Stats for {username}',
                            color=discord.Color.dark_gold())
 
-        for stat in stats:
-            em.add_field(name=stat, value=stats[stat])
-            break
+        em.add_field(name='Overall', value=str(stats))
 
         await ctx.send(embed=em)
 
