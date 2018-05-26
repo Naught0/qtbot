@@ -298,7 +298,7 @@ class OSRS:
         labels = ['Rank', 'Level', 'XP']
         stat_list = user_info[stat_name.title()].split(',')
         for idx, label in enumerate(labels):
-            em.add_field(name=label, value=f'{stat_list[idx]:,}')
+            em.add_field(name=label, value=f'{int(stat_list[idx]):,}')
 
         await ctx.send(embed=em)
 
