@@ -6,8 +6,9 @@ from pathlib import Path
 import aiohttp
 import aredis
 import asyncpg
-import lolrune
 from discord.ext import commands
+
+from utils.custom_context import CustomContext
 
 
 class QTBot(commands.Bot):
@@ -48,6 +49,10 @@ class QTBot(commands.Bot):
         with open(self.config_file) as f:
             self.pg_pw = json.load(f)['postgres']
         self.pg_con = await asyncpg.create_pool(user='james', password=self.pg_pw, database='discord_testing')
+
+    async def on_message(self, message):
+        ctx = await self.get_context(message, cls=CustomContext)
+        await self.invoke(ctx)
 
     async def on_ready(self):
         if not hasattr(self, 'start_time'):

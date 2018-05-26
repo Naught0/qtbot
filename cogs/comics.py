@@ -165,9 +165,7 @@ class Comics:
         most_recent_in_file = max([int(x) for x in self.COMICS])
         # If comics are already updated
         if current_comic['num'] == most_recent_in_file:
-            em = discord.Embed(title=':no_entry_sign: Comics already up-to-date boss!',
-                               color=discord.Color.dark_red())
-            return await ctx.send(embed=em)
+            return await ctx.error('Comics already up-to-date boss!')
 
         # Gather comics to update and download them
         comics_to_update = list(range(most_recent_in_file + 1, current_comic['num'] + 1))
@@ -187,9 +185,7 @@ class Comics:
         with open('data/xkcd_blob.json', 'w', encoding='utf8') as f:
             json.dump(self.BLOB, f)
 
-        em = discord.Embed(title=f':white_check_mark: Updated {len(comics_to_update)} comics!',
-                           color=discord.Color.dark_green())
-        await ctx.send(embed=em)
+        await ctx.success(f'Update {len(comics_to_update)} comic(s)!')
 
 
 def setup(bot):
