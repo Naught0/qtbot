@@ -104,20 +104,15 @@ class OSRS:
         # em = discord.Embed(title=f':white_check_mark: {num_updated} Item(s) updated!',
         #                    color=discord.Color.dark_green())
 
-        # The osbuddy api just 503s every time, keeping this up
-        # in the hopes that this works in the future
+        # The osbuddy api just 503s every time, keeping this commented in the hopes that it works in the future
         em = discord.Embed(title=':white_check_mark: Check here',
                            url='https://rsbuddy.com/exchange/names.json',
                            color=self.color)
-        em.description = \
-            """
-            ```py
-            data = requests.get('https://rsbuddy.com/exchange/names.json').json()
-            d = {}
-            for item in data:
-                d[data[item]['name'].lower()] = {'id': item, 'name': data[item]['name']}
-            ```
-            """
+        em.description = ("```py\n"
+                          "data = requests.get('https://rsbuddy.com/exchange/names.json').json() d = {}\n\n"
+                          "for item in data:\n"
+                          "\td[data[item]['name'].lower()] = {'id': item, 'name': data[item]['name']}"
+                          "```")
 
         await ctx.send(embed=em)
 
