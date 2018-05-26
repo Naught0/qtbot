@@ -130,22 +130,14 @@ class OSRS:
     @commands.group(name='osrs', aliases=['hiscores', 'hiscore'], invoke_without_command=True)
     async def _osrs(self, ctx, *, username: str = None):
         """Get information about your OSRS stats"""
-        # Get user
-        user_supplied = True
+        image = None
         if username is None:
-            user_supplied = False
             username = await self.db.fetch_user_info(ctx.author.id, 'osrs_name')
             image = await self.db.fetch_user_info(ctx.author.id, 'osrs_pic')
 
             # No users found
             if not username:
                 return await ctx.error(self.user_missing)
-
-        # Added this bit so that user images appear if you search yourself and are in the DB already
-        if user_supplied:
-            author_user = await self.db.fetch_user_info(ctx.author.id, 'osrs_name')
-            if author_user == user_supplied:
-                image = await self.db.fetch_user_info(ctx.author.id, 'osrs_pic')
 
         user_info = await self.get_user_info(username)
         if user_info is None:
