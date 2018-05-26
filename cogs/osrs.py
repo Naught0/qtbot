@@ -143,8 +143,8 @@ class OSRS:
                            url=self.player_click_uri.format(username),
                            color=self.color)
         # See get_user_info for why things are wonky and split like this
-        em.add_field(name='Total Level', value=f"{user_info['Overall'].split(',')[1]:,}")
-        em.add_field(name='Overall Rank', value=f"{user_info['Overall'].split(',')[0]:,}")
+        em.add_field(name='Total Level', value=f"{int(user_info['Overall'].split(',')[1]):,}")
+        em.add_field(name='Overall Rank', value=f"{int(user_info['Overall'].split(',')[0]):,}")
 
         image = await self.db.fetch_user_info(ctx.author.id, 'osrs_pic')
         if image:
@@ -195,7 +195,7 @@ class OSRS:
         for item in user_info:
             if {'clue'} & set(item.lower().split()):
                 v = user_info[item].split(',')
-                em.add_field(name=item, value=f'Rank: {v[0]} ({v[1]} clues)')
+                em.add_field(name=item, value=f'Rank: {int(v[0]):,} ({int(v[1]):,} clues)')
 
         await ctx.send(embed=em)
 
