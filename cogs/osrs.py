@@ -124,7 +124,7 @@ class OSRS:
             if field == 'Overall':
                 em.add_field(name=field, value=stats[field].split(',')[1], inline=False)
                 continue
-            if {'bounty', 'clue', 'lms'} & set(field.split()):
+            if {'bounty', 'clue', 'lms'} & set(field.lower().split()):
                 continue
 
             em.add_field(name=field, value=stats[field].split(',')[1])
