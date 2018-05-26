@@ -14,7 +14,7 @@ class OSRS:
         self.redis_client = bot.redis_client
         self.items_uri = 'https://rsbuddy.com/exchange/names.json'
         self.api_uri = 'https://api.rsbuddy.com/grandExchange?a=guidePrice&i={}'
-        self.player_uri = 'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={}'
+        self.player_uri = 'http://services.runescape.com/m=hiscore_oldschool/index_lite.ws?player={}'
         self.skills = ['Overall', 'Attack', 'Defense', 'Strength', 'Hitpoints', 'Ranged', 'Prayer',
                        'Magic', 'Cooking', 'Woodcutting', 'Fletching', 'Fishing', 'Firemaking',
                        'Crafting', 'Smithing', 'Mining', 'Herblore', 'Agility', 'Thieving', 'Slayer',
