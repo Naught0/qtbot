@@ -249,19 +249,27 @@ class OSRS:
         if user_info is None:
             return await ctx.error(self.user_not_exist)
 
-        em = discord.Embed(title=f":bar_chart: {username} Lvl. {self.calc_combat(user_info)}",
+        em = discord.Embed(title=f":right_facing_fist::left_facing_fist: {username}'s Combat Stats",
                            url=self.player_click_uri.format(username),
                            color=self.color)
-        # see if we can force just two columns
-        em.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png')
+        col1 = [f':crossed_swords: Combat {self.calc_combat(user_info)}'
+                f':heart: Hitpoints {self.get_level(user_info["Hitpoints"])}',
+                f':dagger: Attack {self.get_level(user_info["Attack"])}',
+                f':fist: Strength {self.get_level(user_info['Attack'])}']
+        col2 = [f':shield: Shield {self.get_level(user_info['Defense'])}',
+                f':bow_and_arrow: Range {self.get_level(user_info['Ranged'])}',
+                f':sparkles: Magic {self.get_level(user_info['Magic'])}',
+                f':pray: Prayer {self.get_level(user_info['Prayer'])}']
+        em.add_field(name='\u200B', value='\n'.join(col1))
+        em.add_field(name='\u200B', value='\n'.join(col2))
 
-        em.add_field(name=':heart: Hitpoints', value=str(self.get_level(user_info['Hitpoints'])))
-        em.add_field(name=':crossed_swords: Attack', value=str(self.get_level(user_info['Attack'])))
-        em.add_field(name=':fist: Strength', value=str(self.get_level(user_info['Strength'])))
-        em.add_field(name=':shield: Defence', value=str(self.get_level(user_info['Defense'])))
-        em.add_field(name=':bow_and_arrow: Range', value=str(self.get_level(user_info['Ranged'])))
-        em.add_field(name=':sparkles: Magic', value=str(self.get_level(user_info['Magic'])))
-        em.add_field(name=':pray: Prayer', value=str(self.get_level(user_info['Prayer'])))
+        # em.add_field(name=':heart: Hitpoints', value=str(self.get_level(user_info['Hitpoints'])))
+        # em.add_field(name=':crossed_swords: Attack', value=str(self.get_level(user_info['Attack'])))
+        # em.add_field(name=':fist: Strength', value=str(self.get_level(user_info['Strength'])))
+        # em.add_field(name=':shield: Defence', value=str(self.get_level(user_info['Defense'])))
+        # em.add_field(name=':bow_and_arrow: Range', value=str(self.get_level(user_info['Ranged'])))
+        # em.add_field(name=':sparkles: Magic', value=str(self.get_level(user_info['Magic'])))
+        # em.add_field(name=':pray: Prayer', value=str(self.get_level(user_info['Prayer'])))
 
         await ctx.send(embed=em)
 
