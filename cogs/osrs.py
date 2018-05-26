@@ -128,7 +128,7 @@ class OSRS:
         return dict(zip(self.skills, user_info.split()))
 
     @commands.group(name='osrs', aliases=['hiscores', 'hiscore'], invoke_without_command=True)
-    async def _osrs(self, ctx, *, username):
+    async def _osrs(self, ctx, *, username: str = None):
         """Get information about your OSRS stats"""
         if username is None:
             username = await self.db.fetch_user_info(ctx.author.id, 'osrs_name')
@@ -153,7 +153,7 @@ class OSRS:
         await ctx.send(embed=em)
 
     @_osrs.command()
-    async def user(self, ctx, *, username):
+    async def user(self, ctx, *, username: str):
         """Save your OSRS username so that you don't have supply it later"""
         await self.db.insert_user_info(ctx.author.id, 'osrs_name', username)
         await ctx.success(f'Added {username} ({ctx.author.display_name}) to database!')
@@ -165,7 +165,7 @@ class OSRS:
         await ctx.success(f'Removed username from the database.')
 
     @_osrs.command(aliases=['avatar', 'pic'])
-    async def picture(self, ctx, *, url):
+    async def picture(self, ctx, *, url: str):
         """Add a custom picture of your OSRS character to appear in the osrs command"""
         await self.db.insert_user_info(ctx.author.id, 'osrs_pic', url)
         await ctx.success(f'Added picture successfully')
@@ -177,7 +177,7 @@ class OSRS:
         await ctx.success(f'Removed picture.')
 
     @_osrs.command(aliases=['clues', 'clu', 'clue scroll', 'cluescroll', 'cluescrolls'])
-    async def clue(self, ctx, *, username=None):
+    async def clue(self, ctx, *, username: str = None):
         """Get your clue scroll ranks"""
         if username is None:
             username = await self.db.fetch_user_info(ctx.author.id, 'osrs_name')
