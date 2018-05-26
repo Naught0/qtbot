@@ -28,6 +28,13 @@ class OSRS:
         self.user_missing = 'Please either add a username or supply one.'
         self.user_not_exist = "Couldn't find a user matching {}"
         self.color = discord.Color.dark_gold()
+        self.statmoji = {'attack': ':dagger:', 'strength': ':fist:', 'defense': ':shield:',
+                           'ranged': ':bow_and_arrow:', 'prayer': ':pray:', 'magic': ':sparkles:',
+                           'runecrafting': ':crystal_ball:', 'construction': ':house:', 'hitpoints': ':heart:',
+                           'agility': ':runner:', 'herblore': ':herb:', 'thieving': ':spy:',
+                           'crafting': ':hammer_pick:', 'fletching': ':cupid:', 'slayer': ':skull_crossbones:',
+                           'hunter': ':feet:', 'mining': ':pick:', 'fishing': ':fish:', 'cooking': ':cooking:',
+                           'firemaking': ':fire:', 'woodcutting': ':deciduous_tree:', 'farming': ':corn:'}
 
         with open('data/item-data.json') as f:
             self.item_data = json.load(f)
@@ -263,13 +270,34 @@ class OSRS:
         em.add_field(name='\u200B', value='\n'.join(col1))
         em.add_field(name='\u200B', value='\n'.join(col2))
 
-        # em.add_field(name=':heart: Hitpoints', value=str(self.get_level(user_info['Hitpoints'])))
-        # em.add_field(name=':crossed_swords: Attack', value=str(self.get_level(user_info['Attack'])))
-        # em.add_field(name=':fist: Strength', value=str(self.get_level(user_info['Strength'])))
-        # em.add_field(name=':shield: Defence', value=str(self.get_level(user_info['Defense'])))
-        # em.add_field(name=':bow_and_arrow: Range', value=str(self.get_level(user_info['Ranged'])))
-        # em.add_field(name=':sparkles: Magic', value=str(self.get_level(user_info['Magic'])))
-        # em.add_field(name=':pray: Prayer', value=str(self.get_level(user_info['Prayer'])))
+        await ctx.send(embed=em)
+
+    @_osrs.command()
+    async def stat(self, ctx, username: str, stat_name: str):
+        """Get a specific stat for a user
+        Note:
+        Be sure to wrap the username in quotation marks if it has spaces
+        Username is required here per the limitations of Discord, sorry"""
+        user_info = await self.get_user_info(username)
+        if user_info is None:
+            return await ctx.error(self.user_not_exist)
+
+        if stat_name.lower() not in self.statmoji:
+            for stat in self.statmoji:
+                if len(set(stat) & set(stat_name)) > 3:
+                    stat_name = stat
+
+        # If we still haven't found the match / abbreviation
+        if stat_name.lower() in self.statmoji:
+            stat_name = dm.get_closest(self.statmoji, stat_name)
+
+        em = discord.Embed(title=f'{self.statmoji[stat_name]} {stat_name.title()} - {username}',
+                           url=self.player_click_uri.format(username),
+                           color=self.color)
+        labels = ['Rank', 'Level', 'XP']
+        stat_list = user_info[stat_name.title()].split(',')
+        for idx, label in enumerate(labels):
+            em.add_field(name=label, value=stat_list[idx])
 
         await ctx.send(embed=em)
 
