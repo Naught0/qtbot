@@ -118,8 +118,14 @@ class OSRS:
         em = discord.Embed(title=f'Stats for {username}',
                            color=discord.Color.dark_gold(),
                            url=f'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={username}')
+        em.set_thumbnail(url='https://king4rs.com/31-large_default/novice-osrs-quest.jpg')
 
         for field in stats:
+            if field == 'Overall':
+                em.add_field(name=field, value=stats[field].split(',')[1], inline=False)
+            if 'clue' in field.lower():
+                continue
+
             em.add_field(name=field, value=stats[field].split(',')[1])
 
         await ctx.send(embed=em)
