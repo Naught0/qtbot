@@ -1,4 +1,5 @@
 import json
+from urllib.parse import quote_plus
 from typing import Union
 
 import discord
@@ -146,7 +147,7 @@ class OSRS:
     async def get_user_info(self, username: str) -> Union[dict, None]:
         """Helper method to see whether a user exists, if so, retrieves the data and formats it in a dict
         returns None otherwise"""
-        user_info = await aw.aio_get_text(self.aio_session, self.player_uri.format(username))
+        user_info = await aw.aio_get_text(self.aio_session, self.player_uri.format(quote_plus(username)))
         if user_info is None:
             return None
 
@@ -157,7 +158,7 @@ class OSRS:
         # -1's denote no rank or xp
         return dict(zip(self.skills, user_info.split()))
 
-    @commands.group(name='osrs', aliases=['hiscores', 'hiscore'], invoke_without_command=True)
+    @commands.group(name='osrs', aliases=['hiscores', 'hiscore', 'rs'], invoke_without_command=True)
     async def _osrs(self, ctx, *, username: str = None):
         """Get information about your OSRS stats"""
         image = None
@@ -169,18 +170,22 @@ class OSRS:
             if not username:
                 return await ctx.error(self.user_missing)
 
+        # User doesn't exist
         user_info = await self.get_user_info(username)
         if user_info is None:
             return await ctx.error(self.user_not_exist.format(username))
 
+        # Create embed
         em = discord.Embed(title=f':bar_chart: {username}',
-                           url=self.player_click_uri.format(username),
+                           url=self.player_click_uri.format(quote_plus(username)),
                            color=self.color)
         # See get_user_info for why things are wonky and split like this
+        overall = user_info['Overall'].split(',')
         em.add_field(name='Combat Level', value=self.calc_combat(user_info), inline=False)
-        em.add_field(name='Total Level', value=f"{int(user_info['Overall'].split(',')[1]):,}")
-        em.add_field(name='Overall Rank', value=f"{int(user_info['Overall'].split(',')[0]):,}")
+        em.add_field(name='Total Level', value=f"{int(overall[1]):,}")
+        em.add_field(name='Overall Rank', value=f"{int(overall[0]):,}")
 
+        # Set image if one exists & if the player == the author
         if image:
             em.set_image(url=image)
 
@@ -188,7 +193,7 @@ class OSRS:
 
     @_osrs.command()
     async def user(self, ctx, *, username: str):
-        """Save your OSRS username so that you don't have supply it later"""
+        """Save your OSRS username so that you don't have to supply it later"""
         await self.db.insert_user_info(ctx.author.id, 'osrs_name', username)
         await ctx.success(f'Added {username} ({ctx.author.display_name}) to database!')
 
@@ -200,7 +205,8 @@ class OSRS:
 
     @_osrs.command(aliases=['avatar', 'pic'])
     async def picture(self, ctx, *, url: str):
-        """Add a custom picture of your OSRS character to appear in the osrs command"""
+        """Add a custom picture of your OSRS character to appear in the osrs command
+        (Only when called by you)"""
         await self.db.insert_user_info(ctx.author.id, 'osrs_pic', url)
         await ctx.success(f'Added picture successfully')
 
@@ -210,9 +216,9 @@ class OSRS:
         await self.db.remove_user_info(ctx.author.id, 'osrs_pic')
         await ctx.success(f'Removed picture.')
 
-    @_osrs.command(aliases=['clues', 'clu', 'clue scroll', 'cluescroll', 'cluescrolls'])
+    @_osrs.command(aliases=['clues', 'clu', 'cluescroll', 'cluescrolls'])
     async def clue(self, ctx, *, username: str = None):
-        """Get your clue scroll ranks"""
+        """Get your clue scroll counts & ranks"""
         if username is None:
             username = await self.db.fetch_user_info(ctx.author.id, 'osrs_name')
             if not username:
@@ -223,7 +229,7 @@ class OSRS:
             return await ctx.error(self.user_not_exist.format(username))
 
         em = discord.Embed(title=f":scroll: {username}'s clues",
-                           url=self.player_click_uri.format(username),
+                           url=self.player_click_uri.format(quote_plus(username)),
                            color=self.color)
 
         for item in user_info:
@@ -257,7 +263,7 @@ class OSRS:
             return await ctx.error(self.user_not_exist)
 
         em = discord.Embed(title=f":right_facing_fist::left_facing_fist: {username}'s Combat Stats",
-                           url=self.player_click_uri.format(username),
+                           url=self.player_click_uri.format(quote_plus(username)),
                            color=self.color)
         col1 = [f':crossed_swords: Combat `{self.calc_combat(user_info)}`',
                 f':heart: Hitpoints `{self.get_level(user_info["Hitpoints"])}`',
@@ -288,7 +294,7 @@ class OSRS:
             stat_name = dm.get_closest(self.statmoji, stat_name)
 
         em = discord.Embed(title=f'{self.statmoji[stat_name]} {stat_name.title()} - {username}',
-                           url=self.player_click_uri.format(username),
+                           url=self.player_click_uri.format(quote_plus(username)),
                            color=self.color)
 
         labels = ['Rank', 'Level', 'XP']
