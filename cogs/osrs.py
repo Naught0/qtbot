@@ -1,26 +1,33 @@
 import json
+from typing import Union
 
 import discord
 from discord.ext import commands
 
 from utils import aiohttp_wrap as aw
 from utils import dict_manip as dm
+from utils.user_funcs import PGDB
 
 
 class OSRS:
     def __init__(self, bot):
         self.bot = bot
+        self.db = PGDB(bot.pg_con)
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
         self.items_uri = 'https://rsbuddy.com/exchange/names.json'
         self.api_uri = 'https://api.rsbuddy.com/grandExchange?a=guidePrice&i={}'
         self.player_uri = 'http://services.runescape.com/m=hiscore_oldschool/index_lite.ws?player={}'
+        self.player_click_uri = 'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={}'
         self.skills = ['Overall', 'Attack', 'Defense', 'Strength', 'Hitpoints', 'Ranged', 'Prayer',
                        'Magic', 'Cooking', 'Woodcutting', 'Fletching', 'Fishing', 'Firemaking',
                        'Crafting', 'Smithing', 'Mining', 'Herblore', 'Agility', 'Thieving', 'Slayer',
                        'Farming', 'Runecrafting', 'Hunter', 'Construction', 'Clue (Easy)', 'Clue (Medium)',
                        'Clue (All)', 'Bounty Hunter: Rogue', 'Bounty Hunter: Hunter', 'Clue (Hard)', 'LMS',
                        'Clue (Elite)', 'Clue (Master)']
+        self.user_missing = 'Please either add a username or supply one.'
+        self.user_not_exist = "Couldn't find a user matching {}"
+        self.color = discord.Color.dark_gold()
 
         with open('data/item-data.json') as f:
             self.item_data = json.load(f)
@@ -53,7 +60,7 @@ class OSRS:
             await self.redis_client.set(f'osrs:{item_id}', json.dumps(item_pricing_dict), ex=(10 * 60))
 
         # Create pretty embed
-        em = discord.Embed(title=item.title(), color=discord.Color.dark_gold())
+        em = discord.Embed(title=item.title(), color=self.color)
         em.url = f'https://rsbuddy.com/exchange?id={item_id}'
         em.set_thumbnail(url=f'https://services.runescape.com/m=itemdb_oldschool/obj_big.gif?id={item_id}')
         em.add_field(name='Buying Price', value=f'{item_pricing_dict["buying"]:,}gp')
@@ -93,7 +100,7 @@ class OSRS:
         # in the hopes that this works in the future
         em = discord.Embed(title=':white_check_mark: Check here',
                            url='https://rsbuddy.com/exchange/names.json',
-                           color=discord.Color.dark_gold())
+                           color=self.color)
         em.description = \
             """
             ```py
@@ -106,28 +113,89 @@ class OSRS:
 
         await ctx.send(embed=em)
 
-    @commands.command(name='osrs', aliases=['hiscores', 'hiscore'], invoke_without_command=True)
+    async def get_user_info(self, username: str) -> Union[dict, None]:
+        """Helper method to see whether a user exists, if so, retrieves the data and formats it in a dict
+        returns None otherwise"""
+        user_info = await aw.aio_get_text(self.aio_session, self.player_uri.format(username))
+        if user_info is None:
+            return None
+
+        # Player data is returned like so:
+        # Rank, Level, XP
+        # For clues, LMS, and Bounty Hunter it's:
+        # Rank, Score
+        # -1's denote no rank or xp
+        return dict(zip(self.skills, user_info.split()))
+
+    @commands.group(name='osrs', aliases=['hiscores', 'hiscore'], invoke_without_command=True)
     async def _osrs(self, ctx, *, username):
         """Get information about your OSRS stats"""
-        player_data = await aw.aio_get_text(self.aio_session, self.player_uri.format(username))
-        if player_data is None:
-            return await ctx.error(f'Couldn\'t find anyone named {username}.')
+        if username is None:
+            username = await self.db.fetch_user_info(ctx.author.id, 'osrs_name')
+            if not username:
+                return await ctx.error(self.user_missing)
 
-        stats = dict(zip(self.skills, player_data.split()))
+        user_info = await self.get_user_info(username)
+        if user_info is None:
+            return await ctx.error(self.user_not_exist.format(username))
 
-        em = discord.Embed(color=discord.Color.dark_gold(),
-                           title=username,
-                           url=f'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={username}')
-        em.set_thumbnail(url='https://vignette.wikia.nocookie.net/runescape2/images/4/41/Old_School_RuneScape_logo.png/revision/latest?cb=20170613204946')
+        em = discord.Embed(title=username,
+                           url=self.player_click_uri.format(username),
+                           color=self.color)
+        # See get_user_info for why things are wonky and split like this
+        em.add_field(name='Total Level', value=f"{user_info['Overall'].split(',')[1]:,}")
+        em.add_field(name='Overall Rank', value=f"{user_info['Overall'].split(',')[0]:,}")
 
-        for field in stats:
-            if field == 'Overall':
-                em.add_field(name=field, value=stats[field].split(',')[1], inline=False)
-                continue
-            if {'bounty', 'clue', 'lms'} & set(field.lower().split()):
-                continue
+        image = await self.db.fetch_user_info(ctx.author.id, 'osrs_pic')
+        if image:
+            em.set_thumbnail(url=image)
 
-            em.add_field(name=field, value=stats[field].split(',')[1])
+        await ctx.send(embed=em)
+
+    @_osrs.command(aliases=['user'])
+    async def user(self, ctx, *, username):
+        """Save your OSRS username so that you don't have supply it later"""
+        await self.db.insert_user_info(ctx.author.id, 'osrs_name', username)
+        await ctx.success(f'Added {username} ({ctx.author.display_name}) to database!')
+
+    @_osrs.command()
+    async def rmuser(self, ctx):
+        """Remove your OSRS username from the database"""
+        await self.db.remove_user_info(ctx.author.id, 'osrs_name')
+        await ctx.success(f'Removed username from the database.')
+
+    @_osrs.command(aliases=['avatar', 'pic'])
+    async def picture(self, ctx, *, url):
+        """Add a custom picture of your OSRS character to appear in the osrs command"""
+        await self.db.insert_user_info(ctx.author.id, 'osrs_pic', url)
+        await ctx.success(f'Added picture successfully')
+
+    @_osrs.command(aliases=['rmavatar', 'rmpic'])
+    async def rmpicture(self, ctx):
+        """Remove your custom OSRS picture from the database"""
+        await self.db.remove_user_info(ctx.author.id, 'osrs_pic')
+        await ctx.success(f'Removed picture.')
+
+    @_osrs.command(aliases=['clues', 'clu', 'clue scroll', 'cluescroll', 'cluescrolls'])
+    async def clue(self, ctx, *, username=None):
+        """Get your clue scroll ranks"""
+        if username is None:
+            username = await self.db.fetch_user_info(ctx.author.id, 'osrs_name')
+            if not username:
+                return await ctx.error(self.user_missing)
+
+        user_info = await self.get_user_info(username)
+        if user_info is None:
+            return await ctx.error(self.user_not_exist.format(username))
+
+        em = discord.Embed(title=f":scroll: {username}'s clues",
+                           url=self.player_click_uri.format(username),
+                           color=self.color)
+
+        for item in user_info:
+            if {'clue'} & set(item.lower().split()):
+                v = user_info[item].split(',')
+                em.add_field(name=item, value=f'Rank: {v[0]} ({v[1]} clues)')
 
         await ctx.send(embed=em)
 
