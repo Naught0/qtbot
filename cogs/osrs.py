@@ -130,23 +130,30 @@ class OSRS:
     @commands.group(name='osrs', aliases=['hiscores', 'hiscore'], invoke_without_command=True)
     async def _osrs(self, ctx, *, username: str = None):
         """Get information about your OSRS stats"""
+        # Get user
+        user_supplied = True
         if username is None:
+            user_supplied = False
             username = await self.db.fetch_user_info(ctx.author.id, 'osrs_name')
+            image = await self.db.fetch_user_info(ctx.author.id, 'osrs_pic')
             if not username:
                 return await ctx.error(self.user_missing)
+
+        # Added this bit so that user images appear if you search yourself and are in the DB already
+        if (user_supplied is True) and (user_supplied == await self.db.fetch_user_info(ctx.author.id, 'osrs_name')):
+            image = await self.db.fetch_user_info(ctx.author.id, 'osrs_pic')
 
         user_info = await self.get_user_info(username)
         if user_info is None:
             return await ctx.error(self.user_not_exist.format(username))
 
-        em = discord.Embed(title=username,
+        em = discord.Embed(title=f':bar_chart: {username}',
                            url=self.player_click_uri.format(username),
                            color=self.color)
         # See get_user_info for why things are wonky and split like this
         em.add_field(name='Total Level', value=f"{int(user_info['Overall'].split(',')[1]):,}")
         em.add_field(name='Overall Rank', value=f"{int(user_info['Overall'].split(',')[0]):,}")
 
-        image = await self.db.fetch_user_info(ctx.author.id, 'osrs_pic')
         if image:
             em.set_image(url=image)
 
