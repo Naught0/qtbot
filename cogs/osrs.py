@@ -252,14 +252,14 @@ class OSRS:
         em = discord.Embed(title=f":right_facing_fist::left_facing_fist: {username}'s Combat Stats",
                            url=self.player_click_uri.format(username),
                            color=self.color)
-        col1 = [f':crossed_swords: Combat {self.calc_combat(user_info)}',
-                f':heart: Hitpoints {self.get_level(user_info["Hitpoints"])}',
-                f':dagger: Attack {self.get_level(user_info["Attack"])}',
-                f':fist: Strength {self.get_level(user_info["Attack"])}']
-        col2 = [f':shield: Defence {self.get_level(user_info["Defense"])}',
-                f':bow_and_arrow: Range {self.get_level(user_info["Ranged"])}',
-                f':sparkles: Magic {self.get_level(user_info["Magic"])}',
-                f':pray: Prayer {self.get_level(user_info["Prayer"])}']
+        col1 = [f':crossed_swords: Combat {self.calc_combat(user_info):>4}',
+                f':heart: Hitpoints {self.get_level(user_info["Hitpoints"]):>4}',
+                f':dagger: Attack {self.get_level(user_info["Attack"]):>4}',
+                f':fist: Strength {self.get_level(user_info["Attack"]):>4}']
+        col2 = [f':shield: Defence {self.get_level(user_info["Defense"]):>4}',
+                f':bow_and_arrow: Range {self.get_level(user_info["Ranged"]):>4}',
+                f':sparkles: Magic {self.get_level(user_info["Magic"]):>4}',
+                f':pray: Prayer {self.get_level(user_info["Prayer"]):>4}']
         em.add_field(name='\u200B', value='\n'.join(col1))
         em.add_field(name='\u200B', value='\n'.join(col2))
 
