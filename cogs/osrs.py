@@ -282,12 +282,8 @@ class OSRS:
         if user_info is None:
             return await ctx.error(self.user_not_exist)
 
-        if stat_name.lower() not in self.statmoji:
-            for stat in self.statmoji:
-                if len(set(stat) & set(stat_name)) > 2:
-                    stat_name = stat
-
-        # If we still haven't found the match / abbreviation
+        # If input doesn't match exactly
+        # Hopefully this handles common abbreviations (but I'm nearly sure it won't)
         if stat_name.lower() not in self.statmoji:
             stat_name = dm.get_closest(self.statmoji, stat_name)
 
