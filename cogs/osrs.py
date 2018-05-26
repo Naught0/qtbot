@@ -272,7 +272,7 @@ class OSRS:
 
         await ctx.send(embed=em)
 
-    @_osrs.command()
+    @_osrs.command(aliases=['stats'])
     async def stat(self, ctx, username: str, stat_name: str):
         """Get a specific stat for a user
         Note:
@@ -284,20 +284,21 @@ class OSRS:
 
         if stat_name.lower() not in self.statmoji:
             for stat in self.statmoji:
-                if len(set(stat) & set(stat_name)) > 3:
+                if len(set(stat) & set(stat_name)) > 2:
                     stat_name = stat
 
         # If we still haven't found the match / abbreviation
-        if stat_name.lower() in self.statmoji:
+        if stat_name.lower() not in self.statmoji:
             stat_name = dm.get_closest(self.statmoji, stat_name)
 
         em = discord.Embed(title=f'{self.statmoji[stat_name]} {stat_name.title()} - {username}',
                            url=self.player_click_uri.format(username),
                            color=self.color)
+
         labels = ['Rank', 'Level', 'XP']
         stat_list = user_info[stat_name.title()].split(',')
         for idx, label in enumerate(labels):
-            em.add_field(name=label, value=stat_list[idx])
+            em.add_field(name=label, value=f'{stat_list[idx]:,')
 
         await ctx.send(embed=em)
 
