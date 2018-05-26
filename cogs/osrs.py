@@ -113,6 +113,29 @@ class OSRS:
 
         await ctx.send(embed=em)
 
+    @staticmethod
+    def get_level(stat: str) -> int:
+        """Helps parse player level from strings that look like 0,0,0"""
+        return int(stat.split(',')[1])
+
+    def calc_combat(self, user_info: dict) -> str:
+        """Helper method which returns the player's combat level
+        Formula here: http://oldschoolrunescape.wikia.com/wiki/Combat_level"""
+        at = self.get_level(user_info['Attack'])
+        st = self.get_level(user_info['Strength'])
+        de = self.get_level(user_info['Defense'])
+        hp = self.get_level(user_info['Hitpoints'])
+        rn = self.get_level(user_info['Ranged'])
+        mg = self.get_level(user_info['Magic'])
+        pr = self.get_level(user_info['Prayer'])
+
+        base = 0.25 * (de + hp + (pr // 2))
+        melee = 0.325 * (at + st)
+        range = 0.325 * ((rn // 2) + rn)
+        mage = 0.325 * ((mg // 2) + mg)
+
+        return str(int(base + max(melee, range, mage)))
+
     async def get_user_info(self, username: str) -> Union[dict, None]:
         """Helper method to see whether a user exists, if so, retrieves the data and formats it in a dict
         returns None otherwise"""
@@ -147,6 +170,7 @@ class OSRS:
                            url=self.player_click_uri.format(username),
                            color=self.color)
         # See get_user_info for why things are wonky and split like this
+        em.add_field(name='Combat Level', value=self.calc_combat(user_info), inline=False)
         em.add_field(name='Total Level', value=f"{int(user_info['Overall'].split(',')[1]):,}")
         em.add_field(name='Overall Rank', value=f"{int(user_info['Overall'].split(',')[0]):,}")
 
@@ -210,6 +234,31 @@ class OSRS:
         # Now to swap Clue (All) to the first field
         overall = em._fields.pop(2)
         em._fields.insert(0, overall)
+
+        await ctx.send(embed=em)
+
+    @_osrs.command(aliases=['cb'])
+    async def combat(self, ctx, *, username: str = None):
+        """Check the combat stats of yourself or someone else"""
+        if username is None:
+            username = await self.db.fetch_user_info(ctx.author.id, 'osrs_name')
+            if not username:
+                return await ctx.error(self.user_missing)
+
+        user_info = await self.get_user_info(username)
+        if user_info is None:
+            return await ctx.error(self.user_not_exist)
+
+        em = discord.Embed(title=f":bar_chart: {username} Lvl. {self.calc_combat(user_info)}",
+                           url=self.player_click_uri.format(username),
+                           color=self.color)
+        em.add_field(name=':heart: Hitpoints', value=str(self.get_level(user_info['Hitpoints'])))
+        em.add_field(name=':crossed_swords: Attack', value=str(self.get_level(user_info['Attack'])))
+        em.add_field(name=':fist: Strength', value=str(self.get_level(user_info['Strength'])))
+        em.add_field(name=':shield: Defence', value=str(self.get_level(user_info['Defense'])))
+        em.add_field(name=':bow_and_arrow: Range', value=str(self.get_level(user_info['Ranged'])))
+        em.add_field(name=':sparkles: Magic', value=str(self.get_level(user_info['Magic'])))
+        em.add_field(name=':pray: Prayer', value=str(self.get_level(user_info['Prayer'])))
 
         await ctx.send(embed=em)
 
