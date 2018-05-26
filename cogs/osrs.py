@@ -14,6 +14,13 @@ class OSRS:
         self.redis_client = bot.redis_client
         self.items_uri = 'https://rsbuddy.com/exchange/names.json'
         self.api_uri = 'https://api.rsbuddy.com/grandExchange?a=guidePrice&i={}'
+        self.player_uri = 'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={}'
+        self.skills = ['Overall', 'Attack', 'Defense', 'Strength', 'Hitpoints', 'Ranged', 'Prayer',
+                       'Magic', 'Cooking', 'Woodcutting', 'Fletching', 'Fishing', 'Firemaking',
+                       'Crafting', 'Smithing', 'Mining', 'Herblore', 'Agility', 'Thieving', 'Slayer',
+                       'Farming', 'Runecrafting', 'Hunter', 'Construction', 'Clue (Easy)', 'Clue (Medium)',
+                       'Clue (All)', 'Bounty Hunter: Rogue', 'Bounty Hunter: Hunter', 'Clue (Hard)', 'LMS',
+                       'Clue (Elite)', 'Clue (Master)']
 
         with open('data/item-data.json') as f:
             self.item_data = json.load(f)
@@ -41,8 +48,7 @@ class OSRS:
             item_pricing_dict = await aw.aio_get_json(self.aio_session, self.api_uri.format(item_id))
 
             if not item_pricing_dict:
-                return await ctx.send(
-                    'Sorry, I was unable to communicate with the RSBuddy API. Please try again later.')
+                return await ctx.error('Couldn\'t contact the RSBuddy API, please try again later')
 
             await self.redis_client.set(f'osrs:{item_id}', json.dumps(item_pricing_dict), ex=(10 * 60))
 
@@ -97,6 +103,23 @@ class OSRS:
             d[data[item]['name'].lower()] = {'id': item, 'name': data[item]['name']}
         ```
         """
+
+        await ctx.send(embed=em)
+
+    @commands.command(names='osrs', aliases=['hiscores', 'hiscore'])
+    async def _osrs(self, ctx, *, username):
+        """Get information about your OSRS stats"""
+        player_data = await aw.aio_get_text(self.player_uri.format(username))
+        if player_data is None:
+            return await ctx.error(f'Couldn\'t find anyone named {username}.')
+
+        stats = dict(zip(self.skills, player_data))
+
+        em = discord.Embed(title=f'Stats for {username}',
+                           color=discord.Color.dark_gold())
+
+        for stat in stats:
+            em.add_field(name=stat, value=stats[stat])
 
         await ctx.send(embed=em)
 
