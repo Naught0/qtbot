@@ -116,10 +116,11 @@ class OSRS:
         stats = dict(zip(self.skills, player_data.split()))
 
         em = discord.Embed(title=f'Stats for {username}',
-                           color=discord.Color.dark_gold())
+                           color=discord.Color.dark_gold(),
+                           url=f'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={username}')
 
         for field in stats:
-            em.add_field(name=field, value=stats[field])
+            em.add_field(name=field, value=stats[field].split(',')[1])
 
         await ctx.send(embed=em)
 
