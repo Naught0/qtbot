@@ -95,14 +95,14 @@ class OSRS:
                            url='https://rsbuddy.com/exchange/names.json',
                            color=discord.Color.dark_gold())
         em.description = \
-        """
-        ```py
-        data = requests.get('https://rsbuddy.com/exchange/names.json').json()
-        d = {}
-        for item in data:
-            d[data[item]['name'].lower()] = {'id': item, 'name': data[item]['name']}
-        ```
-        """
+            """
+            ```py
+            data = requests.get('https://rsbuddy.com/exchange/names.json').json()
+            d = {}
+            for item in data:
+                d[data[item]['name'].lower()] = {'id': item, 'name': data[item]['name']}
+            ```
+            """
 
         await ctx.send(embed=em)
 
@@ -115,9 +115,9 @@ class OSRS:
 
         stats = dict(zip(self.skills, player_data.split()))
 
-        em = discord.Embed(color=discord.Color.dark_gold(),
-                           url=f'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={username}')
-        em.set_author(name=username, icon_url='https://king4rs.com/31-large_default/novice-osrs-quest.jpg')
+        em = discord.Embed(color=discord.Color.dark_gold())
+        em.set_author(name=username, icon_url='https://king4rs.com/31-large_default/novice-osrs-quest.jpg',
+                      url=f'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={username}')
 
         for field in stats:
             if field == 'Overall':
