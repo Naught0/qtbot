@@ -113,12 +113,13 @@ class OSRS:
         if player_data is None:
             return await ctx.error(f'Couldn\'t find anyone named {username}.')
 
-        stats = dict(zip(self.skills, player_data))
+        stats = dict(zip(self.skills, player_data.split()))
 
         em = discord.Embed(title=f'Stats for {username}',
                            color=discord.Color.dark_gold())
 
-        em.add_field(name='Overall', value=str(stats))
+        for field in stats:
+            em.add_field(name=field, value=stats[field])
 
         await ctx.send(embed=em)
 
