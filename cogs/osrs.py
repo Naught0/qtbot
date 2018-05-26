@@ -202,7 +202,11 @@ class OSRS:
                 # Cast to int for str formatting otherwise
                 else:
                     v = [int(x) for x in v]
-                    em.add_field(name=item, value=f'Rank: {v[0]:,} ({v[1]:,} clue(s))')
+                    em.add_field(name=item, value=f'Rank: {v[0]:,} ({v[1]:,} clues)')
+
+        # Now to swap Clue (All) to the first field
+        overall = em._fields.pop(2)
+        em._fields.insert(0, overall)
 
         await ctx.send(embed=em)
 
