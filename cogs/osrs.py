@@ -148,7 +148,7 @@ class OSRS:
 
         image = await self.db.fetch_user_info(ctx.author.id, 'osrs_pic')
         if image:
-            em.set_thumbnail(url=image)
+            em.set_image(url=image)
 
         await ctx.send(embed=em)
 
@@ -195,7 +195,14 @@ class OSRS:
         for item in user_info:
             if {'clue'} & set(item.lower().split()):
                 v = user_info[item].split(',')
-                em.add_field(name=item, value=f'Rank: {int(v[0]):,} ({int(v[1]):,} clues)')
+                # Handle no rank
+                if v == ['-1', '-1']:
+                    v = ['n/a', '0']
+                    em.add_field(name=item, value=f'Rank: {v[0]} ({v[1]} clues)')
+                # Cast to int for str formatting otherwise
+                else:
+                    v = [int(x) for x in v]
+                    em.add_field(name=item, value=f'Rank: {v[0]:,} ({v[1]:,} clue(s))')
 
         await ctx.send(embed=em)
 
