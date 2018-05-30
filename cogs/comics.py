@@ -142,10 +142,8 @@ class Comics:
 
         if number in self.COMICS:
             return await ctx.send(embed=self.comic_to_embed((None, number)))
-        else:
-            em = discord.Embed(title=':no_entry_sign: Comic not found',
-                               color=discord.Color.dark_red())
-            await ctx.send(embed=em)
+        
+        await ctx.error('Comic not found.')
 
     @xkcd.command(aliases=['s'])
     async def search(self, ctx, *, query):
@@ -185,7 +183,7 @@ class Comics:
         with open('data/xkcd_blob.json', 'w', encoding='utf8') as f:
             json.dump(self.BLOB, f)
 
-        await ctx.success(f'Update {len(comics_to_update)} comic(s)!')
+        await ctx.success(f'Updated {len(comics_to_update)} comic(s)!')
 
 
 def setup(bot):
