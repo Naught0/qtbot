@@ -1,5 +1,3 @@
-#!/bin/env python
-
 import sys
 import traceback
 from discord.ext import commands
