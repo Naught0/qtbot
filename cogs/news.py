@@ -1,4 +1,3 @@
-#!/bin/evn python
 import json
 import asyncio
 import re

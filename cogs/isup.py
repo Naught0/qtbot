@@ -1,5 +1,3 @@
-#!/bin/env python
-
 import discord
 from utils import aiohttp_wrap as aw
 from bs4 import BeautifulSoup

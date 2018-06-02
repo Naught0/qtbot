@@ -1,5 +1,3 @@
-#!/bin/env python
-
 import json
 
 from utils import dict_manip as dm

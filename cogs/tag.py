@@ -1,5 +1,3 @@
-#!/bin/env python
-
 import discord
 import asyncpg
 from datetime import datetime

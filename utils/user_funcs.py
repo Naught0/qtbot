@@ -1,5 +1,3 @@
-#!bin/env python
-
 import asyncpg
 
 class PGDB:

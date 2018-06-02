@@ -1,5 +1,3 @@
-#!/bin/env python
-
 import json
 from nltk.metrics import edit_distance as ed
 

@@ -1,5 +1,3 @@
-#!/bin/env python3
-
 import re
 import utils.aiohttp_wrap as aw
 

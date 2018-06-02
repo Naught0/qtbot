@@ -1,5 +1,3 @@
-#!/bin/env python
-
 import asyncio
 import discord
 import json
