@@ -1,5 +1,3 @@
-#!/bin/env python3
-
 import random
 import re
 from datetime import datetime
