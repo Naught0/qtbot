@@ -8,9 +8,11 @@ class MusicInfo:
     """A cog for retrieving music information (not playing it)"""
     URL = 'http://ws.audioscrobbler.com/2.0/'
     LOGO_URL = 'https://www.last.fm/static/images/lastfm_logo_facebook.1b63d4451dcc.png'
-    TOKEN = self.api_keys['lastfm']
     NO_RESULT = "Sorry, couldn't find anything for {}."
     EM_COLOR = discord.Color.blurple()
+
+    def __init__(self, bot):
+        self.TOKEN = bot.api_keys['lastfm']
 
     @staticmethod
     def truncat(text: str, length=500) -> str:
@@ -22,7 +24,6 @@ class MusicInfo:
     @commands.group(aliases=['lastfm', 'fm'])
     async def music(self, ctx):
         """Main group cmd"""
-        pass
 
     @music.command()
     async def album(self, ctx, *, query):
