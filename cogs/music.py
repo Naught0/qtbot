@@ -28,8 +28,8 @@ class MusicInfo:
     @music.command()
     async def album(self, ctx, *, query):
         """Search for some basic album information via album name"""
-        search_params = {'method': 'album.search', 'album': query, 'limit': 5, '
-                         'format': 'json', api_key': self.TOKEN}
+        search_params = {'method': 'album.search', 'album': query, 'limit': 5,
+                         'format': 'json', 'api_key': self.TOKEN}
         search_resp = await aw.aio_get_json(ctx.bot.aio_session, self.URL, params=search_params)
 
         # API didn't respond
