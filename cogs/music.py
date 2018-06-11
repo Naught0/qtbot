@@ -50,15 +50,15 @@ class MusicInfo:
         info_resp = await aw.aio_get_json(ctx.bot.aio_session, self.URL, params=info_params)
 
         em = discord.Embed(title=f'{artist} - {name}',
-                           url=info_resp['url'],
+                           url=info_resp['album']['url'],
                            color=self.EM_COLOR)
-        em.set_thumbnail(url=info_resp['image'][-1])
+        em.set_thumbnail(url=info_resp['album']['image'][-1])
         # If there's some wiki info, include it
         if info_resp['wiki']['summary']:
-            em.description = self.truncat(info_resp['wiki']['summary'])
+            em.description = self.truncat(info_resp['album']['wiki']['summary'])
 
         # Get and number the tracks in a list
-        tracks = [f"{idx}. {x['name']}" for idx, x in enumerate(info_resp['tracks']['track'])]
+        tracks = [f"{idx}. {x['name']}" for idx, x in enumerate(info_resp['album']['tracks']['track'])]
         em.add_field(name='Track List', text='\n'.join(tracks))
 
         # Attribution or whatever
