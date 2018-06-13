@@ -45,7 +45,7 @@ class MusicInfo:
         artist = search_result['artist']
 
         # Once we've found the matching album, we've gotta do ANOTHER request
-        info_params = {'method': 'album.search', 'artist': artist, 'album': name, 
+        info_params = {'method': 'album.getInfo', 'artist': artist, 'album': name, 
                        'format': 'json', 'api_key': self.TOKEN}
         info_resp = await aw.aio_get_json(ctx.bot.aio_session, self.URL, params=info_params)
 
