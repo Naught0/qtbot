@@ -59,7 +59,7 @@ class MusicInfo:
 
         # Get and number the tracks in a list
         tracks = [f"{idx}. {x['name']}" for idx, x in enumerate(info_resp['album']['tracks']['track'])]
-        em.add_field(name='Track List', text='\n'.join(tracks))
+        em.add_field(name='Track List', value='\n'.join(tracks))
 
         # Attribution or whatever
         em.set_footer(text='Powered by last.fm', icon_url=self.LOGO_URL)
