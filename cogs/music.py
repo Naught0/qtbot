@@ -54,7 +54,7 @@ class MusicInfo:
                            color=self.EM_COLOR)
         em.set_thumbnail(url=info_resp['album']['image'][-1])
         # If there's some wiki info, include it
-        if info_resp['wiki']['summary']:
+        if info_resp['album']['wiki']['summary']:
             em.description = self.truncat(info_resp['album']['wiki']['summary'])
 
         # Get and number the tracks in a list
