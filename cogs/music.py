@@ -58,7 +58,7 @@ class MusicInfo:
             em.description = self.truncat(info_resp['album']['wiki']['summary'])
 
         # Get and number the tracks in a list
-        tracks = [f"{idx + 1}. {x['name']}" for idx, x in enumerate(info_resp['album']['tracks']['track'])]
+        tracks = [f"{idx + 1}. {x['name']}" for idx, x in enumerate(info_resp['album']['tracks']['track'][:15])]
         em.add_field(name='Track List', value='\n'.join(tracks))
 
         # Attribution or whatever
