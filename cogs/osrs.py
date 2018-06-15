@@ -82,39 +82,38 @@ class OSRS:
     @commands.is_owner()
     async def _update(self, ctx):
         """A command to update the OSRS GE item list"""
-        # new_items = await aw.aio_get_json(self.aio_session, self.items_uri)
-        #
-        # # This 503's a lot, if not every time, not sure yet
-        # if new_items is None:
-        #     em = discord.Embed(title=':no_entry_sign: RS buddy is serving up a 503!',
-        #                        color=discord.Color.dark_red())
-        #
-        #     return await ctx.send(embed=em)
-        #
-        # if len(new_items) == len(self.item_data):
-        #     em = discord.Embed(title=':no_entry_sign: Items already up-to-date boss!',
-        #                        color=discord.Color.dark_red())
-        #
-        #     return await ctx.send(embed=em)
-        #
-        # with open('data/item-data.json', 'w') as f:
-        #     json.dump(new_items, f, indent=2)
-        #
-        # num_updated = len(new_items) - len(self.item_data)
-        # em = discord.Embed(title=f':white_check_mark: {num_updated} Item(s) updated!',
-        #                    color=discord.Color.dark_green())
+        new_items = await aw.aio_get_json(self.aio_session, self.items_uri)
+        
+        # This 503's a lot, if not every time, not sure yet
+        if new_items is None:
+            em = discord.Embed(title=':no_entry_sign: RS buddy is serving up a 503!',
+                               color=discord.Color.dark_red())
+        
+            return await ctx.send(embed=em)
+        
+        if len(new_items) == len(self.item_data):
+            em = discord.Embed(title=':no_entry_sign: Items already up-to-date boss!',
+                               color=discord.Color.dark_red())
+        
+            return await ctx.send(embed=em)
+        
+        with open('data/item-data.json', 'w') as f:
+            json.dump(new_items, f, indent=2)
+        
+        num_updated = len(new_items) - len(self.item_data)
+        await ctx.success(f'Updated `{num_updated}` item(s).')
 
         # The osbuddy api just 503s every time, keeping this commented in the hopes that it works in the future
-        em = discord.Embed(title=':white_check_mark: Check here',
-                           url='https://rsbuddy.com/exchange/names.json',
-                           color=self.color)
-        em.description = ("```py\n"
-                          "data = requests.get('https://rsbuddy.com/exchange/names.json').json() d = {}\n\n"
-                          "for item in data:\n"
-                          "\td[data[item]['name'].lower()] = {'id': item, 'name': data[item]['name']}"
-                          "```")
+        # em = discord.Embed(title=':white_check_mark: Check here',
+        #                    url='https://rsbuddy.com/exchange/names.json',
+        #                    color=self.color)
+        # em.description = ("```py\n"
+        #                   "data = requests.get('https://rsbuddy.com/exchange/names.json').json() d = {}\n\n"
+        #                   "for item in data:\n"
+        #                   "\td[data[item]['name'].lower()] = {'id': item, 'name': data[item]['name']}"
+        #                   "```")
 
-        await ctx.send(embed=em)
+        # await ctx.send(embed=em)
 
     @staticmethod
     def get_level(stat: str) -> int:
