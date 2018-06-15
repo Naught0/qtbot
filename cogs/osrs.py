@@ -99,6 +99,8 @@ class OSRS:
         
         with open('data/item-data.json', 'w') as f:
             json.dump(new_items, f, indent=2)
+
+        self.item_data = new_items
         
         num_updated = len(new_items) - len(self.item_data)
         await ctx.success(f'Updated `{num_updated}` item(s).')
