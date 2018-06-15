@@ -96,11 +96,15 @@ class OSRS:
                                color=discord.Color.dark_red())
         
             return await ctx.send(embed=em)
+
+        filtered_items = {}
+        for item in new_items:
+            filtered_items[new_items[item]['name'].lower()] = {'id': item, 'name': new_items[item]['name']}
         
         with open('data/item-data.json', 'w') as f:
-            json.dump(new_items, f, indent=2)
+            json.dump(filtered_items, f, indent=2)
 
-        self.item_data = new_items
+        self.item_data = filtered_items
         
         num_updated = len(new_items) - len(self.item_data)
         await ctx.success(f'Updated `{num_updated}` item(s).')
