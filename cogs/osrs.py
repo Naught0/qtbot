@@ -62,7 +62,7 @@ class OSRS:
         if await self.redis_client.exists('osrs_prices'):
             item_prices = json.loads((await self.redis_client.get('osrs_prices')))
         else:
-            item_prices = json.loads((await aw.aio_get_json(self.aio_session, self.prices_uri)))
+            item_prices = await aw.aio_get_json(self.aio_session, self.prices_uri)
 
             if not item_prices:
                 return await ctx.error('The RSBuddy API is dead yet again. Try again in a bit.')
