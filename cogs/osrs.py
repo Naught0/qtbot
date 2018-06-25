@@ -16,8 +16,11 @@ class OSRS:
         self.db = PGDB(bot.pg_con)
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
+
         self.items_uri = 'https://rsbuddy.com/exchange/names.json'
-        self.api_uri = 'https://api.rsbuddy.com/grandExchange?a=guidePrice&i={}'
+        # self.api_uri = 'https://api.rsbuddy.com/grandExchange?a=guidePrice&i={}'
+        self.prices_uri = 'https://storage.googleapis.com/osbuddy-exchange/summary.json'
+
         self.player_uri = 'http://services.runescape.com/m=hiscore_oldschool/index_lite.ws?player={}'
         self.player_click_uri = 'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={}'
         self.skills = ['Overall', 'Attack', 'Defense', 'Strength', 'Hitpoints', 'Ranged', 'Prayer',
@@ -26,9 +29,6 @@ class OSRS:
                        'Farming', 'Runecrafting', 'Hunter', 'Construction', 'Clue (Easy)', 'Clue (Medium)',
                        'Clue (All)', 'Bounty Hunter: Rogue', 'Bounty Hunter: Hunter', 'Clue (Hard)', 'LMS',
                        'Clue (Elite)', 'Clue (Master)']
-        self.user_missing = 'Please either add a username or supply one.'
-        self.user_not_exist = "Couldn't find a user matching {}"
-        self.color = discord.Color.dark_gold()
         self.statmoji = {'attack': ':dagger:', 'strength': ':fist:', 'defense': ':shield:',
                            'ranged': ':bow_and_arrow:', 'prayer': ':pray:', 'magic': ':sparkles:',
                            'runecrafting': ':crystal_ball:', 'construction': ':house:', 'hitpoints': ':heart:',
@@ -36,6 +36,10 @@ class OSRS:
                            'crafting': ':hammer_pick:', 'fletching': ':cupid:', 'slayer': ':skull_crossbones:',
                            'hunter': ':feet:', 'mining': ':pick:', 'fishing': ':fish:', 'cooking': ':cooking:',
                            'firemaking': ':fire:', 'woodcutting': ':deciduous_tree:', 'farming': ':corn:'}
+
+        self.user_missing = 'Please either add a username or supply one.'
+        self.user_not_exist = "Couldn't find a user matching {}"
+        self.color = discord.Color.dark_gold()
 
         with open('data/item-data.json') as f:
             self.item_data = json.load(f)
@@ -55,26 +59,24 @@ class OSRS:
             item = dm.get_closest(self.item_data, item)
             item_id = self.item_data[item]['id']
 
-        # Check our handy-dandy redis cache
-        if await self.redis_client.exists(f'osrs:{item_id}'):
-            item_pricing_dict = await self.redis_client.get(f'osrs:{item_id}')
-            item_pricing_dict = json.loads(item_pricing_dict)
+        if await self.redis_client.exists('osrs_prices'):
+            item_prices = json.loads((await self.redis_client.get('osrs_prices')))
         else:
-            item_pricing_dict = await aw.aio_get_json(self.aio_session, self.api_uri.format(item_id))
+            item_prices = json.loads((await aw.aio_get_json(self.aio_session, self.prices_uri)))
 
-            if not item_pricing_dict:
-                return await ctx.error('Couldn\'t contact the RSBuddy API, please try again later')
+            if not item_prices:
+                return await ctx.error('The RSBuddy API is dead yet again. Try again in a bit.')
 
-            await self.redis_client.set(f'osrs:{item_id}', json.dumps(item_pricing_dict), ex=(10 * 60))
+            await self.redis_client.set('osrs_prices', json.dumps(item_prices), ex=(5*60))
 
         # Create pretty embed
         em = discord.Embed(title=item.title(), color=self.color)
         em.url = f'https://rsbuddy.com/exchange?id={item_id}'
         em.set_thumbnail(url=f'https://services.runescape.com/m=itemdb_oldschool/obj_big.gif?id={item_id}')
-        em.add_field(name='Buying Price', value=f'{item_pricing_dict["buying"]:,}gp')
-        em.add_field(name='Selling Price', value=f'{item_pricing_dict["selling"]:,}gp')
-        em.add_field(name='Buying Quantity', value=f'{item_pricing_dict["buyingQuantity"]:,}/hr')
-        em.add_field(name='Selling Quantity', value=f'{item_pricing_dict["sellingQuantity"]:,}/hr')
+        em.add_field(name='Buying Price', value=f'{item_prices[item_id]["buy_average"]:,}gp')
+        em.add_field(name='Selling Price', value=f'{item_prices[item_id]["sell_average"]:,}gp')
+        em.add_field(name='Buying Quantity', value=f'{item_prices[item_id]["buy_quantity"]:,}/hr')
+        em.add_field(name='Selling Quantity', value=f'{item_prices[item_id]["sell_quantity"]:,}/hr')
 
         await ctx.send(embed=em)
 
