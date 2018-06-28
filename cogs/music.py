@@ -21,11 +21,11 @@ class MusicInfo:
 
         return text
 
-    @commands.group(aliases=['lastfm', 'fm'])
+    @commands.group(aliases=['lastfm', 'fm'], hidden=True)
     async def music(self, ctx):
         """Main group cmd"""
 
-    @music.command()
+    @music.command(hidden=True)
     async def album(self, ctx, *, query):
         """Search for some basic album information via album name"""
         search_params = {'method': 'album.search', 'album': query, 'limit': 5,
