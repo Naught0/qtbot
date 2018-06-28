@@ -262,7 +262,7 @@ class OSRS:
 
         user_info = await self.get_user_info(username)
         if user_info is None:
-            return await ctx.error(self.user_not_exist)
+            return await ctx.error(self.user_not_exist.format(username))
 
         em = discord.Embed(title=f":right_facing_fist::left_facing_fist: {username}'s Combat Stats",
                            url=self.player_click_uri.format(quote_plus(username)),
@@ -288,14 +288,14 @@ class OSRS:
         Username is required here per the limitations of Discord, sorry"""
         user_info = await self.get_user_info(username)
         if user_info is None:
-            return await ctx.error(self.user_not_exist)
+            return await ctx.error(self.user_not_exist.format(username))
 
         # If input doesn't match exactly
         # Hopefully this handles common abbreviations (but I'm nearly sure it won't)
         if stat_name.lower() not in self.statmoji:
             stat_name = dm.get_closest(self.statmoji, stat_name)
 
-        em = discord.Embed(title=f'{self.statmoji[stat_name]} {stat_name.title()} - {username}',
+        em = discord.Embed(title=f'{self.statmoji[stat_name.lower()]} {stat_name.title()} - {username}',
                            url=self.player_click_uri.format(quote_plus(username)),
                            color=self.color)
 
