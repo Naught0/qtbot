@@ -70,7 +70,7 @@ class OSRS:
             await self.redis_client.set('osrs_prices', json.dumps(item_prices), ex=(5*60))
 
         # Create pretty embed
-        em = discord.Embed(title=item.title(), color=self.color)
+        em = discord.Embed(title=item.capitalize(), color=self.color)
         em.url = f'https://rsbuddy.com/exchange?id={item_id}'
         em.set_thumbnail(url=f'https://services.runescape.com/m=itemdb_oldschool/obj_big.gif?id={item_id}')
         em.add_field(name='Buying Price', value=f'{item_prices[item_id]["buy_average"]:,}gp')
