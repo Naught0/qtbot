@@ -68,7 +68,7 @@ class Generic:
     async def report(self, ctx):
         """ Report a user """
         await ctx.send(
-            f'Thank you for your service. This incident has been reported to the proper authorities.'
+            f'Thank you for your report. This incident has been sent to the proper authorities. '
             "We'll take it from here.")
 
     @commands.command()
