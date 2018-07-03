@@ -1,11 +1,15 @@
-import discord
 import asyncio
+
+import discord
 from discord.ext import commands
+
 
 class Eval:
     def __init__(self, bot):
         self.bot = bot
         self.db_conn = bot.pg_con
+        self.green = discord.Color.dark_green()
+        self.orange = discord.Color.dark_orange()
 
     @commands.command(name='eval', hidden=True)
     @commands.is_owner()
@@ -15,14 +19,18 @@ class Eval:
         stdout, stderr = await process.communicate()
         try:
             if stdout:
-                await ctx.send(f'`{cmd}`\n```{stdout.decode().strip()}```')
+                await ctx.send(embed=discord.Embed(title=cmd,
+                                                   description=f'`{cmd}`\n```{stdout.decode().strip()}```',
+                                                   color=self.green))
             elif stderr:
-                await ctx.send(f'`{cmd}`\n```{stderr.decode().strip()}```')
+                await ctx.send(embed=discord.Embed(title=cmd,
+                                                   description=f'`{cmd}`\n```{stderr.decode().strip()}```',
+                                                   color=self.green))
             else:
-                await ctx.send(f'`{cmd}` produced no output')
+                await ctx.error(f'Couldn\'t grab output for ```{cmd}```.')
 
         except Exception as e:
-            await ctx.send(f'Unable to send output\n```py\n{e}```')
+            await ctx.error(f'Unable to send output ```py\n{e}```')
 
     @commands.command(name='git', hidden=True)
     @commands.is_owner()
@@ -38,12 +46,14 @@ class Eval:
         try:
             res = await self.db_conn.execute(query)
         except Exception as e:
-            return await ctx.send(f'```py\n{type(e).__name__}\n{str(e)}```')
+            return await ctx.error(f'```py\n{type(e).__name__}\n{str(e)}```')
 
         if not res:
-            return await ctx.send(f'Sorry, `{query}` did not return anything.')
+            return await ctx.error(f'Sorry, `{query}` did not return anything.')
 
-        await ctx.send(f'```sql\n{res}```')
+        await ctx.send(embed=discord.Embed(title=query,
+                                           description=f'```sql\n{res}```',
+                                           color=self.orange))
 
     @sql_execute.command(name='fetch')
     @commands.is_owner()
@@ -51,12 +61,12 @@ class Eval:
         try:
             res = await self.db_conn.fetch(query)
         except Exception as e:
-            return await ctx.send(f'```py\n{type(e).__name__}\n{str(e)}```')
+            return await ctx.error(f'```py\n{type(e).__name__}\n{str(e)}```')
 
         if not res:
-            return await ctx.send(f'Sorry, `{query}` did not return anything.')
+            return await ctx.error(f'Sorry, `{query}` did not return anything.')
 
-        em = discord.Embed(color=discord.Color.dark_orange(), title='SQL Fetch')
+        em = discord.Embed(color=self.orange, title='SQL Fetch')
         for k, v in res[0].items():
             em.add_field(name=k, value=v)
 
