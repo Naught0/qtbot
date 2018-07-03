@@ -1,5 +1,6 @@
 import json
 
+import discord
 from asyncurban import UrbanDictionary, WordNotFoundError
 from discord.ext import commands
 from wordnik import *
@@ -31,7 +32,7 @@ class Dictionary:
         result = wordApi.getDefinitions(word)
 
         if not result:
-            return await ctx.send("Sorry, couldn't find that one.")
+            return await ctx.error("Sorry, couldn't find that one.")
 
         final_result = result[0]
 
@@ -42,7 +43,9 @@ class Dictionary:
             else:
                 word_pos = final_result.partOfSpeech
 
-        await ctx.send(f'{word.title()} _{word_pos}_ `{final_result.text}`')
+        em = discord.Embed(title=f':book: {word.title()} - {word_pos}',
+                           description=f'```{final_result.text}```')
+        await ctx.send(embed=em)
 
     @commands.group(invoke_without_subcommand=True, name='urban', aliases=['ud', 'urband'])
     async def _urban(self, ctx, *, word):
@@ -50,18 +53,22 @@ class Dictionary:
         try:
             result = await self.urban.get_word(word)
         except WordNotFoundError:
-            return await ctx.send(f"Sorry, couldn't find anything on `{word}`.")
+            return await ctx.error(f"Sorry, couldn't find anything on `{word}`.")
         except ConnectionError:
-            return await ctx.send(f"Sorry, the UrbanDictionary API buggered off.")
+            return await ctx.error(f"Sorry, the UrbanDictionary API buggered off.")
 
-        await ctx.send(f'{word.title()}: `{result.definition}`')
+        em = discord.Embed(title=f':closed_book: {word.title()}',
+                           description=f'```{result.definition}```')
+        await ctx.send(embed=em)
 
     @_urban.command(name='-r')
     async def _random(self, ctx):
         """ Get a random word from UrbanDictionary """
         word = await self.urban.get_random()
 
-        await ctx.send(f'{word.title()}: `{word.definition}`')
+        em = discord.Embed(title=f':closed_book: {word.title()}',
+                           description=f'```{word.definition}```')
+        await ctx.send(embed=em)
 
 
 def setup(bot):

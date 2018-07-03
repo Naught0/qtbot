@@ -28,7 +28,7 @@ class Calculator:
         """ Calculate like, anything. """
 
         if not query:
-            return await ctx.send('Please enter something for me to calculate!')
+            return await ctx.error('Please enter something for me to calculate!')
 
         # Send typing b/c this can take some time
         await ctx.trigger_typing()
@@ -36,9 +36,12 @@ class Calculator:
         result = await self.bot.loop.run_in_executor(None, Calculator.sync_calc, query)
 
         if result is not None:
-            await ctx.send(result)
+            em = discord.Embed(title=f':1234: `{query}`',
+                               color=discord.Color.dark_green(),
+                               description=f'``{result}``')
+            await ctx.send(embed=em)
         else:
-            await ctx.send(f"Sorry, I couldn't calculate `{query}`.")
+            await ctx.error(f"Sorry, I couldn't calculate `{query}`.")
 
 
 def setup(bot):
