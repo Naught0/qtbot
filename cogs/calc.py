@@ -36,9 +36,9 @@ class Calculator:
         result = await self.bot.loop.run_in_executor(None, Calculator.sync_calc, query)
 
         if result is not None:
-            em = discord.Embed(title=f':1234: `{query}`',
+            em = discord.Embed(title=f':desktop: Calculated: {query}',
                                color=discord.Color.dark_green(),
-                               description=f'``{result}``')
+                               description=f'```{result}```')
             await ctx.send(embed=em)
         else:
             await ctx.error(f"Sorry, I couldn't calculate `{query}`.")
