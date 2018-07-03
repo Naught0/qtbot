@@ -13,27 +13,13 @@ class Generic:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def todo(self, ctx):
-        """ A to-do list for myself """
-        await ctx.send('[ ] Gambling bot [ ] League Match History')
-
-    # @commands.command()
-    # async def kick(self, ctx, *args):
-    #     """ Don't use this """
-    #     phrases = ['I would never!', 'That isn\'t very nice!',
-    #                'Maybe we should talk about our feelings.',
-    #                'Calm down.', 'Check your privileges.',
-    #                'Make love, not war.']
-    #     await ctx.send(random.choice(phrases))
-
-    @commands.command()
+    @commands.command(hidden=True)
     async def say(self, ctx, *, message):
         """ Make qtbot say anything ;) """
         await ctx.message.delete()
         await ctx.send(message)
 
-    @commands.command()
+    @commands.command(name='8ball', aliases=['ball'])
     async def ball(self, ctx, *args):
         """ Ask the magic 8ball """
         responses = ['It is certain', 'It is decidedly so', 'Without a doubt',
@@ -59,7 +45,7 @@ class Generic:
     @commands.command()
     async def slap(self, ctx, *, target=None):
         """ Teach someone a lesson """
-        if not target:
+        if target is None:
             return await ctx.send(f'{ctx.author.name} thrusts his hands wildly about in the air.')
 
         await ctx.send(f'{ctx.author.name} slaps {target} around a bit with a large trout.')
@@ -98,9 +84,31 @@ class Generic:
         """Get current bot uptime."""
         current_time = datetime.now()
         current_time_str = current_time.strftime('%B %d %H:%M:%S')
-        await ctx.send(f'Initialized `{self.bot.start_time_str}`\n'
-                       f'Current Time: `{current_time_str}`\n'
-                       f'Uptime: `{str(current_time - self.bot.start_time).split(".")[0]}`')
+        em = discord.Embed(title=':clock1: Qtbot Uptime')
+        em.add_field(name='Initialized', value=self.bot.start_time_str, inline=False)
+        em.add_field(name='Current time (UTC)', value=current_time_str, inline=False)
+        em.add_field(name='Uptime', value=str(current_time - self.bot.start_time).split('.')[0])
+
+        await ctx.send(embed=em)
+
+    @commands.command()
+    async def about(self, ctx):
+        """Get information about qtbot"""
+        em = discord.Embed(title=':information_source: About qtbot',
+                           description='Qtbot is a general purpose bot with a load of functionality. Call the help'
+                                       ' command via `qt.help` to receive a message with a full list of commands.')
+        em.add_field(name='Total Servers', value=f'{len(self.bot.guilds):,}')
+        em.add_field(name='Total Users', value=f'{len(self.bot.users):,}')
+        em.add_field(name='Total Commands', value=str(len(self.bot.commands)))
+        em.add_field(name='Disclaimer', value='Qtbot does not collect messages or information on any users unless '
+                                               'that user specifically opts to share it via a command. Information '
+                                               'that may be willingly shared includes:\n'
+                                               '\u2022 Location (for weather & forecast)\n'
+                                               '\u2022 League of Legends username\n'
+                                               '\u2022 Oldschool Runescape username\n'
+                                               '\u2022 A link to an Oldschool Runescape screenshot\n'
+                                               'If you have any questions about this contact the owner below.')
+        em.add_field(name='Owner', value='naught0#4417')
 
     @commands.command(aliases=['gameofthrones', 'gotwhen'])
     async def got(self, ctx):
