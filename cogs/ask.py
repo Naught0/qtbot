@@ -61,7 +61,7 @@ class Google:
             if link_list:
                 await self.redis_client.set(f'ask:{search_query}', f'{link_list}', ex=21600)
             else:
-                return await ctx.send(f"Sorry, I couldn't find anything for `{query}`.")
+                return await ctx.error(f"Sorry, I couldn't find anything for `{query}`.")
 
         if len(link_list) >= 3:
             await ctx.send(f'**Top result:**\n{link_list[0]}\n**See Also:**\n1. <{link_list[1]}>\n2. <{link_list[2]}>')
@@ -88,7 +88,7 @@ class Google:
         """Search for some fantastic imagery my guy"""
         # No input
         if not query:
-            return await ctx.send('You have to actually search for something.')
+            return await ctx.error('You have to actually search for something.')
 
         params = {'q': query}
         html = await aw.aio_get_text(self.aio_session, self.BING_URI, params=params, headers=self.BING_H)
@@ -98,7 +98,7 @@ class Google:
         try:
             bot_message = await ctx.send(embed=em_dict[self.EMOJIS[0]])
         except KeyError:
-            return await ctx.send(f"Oops! I couldn't find anything for `{query}`.")
+            return await ctx.error(f"Oops! I couldn't find anything for `{query}`.")
 
         for emoji in self.EMOJIS[:len(em_dict)]:
             await bot_message.add_reaction(emoji)
