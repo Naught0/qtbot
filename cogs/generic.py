@@ -12,6 +12,7 @@ class Generic:
 
     def __init__(self, bot):
         self.bot = bot
+        self.blue = discord.Color.dark_blue()
 
     @commands.command(hidden=True)
     async def say(self, ctx, *, message):
@@ -20,15 +21,24 @@ class Generic:
         await ctx.send(message)
 
     @commands.command(name='8ball', aliases=['ball'])
-    async def ball(self, ctx, *args):
+    async def ball(self, ctx, *, query=None):
         """ Ask the magic 8ball """
+        if query is None:
+            return await ctx.error("The 8Ball's wisdom is not to be wasted.")
+
         responses = ['It is certain', 'It is decidedly so', 'Without a doubt',
                      'Yes definitely', 'You may rely on it', 'As I see it, yes',
                      'Most likely', 'Outlook good', 'Yes', 'Signs point to yes',
                      'Reply hazy try again', 'Ask again later', 'Better not tell you now',
                      'Cannot predict now', 'Concentrate and ask again', 'Don\'t count on it',
                      'My reply is no', 'My sources say no', 'Outlook not so good', 'Very doubtful']
-        await ctx.send(random.choice(responses))
+
+        if not query.endswith('?'):
+            query = f'{query}?'
+
+        await ctx.send(embed=discord.Embed(title=f':8ball: {query}',
+                                           description=random.choice(responses),
+                                           color=self.blue))
 
     @commands.command()
     async def same(self, ctx):
@@ -53,7 +63,7 @@ class Generic:
     @commands.command()
     async def report(self, ctx):
         """ Report a user """
-        await ctx.send(
+        await ctx.success(
             f'Thank you for your report. This incident has been sent to the proper authorities. '
             "We'll take it from here.")
 
@@ -68,7 +78,7 @@ class Generic:
         if not target:
             return await ctx.send(f'{member} loves ... nothing')
 
-        await ctx.send(f"{member} gives {target} some good ol' fashioned lovin'.")
+        await ctx.send(f":heart_decoration: {member} gives {target} some good ol' fashioned lovin'. :heart_decoration:")
 
     @commands.command(aliases=['at'])
     async def aesthetify(self, ctx, *, a_text):
@@ -89,26 +99,27 @@ class Generic:
         em.add_field(name='Current time (UTC)', value=current_time_str, inline=False)
         em.add_field(name='Uptime', value=str(current_time - self.bot.start_time).split('.')[0])
 
-        await ctx.send(embed=em)
+        await ctx.send(embed=em, color=self.blue)
 
     @commands.command()
     async def about(self, ctx):
         """Get information about qtbot"""
         em = discord.Embed(title=':information_source: About qtbot',
                            description='Qtbot is a general purpose bot with a load of functionality. Call the help'
-                                       ' command via `qt.help` to receive a message with a full list of commands.')
-        em.add_field(name='Total Servers', value=f'{len(self.bot.guilds):,}')
-        em.add_field(name='Total Users', value=f'{len(self.bot.users):,}')
-        em.add_field(name='Total Commands', value=str(len(self.bot.commands)))
+                                       ' command via `qt.help` to receive a message with a full list of commands.',
+                           color=self.blue)
+        em.add_field(name='Total Servers', value=f'`{len(self.bot.guilds):,}`')
+        em.add_field(name='Total Users', value=f'`{len(self.bot.users):,}`')
+        em.add_field(name='Total Commands', value=f'`{len(self.bot.commands)}`')
         em.add_field(name='Disclaimer', value='Qtbot does not collect messages or information on any users unless '
-                                               'that user specifically opts to share it via a command. Information '
-                                               'that may be willingly shared includes:\n'
-                                               '\u2022 Location (for weather & forecast)\n'
-                                               '\u2022 League of Legends username\n'
-                                               '\u2022 Oldschool Runescape username\n'
-                                               '\u2022 A link to an Oldschool Runescape screenshot\n'
-                                               'If you have any questions about this contact the owner below.')
-        em.add_field(name='Owner', value='naught0#4417')
+                                              'that user specifically opts to share it via a command. Information '
+                                              'that may be willingly shared includes:\n'
+                                              '\u2022 `Location (for weather & forecast)`\n'
+                                              '\u2022 `League of Legends username`\n'
+                                              '\u2022 `Oldschool Runescape username`\n'
+                                              '\u2022 `A link to an Oldschool Runescape screenshot`\n'
+                                              'If you have any questions about this contact the owner below.')
+        em.add_field(name='Owner', value='`naught0#4417`')
 
         await ctx.send(embed=em)
 
