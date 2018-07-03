@@ -110,6 +110,8 @@ class Generic:
                                                'If you have any questions about this contact the owner below.')
         em.add_field(name='Owner', value='naught0#4417')
 
+        await ctx.send(embed=em)
+
     @commands.command(aliases=['gameofthrones', 'gotwhen'])
     async def got(self, ctx):
         """How long til the next Game of Thrones episode?"""
