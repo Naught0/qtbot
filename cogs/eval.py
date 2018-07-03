@@ -20,11 +20,11 @@ class Eval:
         try:
             if stdout:
                 await ctx.send(embed=discord.Embed(title=cmd,
-                                                   description=f'`{cmd}`\n```{stdout.decode().strip()}```',
+                                                   description=f'```{stdout.decode().strip()}```',
                                                    color=self.green))
             elif stderr:
                 await ctx.send(embed=discord.Embed(title=cmd,
-                                                   description=f'`{cmd}`\n```{stderr.decode().strip()}```',
+                                                   description=f'```{stderr.decode().strip()}```',
                                                    color=self.green))
             else:
                 await ctx.error(f'Couldn\'t grab output for ```{cmd}```.')
