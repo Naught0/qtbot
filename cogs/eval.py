@@ -46,7 +46,7 @@ class Eval:
         try:
             res = await self.db_conn.execute(query)
         except Exception as e:
-            return await ctx.error(f'```py\n{type(e).__name__}\n{str(e)}```')
+            return await ctx.error(f'\n{type(e).__name__}\n{str(e)}')
 
         if not res:
             return await ctx.error(f'Sorry, `{query}` did not return anything.')
@@ -61,7 +61,7 @@ class Eval:
         try:
             res = await self.db_conn.fetch(query)
         except Exception as e:
-            return await ctx.error(f'```py\n{type(e).__name__}\n{str(e)}```')
+            return await ctx.error(f'{type(e).__name__}\n{str(e)}')
 
         if not res:
             return await ctx.error(f'Sorry, `{query}` did not return anything.')
