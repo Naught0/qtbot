@@ -53,19 +53,21 @@ class UserFacts:
     async def ufact(self, ctx):
         """Get a random user-created fact from your server"""
         # Check to see whether any facts have been created
-        if await self.total_facts(ctx) < 1:
-            return await ctx.error('Your server does not have any facts set up!',
-                                   description=f'Use the `{self.bot.get_prefix(ctx.message)[-1]}ufact add` command to '
-                                               'start getting random facts you\'ve created.')
-
-        fact = await self.get_random_fact(ctx.guild.id)
-        user = ctx.guild.get_member(fact['member_id'])
-        contents = fact['contents']
-
-        em = discord.Embed(title=':bookmark: Fact.', description=contents, timestamp=fact['created'])
-        em.set_footer(text=f'Created by {user} at', icon_url=user.avatar_url)
-
-        await ctx.send(embed=em)
+        # if await self.total_facts(ctx) < 1:
+        #     return await ctx.error('Your server does not have any facts set up!',
+        #                            description=f'Use the `{self.bot.get_prefix(ctx.message)[-1]}ufact add` command to '
+        #                                        'start getting random facts you\'ve created.')
+        #
+        # fact = await self.get_random_fact(ctx.guild.id)
+        # user = ctx.guild.get_member(fact['member_id'])
+        # contents = fact['contents']
+        #
+        # em = discord.Embed(title=':bookmark: Fact.', description=contents, timestamp=fact['created'])
+        # em.set_footer(text=f'Created by {user} at', icon_url=user.avatar_url)
+        #
+        # await ctx.send(embed=em)
+        total = await self.total_facts(ctx)
+        await ctx.send(str(total))
 
     @ufact.command(aliases=['create', 'ad'])
     async def add(self, ctx, *, contents: str = None):
