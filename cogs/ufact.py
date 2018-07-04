@@ -53,7 +53,7 @@ class UserFacts:
     async def ufact(self, ctx):
         """Get a random user-created fact from your server"""
         # Check to see whether any facts have been created
-        if not await self.total_facts(ctx):
+        if await self.total_facts(ctx) < 1:
             return await ctx.error('Your server does not have any facts set up!',
                                    description=f'Use the `{self.bot.get_prefix(ctx.message)[-1]}ufact add` command to '
                                                'start getting random facts you\'ve created.')
