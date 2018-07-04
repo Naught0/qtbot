@@ -58,7 +58,7 @@ class UserFacts:
                                    description=f'Use the `{self.bot.get_prefix(ctx.message)[-1]}ufact add` command to '
                                                'start getting random facts you\'ve created.')
 
-        fact = self.get_random_fact(ctx.guild.id)
+        fact = await self.get_random_fact(ctx.guild.id)
         user = ctx.guild.get_member(fact['member_id'])
         contents = fact['contents']
 
