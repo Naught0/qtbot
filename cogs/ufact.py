@@ -63,7 +63,7 @@ class UserFacts:
         contents = fact['contents']
 
         em = discord.Embed(title=':bookmark: Fact.', description=contents, timestamp=fact['created'])
-        em.set_footer(text=f'Created by {user} at', icon_url=user.avatar_url)
+        em.set_footer(text=f'Created by {user.display_name}', icon_url=user.avatar_url)
 
         await ctx.send(embed=em)
 
