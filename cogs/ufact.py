@@ -53,7 +53,7 @@ class UserFacts:
     async def ufact(self, ctx):
         """Get a random user-created fact from your server"""
         # Check to see whether any facts have been created
-        if not self.total_facts(ctx):
+        if not await self.total_facts(ctx):
             return await ctx.error('Your server does not have any facts set up!',
                                    description=f'Use the `{self.bot.get_prefix(ctx.message)[-1]}ufact add` command to '
                                                'start getting random facts you\'ve created.')
@@ -78,7 +78,7 @@ class UserFacts:
                    VALUES ($1, $2, $3, now());'''
 
         try:
-            await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, ctx.message.content)
+            await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, contents)
         except asyncpg.UniqueViolationError:
             return await ctx.error('Sorry, that fact already exists.')
 
