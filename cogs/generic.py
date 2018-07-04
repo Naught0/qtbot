@@ -94,12 +94,12 @@ class Generic:
         """Get current bot uptime."""
         current_time = datetime.now()
         current_time_str = current_time.strftime('%B %d %H:%M:%S')
-        em = discord.Embed(title=':clock1: Qtbot Uptime')
+        em = discord.Embed(title=':clock1: Qtbot Uptime', color=self.blue)
         em.add_field(name='Initialized', value=self.bot.start_time_str, inline=False)
         em.add_field(name='Current time (UTC)', value=current_time_str, inline=False)
         em.add_field(name='Uptime', value=str(current_time - self.bot.start_time).split('.')[0])
 
-        await ctx.send(embed=em, color=self.blue)
+        await ctx.send(embed=em)
 
     @commands.command()
     async def about(self, ctx):
