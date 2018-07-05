@@ -1,3 +1,5 @@
+import re
+
 import asyncpg
 import discord
 from discord.ext import commands
@@ -13,6 +15,11 @@ class UserFacts:
     def __init__(self, bot):
         self.bot = bot
         self.pg_con = bot.pg_con
+
+    @staticmethod
+    def numify(s: str) -> int:
+        """Small helper method to turn alphanum -> num"""
+        return int(re.sub('[^0-9]', '', s))
 
     async def get_fact(self, guild_id: int, did: int):
         """Gets a specific fact (row from psql)"""
@@ -91,9 +98,9 @@ class UserFacts:
         await ctx.success(f'Added that fact for ya! (#{fact_id})')
 
     @ufact.command(name='delete', aliases=['remove', 'del', 'rm'])
-    async def _delete(self, ctx, fact_id: int):
+    async def _delete(self, ctx, *, fact_id: str):
         """Remove a fact from the database via fact number"""
-        can_delete = await self.can_delete_fact(ctx, fact_id)
+        can_delete = await self.can_delete_fact(ctx, self.numify(fact_id))
 
         if can_delete is None:
             return await ctx.error("Fact not found.")
