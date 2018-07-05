@@ -270,7 +270,7 @@ class OSRS:
         col1 = [f':crossed_swords: Combat `{self.calc_combat(user_info)}`',
                 f':heart: Hitpoints `{self.get_level(user_info["Hitpoints"])}`',
                 f':dagger: Attack `{self.get_level(user_info["Attack"])}`',
-                f':fist: Strength `{self.get_level(user_info["Attack"])}`']
+                f':fist: Strength `{self.get_level(user_info["Strength"])}`']
         col2 = [f':shield: Defence `{self.get_level(user_info["Defense"])}`',
                 f':bow_and_arrow: Range `{self.get_level(user_info["Ranged"])}`',
                 f':sparkles: Magic `{self.get_level(user_info["Magic"])}`',
