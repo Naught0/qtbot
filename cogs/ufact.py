@@ -112,7 +112,7 @@ class UserFacts:
                    WHERE id = $1;'''
         await self.pg_con.execute(query, did)
 
-        await ctx.success(f'Deleted fact #{fact_id}')
+        await ctx.success(f'Deleted fact #{did}')
 
 
 def setup(bot):
