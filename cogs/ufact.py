@@ -100,7 +100,8 @@ class UserFacts:
     @ufact.command(name='delete', aliases=['remove', 'del', 'rm'])
     async def _delete(self, ctx, *, fact_id: str):
         """Remove a fact from the database via fact number"""
-        can_delete = await self.can_delete_fact(ctx, self.numify(fact_id))
+        did = self.numify(fact_id)
+        can_delete = await self.can_delete_fact(ctx, did)
 
         if can_delete is None:
             return await ctx.error("Fact not found.")
@@ -109,7 +110,7 @@ class UserFacts:
 
         query = '''DELETE FROM user_facts
                    WHERE id = $1;'''
-        await self.pg_con.execute(query, fact_id)
+        await self.pg_con.execute(query, did)
 
         await ctx.success(f'Deleted fact #{fact_id}')
 
