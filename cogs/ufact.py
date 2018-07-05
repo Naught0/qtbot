@@ -18,7 +18,7 @@ class UserFacts:
         """Gets a specific fact (row from psql)"""
         query = '''SELECT * from user_facts
                    WHERE guild_id = $1
-                   AND did = $2;'''
+                   AND id = $2;'''
 
         return await self.pg_con.fetchrow(query, guild_id, did)
 
