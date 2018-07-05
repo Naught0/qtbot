@@ -14,13 +14,13 @@ class UserFacts:
         self.bot = bot
         self.pg_con = bot.pg_con
 
-    async def get_fact(self, guild_id: int, contents: str):
+    async def get_fact(self, guild_id: int, did: int):
         """Gets a specific fact (row from psql)"""
         query = '''SELECT * from user_facts
                    WHERE guild_id = $1
-                   AND contents = $2;'''
+                   AND did = $2;'''
 
-        return await self.pg_con.fetchrow(query, guild_id, contents)
+        return await self.pg_con.fetchrow(query, guild_id, did)
 
     async def get_random_fact(self, guild_id: int):
         """Returns a random fact"""
@@ -31,9 +31,14 @@ class UserFacts:
 
         return await self.pg_con.fetchrow(query, guild_id)
 
-    async def can_delete_fact(self, ctx, contents: str):
-        """Check whether the user can delete the fact they want"""
-        fact = await self.get_fact(ctx.guild.id, contents)
+    async def can_delete_fact(self, ctx, did: int):
+        """Check whether the user can delete a given fact
+
+        This is essentially a tribool
+            True -> Can delete
+            False -> Can't delete due to permissions / ownership
+            None -> Fact doesn't exist (in that guild)"""
+        fact = await self.get_fact(ctx.guild.id, did)
 
         if not fact:
             return None
@@ -62,7 +67,7 @@ class UserFacts:
         user = ctx.guild.get_member(fact['member_id'])
         contents = fact['contents']
 
-        em = discord.Embed(title=':bookmark: Fact.', description=contents, timestamp=fact['created'])
+        em = discord.Embed(title=f':bookmark: Fact #{fact["id"]}', description=contents, timestamp=fact['created'])
         em.set_footer(text=f'Created by {user.display_name}', icon_url=user.avatar_url)
 
         await ctx.send(embed=em)
@@ -82,7 +87,24 @@ class UserFacts:
         except asyncpg.UniqueViolationError:
             return await ctx.error('Sorry, that fact already exists.')
 
-        await ctx.success('Added that fact for ya!')
+        fact_id = await self.pg_con.fetchval('''SELECT id FROM user_facts WHERE contents = $1''', contents)
+        await ctx.success(f'Added that fact for ya! (#{fact_id})')
+
+    @ufact.command(name='delete', aliases=['remove', 'del', 'rm'])
+    async def _delete(self, ctx, fact_id: int):
+        """Remove a fact from the database via fact number"""
+        can_delete = await self.can_delete_fact(ctx, fact_id)
+
+        if can_delete is None:
+            return await ctx.error("Fact not found.")
+        if not can_delete:
+            return await ctx.error("You can't delete that fact.")
+
+        query = '''DELETE FROM user_facts
+                   WHERE id = $1;'''
+        await self.pg_con.execute(query, fact_id)
+
+        await ctx.success(f'Deleted fact #{fact_id}')
 
 
 def setup(bot):
