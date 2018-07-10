@@ -85,12 +85,12 @@ class Weather:
             weather_data = json.loads(raw_weather_str)
         else:
 
-            try:
-                resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers,
-                                             params={'q': f'weather {location}'})
-            except AttributeError:
-                return await ctx.error("Couldn't find that location.")
+            resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers,
+                                         params={'q': f'weather {location}'})
+        try:
             weather_data = self.get_weather_json(resp)
+        except AttributeError:
+            return await ctx.error("Couldn't find that location.")
 
             await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
 
