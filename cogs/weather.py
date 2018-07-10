@@ -1,8 +1,10 @@
-import discord
 import json
+
+import discord
 from bs4 import BeautifulSoup
-from utils import aiohttp_wrap as aw
 from discord.ext import commands
+
+from utils import aiohttp_wrap as aw
 from utils.user_funcs import PGDB
 
 
@@ -35,19 +37,19 @@ class Weather:
         return weather_data
 
     def get_weather_json(self, html: str) -> dict:
-        """ Returns a dict representation of Bing weather """ 
+        """ Returns a dict representation of Bing weather """
         soup = BeautifulSoup(html, 'lxml')
         data = {
-                   'weather': {
-                       'loc': soup.find('div', class_='wtr_locTitle').text,
-                       'temp': int(soup.find('div', class_='wtr_currTemp').text),
-                       'precip': soup.find('div', class_='wtr_currPerci').text.split(': ')[-1],
-                       'img_url': soup.find('img', class_='wtr_currImg')['src'],
-                       'curr_cond': soup.find('div', class_='wtr_caption').text,
-                       'wind': int(soup.find('div', class_='wtr_currWind').text.split(': ')[-1].split(' ')[0]),
-                       'humidity': soup.find('div', class_='wtr_currHumi').text.split(': ')[-1] },
+            'weather': {
+                'loc': soup.find('div', class_='wtr_locTitle').text,
+                'temp': int(soup.find('div', class_='wtr_currTemp').text),
+                'precip': soup.find('div', class_='wtr_currPerci').text.split(': ')[-1],
+                'img_url': soup.find('img', class_='wtr_currImg')['src'],
+                'curr_cond': soup.find('div', class_='wtr_caption').text,
+                'wind': int(soup.find('div', class_='wtr_currWind').text.split(': ')[-1].split(' ')[0]),
+                'humidity': soup.find('div', class_='wtr_currHumi').text.split(': ')[-1]},
 
-                   'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
+            'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
         }
         # This bit checks for a union of the sets
         # Evaluates to False if the union is not an empty set, True otherwise
@@ -67,23 +69,27 @@ class Weather:
         """ Remove your location from the database """
         await self.db.remove_user_info(ctx.author.id, 'zipcode')
         await ctx.send(f'Successfully removed location for `{ctx.author}`.')
-    
-    @commands.command(aliases=['wt'])
+
+    @commands.command(aliases=['wt', 'w'])
     async def weather(self, ctx, *, location: str = None):
         """ Get the weather of a given area (zipcode, city, etc.) """
         if location is None:
             location = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
             if location is None:
-                return await ctx.send("Sorry, you don't have a location saved.\n"
-                                      "Feel free to use `al` to add your location, or supply one to the command")
-        
+                return await ctx.error("You don't have a location saved!",
+                                       description="Feel free to use `al` to add your location, or supply one to the command.")
+
         redis_key = f'{location}:weather'
         if await self.redis_client.exists(redis_key):
             raw_weather_str = await self.redis_client.get(redis_key)
             weather_data = json.loads(raw_weather_str)
         else:
-            resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers,
-                                         params={'q': f'weather {location}'})
+
+            try:
+                resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers,
+                                             params={'q': f'weather {location}'})
+            except AttributeError:
+                return await ctx.error("Couldn't find that location.")
             weather_data = self.get_weather_json(resp)
 
             await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
@@ -109,15 +115,14 @@ class Weather:
 
         await ctx.send(embed=em)
 
-
     @commands.command(aliases=['fc'])
     async def forecast(self, ctx, *, location: str = None):
         """ Get the forecast of a given location """
         if location is None:
             location = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
             if location is None:
-                return await ctx.send("Sorry, you don't have a location saved.\n"
-                                      "Feel free to use `al` to add your location, or supply one to the command")
+                return await ctx.send("You don't have a location saved!",
+                                      description="Feel free to use `al` to add your location, or supply one to the command")
 
         redis_key = f'{location}:weather'
         if await self.redis_client.exists(redis_key):
