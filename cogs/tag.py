@@ -50,14 +50,14 @@ class Tag:
         """ Create a new tag for later retrieval """
         if len(tag_name) < 3:
             return await ctx.error('Tag name should be longer than 3 characters')
-            
+
         query = ''' INSERT INTO tags (server_id, owner_id, tag_name, tag_contents, created_at, total_uses)
                     VALUES ($1, $2, lower($3), $4, now(), $5) '''
         try:
             await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, tag_name, contents.replace('@',''), 0)
             await ctx.success(f'`{tag_name}` created.')
         except asyncpg.UniqueViolationError:
-            return await ctx.error(f'Sorry, tag `{tag_name}` already exists. '
+            return await ctx.error(f'Sorry, tag `{tag_name}` already exists. ',
                                   contents=f'If you own it, feel free to `qt.tag edit` it.')
 
     @tag.command(aliases=['del', 'delet'])
