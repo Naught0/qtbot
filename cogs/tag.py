@@ -66,15 +66,15 @@ class Tag:
         _can_delete = await self.can_delete_tag(ctx, tag_name)
 
         if _can_delete is None:
-            return await ctx.send(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
+            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
 
         elif _can_delete:
             query = "DELETE FROM tags WHERE tag_name = lower($1) AND server_id = $2"
             await self.pg_con.execute(query, tag_name, ctx.guild.id)
-            await ctx.send(f'Tag `{tag_name}` deleted.')
+            await ctx.success(f'Tag `{tag_name}` deleted.')
 
         else:
-            await ctx.send(f'Sorry, you do not have the necessary permissions to delete this tag.')
+            await ctx.error(f'Sorry, you do not have the necessary permissions to delete this tag.')
 
     @tag.command(aliases=['ed'])
     async def edit(self, ctx, tag_name, *, contents):
