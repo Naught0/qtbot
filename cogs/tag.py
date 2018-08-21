@@ -3,6 +3,7 @@ import asyncpg
 from datetime import datetime
 from discord.ext import commands
 
+
 class Tag:
     def __init__(self, bot):
        self.bot = bot
@@ -38,23 +39,26 @@ class Tag:
             # Update usage count
             query = '''UPDATE tags SET total_uses = total_uses + 1 
                         WHERE server_id = $1
-                        AND tag_name = lower($2) '''
+                        AND tag_name = lower($2)'''
             await self.pg_con.execute(query, ctx.guild.id, tag_name)
 
         else:
-            return await ctx.send(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
+            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
 
     @tag.command(aliases=['add'])
     async def create(self, ctx, tag_name, *, contents):
         """ Create a new tag for later retrieval """
+        if len(tag_name) < 3:
+            return await ctx.error('Tag name should be longer than 3 characters')
+            
         query = ''' INSERT INTO tags (server_id, owner_id, tag_name, tag_contents, created_at, total_uses)
                     VALUES ($1, $2, lower($3), $4, now(), $5) '''
         try:
-            await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, tag_name, contents, 0)
-            await ctx.send(f'Tag `{tag_name}` created.')
+            await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, tag_name, contents.replace('@',''), 0)
+            await ctx.success(f'`{tag_name}` created.')
         except asyncpg.UniqueViolationError:
-            return await ctx.send(f'Sorry, tag `{tag_name}` already exists. '
-                                  f'If you own it, feel free to `qt.tag edit` it.')
+            return await ctx.error(f'Sorry, tag `{tag_name}` already exists. '
+                                  contents=f'If you own it, feel free to `qt.tag edit` it.')
 
     @tag.command(aliases=['del', 'delet'])
     async def delete(self, ctx, *, tag_name):
@@ -81,7 +85,7 @@ class Tag:
 
         # Check whether tag exists
         if not tag_record:
-            return await ctx.send(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
+            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
 
         # Check owner
         if tag_record['owner_id'] == ctx.author.id:
@@ -89,10 +93,10 @@ class Tag:
                         WHERE tag_name = $2
                         AND server_id = $3 '''
             await self.pg_con.execute(query, contents, tag_name, ctx.guild.id)
-            await ctx.send(f'Successfully edited tag `{tag_name}`.')
+            await ctx.success(f'Successfully edited tag `{tag_name}`.')
 
         else:
-            await ctx.send(f'Sorry, you do not have the necessary permissions to delete this tag.')
+            await ctx.error(f'You don\'t have the permissions to delete this tag.')
 
     @tag.command()
     async def info(self, ctx, *, tag_name):
@@ -103,7 +107,7 @@ class Tag:
 
         # Check whether tag exists
         if not tag_record:
-            return await ctx.send(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
+            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
 
         # Create the embed
         em = discord.Embed(title=tag_record['tag_name'], color=discord.Color.blue())
@@ -123,7 +127,7 @@ class Tag:
         """ Search for some matching tags """ 
 
         if len(query) < 3:
-            return await ctx.send("Sorry, you'll have to be more specific.")
+            return await ctx.error("Sorry, you'll have to be more specific.")
 
         execute = '''SELECT tag_name 
                      FROM tags
@@ -141,7 +145,7 @@ class Tag:
         elif len(search_results) > 1:
             des_list = [f'I found {len(search_results)} similar tags:']
         else:
-            des_list = [f':warning: I could not find any matching tags for "{query}".']
+            des_list = [f':warning: I could not find any matching tags for `{query}`.']
         
         for idx, record in enumerate(search_results):
             des_list.append(f'{self.emoji_map[idx]} {record["tag_name"]}')
