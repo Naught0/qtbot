@@ -81,9 +81,6 @@ class League:
     @commands.command(name='ci', aliases=['champ'])
     async def get_champ_info(self, ctx, *, champ):
         """ Return play, ban, and win rate for a champ """
-        # TODO:
-        # It's already split
-        # Just add pagination
         uri = 'http://api.champion.gg/v2/champions/{}?api_key={}'
         if champ.lower() == 'wukong':
             champ = 'MonkeyKing'
@@ -246,9 +243,10 @@ class League:
             patch_summary = textwrap.shorten(soup.find('blockquote').text, width=1000, placeholder='...')
 
             # Create embed
-            em = discord.Embed(color=discord.Color.green(), url=newest_patch_url, description=patch_summary)
+            em = discord.Embed(color=discord.Color.green(), description=patch_summary)
             em.set_image(url=image_url)
             em.set_author(name='LoL Patch Notes',
+                          url=newest_patch_url,
                           icon_url='http://2.bp.blogspot.com/-HqSOKIIV59A/U8WP4WFW28I/AAAAAAAAT5U/qTSiV9UgvUY/s1600/icon.png')
 
             # Store this embed for 3 hours for easy retrieval later
