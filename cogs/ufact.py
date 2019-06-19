@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 
-class UserFacts:
+class UserFacts(commands.Cog):
     """
     A cog for users to add their own facts to be returned at random when called (similar to tags)
     TODO:

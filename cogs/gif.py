@@ -3,7 +3,7 @@ from utils import giphy_wrapper as gwrap
 from discord.ext import commands
 
 
-class Giphy:
+class Giphy(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.aio_session = bot.aio_session

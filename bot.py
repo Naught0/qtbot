@@ -15,6 +15,7 @@ class QTBot(commands.Bot):
     def __init__(self, config_file, *args, **kwargs):
         self.config_file = config_file
         self.description = 'qtbot is a big qt written in python3 and love.'
+        self.do_not_load = ('league')
 
         with open(self.config_file) as f:
             self.api_keys = json.load(f)
@@ -60,13 +61,14 @@ class QTBot(commands.Bot):
             self.start_time_str = self.start_time.strftime('%B %d %H:%M:%S')
 
         for extension in self.startup_extensions:
-            try:
-                self.load_extension(f'cogs.{extension}')
-            except:
-                print(f'Failed Extension: {extension}')
-                traceback.print_exc()
-            else:
-                print(f'Loaded Extension: {extension}')
+            if extension not in self.do_not_load:
+                try:
+                    self.load_extension(f'cogs.{extension}')
+                except:
+                    print(f'Failed Extension: {extension}')
+                    traceback.print_exc()
+                else:
+                    print(f'Loaded Extension: {extension}')
 
         print(f'Client logged in at {self.start_time_str}')
         print(self.user.name)

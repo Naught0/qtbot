@@ -10,7 +10,7 @@ from lxml import etree
 from utils import aiohttp_wrap as aw
 
 
-class Google:
+class Google(commands.Cog):
     BING_URI = 'https://wwww.bing.com/images/search'
     BING_H = {'User-Agent': 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/4.0; GTB7.4; '
                             'InfoPath.1; SV1; .NET CLR 2.8.52393; WOW64; en-US)'}

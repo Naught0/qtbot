@@ -3,7 +3,7 @@ from utils import yt_funcs as yt
 from discord.ext import commands
 
 
-class YouTube:
+class YouTube(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

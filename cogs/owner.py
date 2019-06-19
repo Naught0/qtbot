@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 
-class Owner:
+class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -18,32 +18,26 @@ class Owner:
         except (AttributeError, ImportError) as e:
             return await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
 
-        await ctx.send(f'Cog `{extension_name}` loaded successfully.')
+        await ctx.success(f'Cog `{extension_name}` loaded successfully.')
 
     @commands.command(aliases=['unl'], hidden=True)
     @commands.is_owner()
     async def unload(self, ctx, extension_name: str):
         """ Unloads an extension. """
         self.bot.unload_extension(extension_name)
-        await ctx.send(f'Cog `{extension_name}` has been unloaded.')
+        await ctx.success(f'Cog `{extension_name}` has been unloaded.')
 
     @commands.command(aliases=['r'], hidden=True)
     @commands.is_owner()
     async def reload(self, ctx, extension_name: str):
         """ Reloads an extension """
-        try:
-            self.bot.unload_extension(extension_name)
-            self.bot.load_extension(extension_name)
-        except Exception as e:
-            return await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
-
-        await ctx.send(f'Cog `{extension_name}` has been reloaded.')
+        self.bot.reload_extension(extension_name)
+        await ctx.success(f'Cog `{extension_name}` has been reloaded.')
 
     @commands.command(name='reload_all', aliases=['ra'], hidden=True)
     @commands.is_owner()
     async def reload_all(self, ctx):
         """ Reloads all extensions """
-
         # Gets cog list and removes admin cog (can't reload without it)
         ext_list = []
         for extension in self.bot.startup_extensions:
@@ -52,13 +46,8 @@ class Owner:
 
         # Reloads all cogs
         for extension in ext_list:
-            try:
-                self.bot.unload_extension(extension)
-                self.bot.load_extension(extension)
-            except Exception as e:
-                return await ctx.send(f'```py\n{type(e).__name__}: {str(e)}\n```')
-
-        await ctx.send('All cogs have been reloaded.')
+            self.bot.reload_extension(extension)
+        await ctx.success(f'Reloaded `{len(self.bot.startup_extensions)}` extensions.')
 
 
 def setup(bot):

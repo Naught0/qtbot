@@ -4,7 +4,7 @@ import traceback
 from discord.ext import commands
 
 
-class ErrorHandler:
+class ErrorHandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

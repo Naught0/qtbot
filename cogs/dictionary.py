@@ -6,7 +6,7 @@ from discord.ext import commands
 from wordnik import *
 
 
-class Dictionary:
+class Dictionary(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.urban = UrbanDictionary(loop=bot.loop, session=bot.aio_session)

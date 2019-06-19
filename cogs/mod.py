@@ -21,7 +21,7 @@ class BannedMember(commands.Converter):
         return user
 
 
-class Moderator:
+class Moderator(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.pg = bot.pg_con

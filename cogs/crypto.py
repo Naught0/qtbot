@@ -5,7 +5,7 @@ from discord.ext import commands
 from utils import aiohttp_wrap as aw
 
 
-class Crypto:
+class Crypto(commands.Cog):
     """ Allows users to track bitcoin and other currencies (eventually) """
     URL_BTC = 'https://api.coinmarketcap.com/v1/ticker/bitcoin' 
     BTC_LOGO_URL = 'https://en.bitcoin.it/w/images/en/2/29/BC_Logo_.png'

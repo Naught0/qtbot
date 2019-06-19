@@ -6,7 +6,7 @@ from datetime import datetime
 from utils import aiohttp_wrap as aw 
 
 
-class Game:
+class Game(commands.Cog):
     """ Cog which allows fetching of video game information """
     IG_URL = 'https://api-2445582011268.apicast.io/{}/'
     IG_ICON_URL = 'https://www.igdb.com/favicon-196x196.png'

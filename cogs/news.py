@@ -7,7 +7,7 @@ from utils import aiohttp_wrap as aw
 from discord.ext import commands
 
 
-class News:
+class News(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.redis_client = bot.redis_client

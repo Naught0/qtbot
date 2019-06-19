@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from utils import aiohttp_wrap as aw
 
 
-class FindMeme:
+class FindMeme(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.aio_session = bot.aio_session

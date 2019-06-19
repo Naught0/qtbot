@@ -6,8 +6,8 @@ import discord
 from discord.ext import commands
 
 
-class Generic:
-    GOT_AIR_DATE = datetime.fromtimestamp(1554685200)
+class Generic(commands.Cog):
+    GOT_AIR_DATE = datetime.fromtimestamp(1555236000)
     GOT_LOGO = 'https://upload.wikimedia.org/wikipedia/en/d/d8/Game_of_Thrones_title_card.jpg'
 
     def __init__(self, bot):
@@ -96,8 +96,18 @@ class Generic:
         current_time_str = current_time.strftime('%B %d %H:%M:%S')
         em = discord.Embed(title=':clock1: Qtbot Uptime', color=self.blue)
         em.add_field(name='Initialized', value=self.bot.start_time_str, inline=False)
-        em.add_field(name='Current time (UTC)', value=current_time_str, inline=False)
+        em.add_field(name='Current time (EST)', value=current_time_str, inline=False)
         em.add_field(name='Uptime', value=str(current_time - self.bot.start_time).split('.')[0])
+
+        await ctx.send(embed=em)
+
+    @commands.command(aliases=['pong'])
+    async def ping(self, ctx):
+        """See the bot's latency"""
+        latency = ctx.bot.latency * 1000
+        em = discord.Embed(title=':ping_pong: Pong!',
+                           description=f'**Bot latency:** ```{latency:.2f} ms```',
+                           color=self.blue)
 
         await ctx.send(embed=em)
 
@@ -123,22 +133,6 @@ class Generic:
 
         await ctx.send(embed=em)
 
-    @commands.command(aliases=['gameofthrones', 'gotwhen'])
-    async def got(self, ctx):
-        """How long til the next Game of Thrones episode?"""
-
-        delta = str(self.GOT_AIR_DATE - datetime.now())
-
-        # Days hours minutes seconds miliseconds
-        delta_list = re.sub('[^0-9 ]', ' ', delta).split()
-
-        em = discord.Embed(title='How long til Game of Thrones?', color=discord.Color.orange())
-        em.description = '`{}` days, `{}` hours, `{}` minutes, `{}` seconds'.format(*delta_list)
-        em.set_thumbnail(url=self.GOT_LOGO)
-        em.set_footer(text='First episode airs')
-        em.timestamp = self.GOT_AIR_DATE
-
-        await ctx.send(embed=em)
 
 
 def setup(bot):

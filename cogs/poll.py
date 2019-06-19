@@ -5,7 +5,7 @@ from functools import reduce
 from utils import dict_manip as dm
 from discord.ext import commands
 
-class Poll:
+class Poll(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.emoji_tup = tuple([f'{x}\U000020e3' for x in range(1, 10)])

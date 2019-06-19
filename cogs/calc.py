@@ -4,7 +4,7 @@ import json
 from discord.ext import commands
 
 
-class Calculator:
+class Calculator(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

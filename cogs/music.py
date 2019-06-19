@@ -4,7 +4,7 @@ from discord.ext import commands
 from utils import aiohttp_wrap as aw 
 
 
-class MusicInfo:
+class MusicInfo(commands.Cog):
     """A cog for retrieving music information (not playing it)"""
     URL = 'http://ws.audioscrobbler.com/2.0/'
     LOGO_URL = 'https://www.last.fm/static/images/lastfm_logo_facebook.1b63d4451dcc.png'

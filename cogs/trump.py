@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from discord.ext import commands
 
 
-class Trump:
+class Trump(commands.Cog):
     """ A cog which nobody ever asked for, that fetches a random Trump tweet """
     with open('data/trump.json', encoding='utf8') as f:
         TRUMP_JSON = json.load(f)

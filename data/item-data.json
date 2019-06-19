@@ -1707,13 +1707,13 @@
     "id": "882",
     "name": "Bronze arrow"
   },
-  "astral rune": {
-    "id": "9075",
-    "name": "Astral rune"
-  },
   "bronze arrow(p)": {
     "id": "883",
     "name": "Bronze arrow(p)"
+  },
+  "astral rune": {
+    "id": "9075",
+    "name": "Astral rune"
   },
   "iron arrow": {
     "id": "884",
@@ -1851,13 +1851,13 @@
     "id": "9179",
     "name": "Steel crossbow"
   },
-  "mith crossbow": {
-    "id": "9181",
-    "name": "Mith crossbow"
-  },
   "crystal key": {
     "id": "989",
     "name": "Crystal key"
+  },
+  "mith crossbow": {
+    "id": "9181",
+    "name": "Mith crossbow"
   },
   "muddy key": {
     "id": "991",
@@ -1963,9 +1963,13 @@
     "id": "1031",
     "name": "Orange cape"
   },
-  "zamorak robe": {
+  "zamorak monk bottom": {
+    "id": "1033",
+    "name": "Zamorak monk bottom"
+  },
+  "zamorak monk top": {
     "id": "1035",
-    "name": "Zamorak robe"
+    "name": "Zamorak monk top"
   },
   "red partyhat": {
     "id": "1038",
@@ -2115,37 +2119,37 @@
     "id": "1093",
     "name": "Rune plateskirt"
   },
-  "iron bolts (p)": {
-    "id": "9287",
-    "name": "Iron bolts (p)"
-  },
   "leather chaps": {
     "id": "1095",
     "name": "Leather chaps"
+  },
+  "iron bolts (p)": {
+    "id": "9287",
+    "name": "Iron bolts (p)"
   },
   "steel bolts (p)": {
     "id": "9288",
     "name": "Steel bolts (p)"
   },
-  "mithril bolts (p)": {
-    "id": "9289",
-    "name": "Mithril bolts (p)"
-  },
   "studded chaps": {
     "id": "1097",
     "name": "Studded chaps"
+  },
+  "mithril bolts (p)": {
+    "id": "9289",
+    "name": "Mithril bolts (p)"
   },
   "adamant bolts (p)": {
     "id": "9290",
     "name": "Adamant bolts (p)"
   },
-  "runite bolts (p)": {
-    "id": "9291",
-    "name": "Runite bolts (p)"
-  },
   "green d'hide chaps": {
     "id": "1099",
     "name": "Green d'hide chaps"
+  },
+  "runite bolts (p)": {
+    "id": "9291",
+    "name": "Runite bolts (p)"
   },
   "silver bolts (p)": {
     "id": "9292",
@@ -2159,13 +2163,13 @@
     "id": "9294",
     "name": "Iron bolts (p+)"
   },
-  "steel bolts (p+)": {
-    "id": "9295",
-    "name": "Steel bolts (p+)"
-  },
   "bronze chainbody": {
     "id": "1103",
     "name": "Bronze chainbody"
+  },
+  "steel bolts (p+)": {
+    "id": "9295",
+    "name": "Steel bolts (p+)"
   },
   "mithril bolts (p+)": {
     "id": "9296",
@@ -2411,13 +2415,13 @@
     "id": "9378",
     "name": "Steel bolts (unf)"
   },
-  "mithril bolts (unf)": {
-    "id": "9379",
-    "name": "Mithril bolts (unf)"
-  },
   "dragon sq shield": {
     "id": "1187",
     "name": "Dragon sq shield"
+  },
+  "mithril bolts (unf)": {
+    "id": "9379",
+    "name": "Mithril bolts (unf)"
   },
   "adamant bolts(unf)": {
     "id": "9380",
@@ -6715,9 +6719,9 @@
     "id": "19707",
     "name": "Amulet of eternal glory"
   },
-  "vampire dust": {
+  "vampyre dust": {
     "id": "3325",
-    "name": "Vampire dust"
+    "name": "Vampyre dust"
   },
   "hunting mix(2)": {
     "id": "11517",
@@ -7031,25 +7035,25 @@
     "id": "19936",
     "name": "Zamorak d'hide boots"
   },
-  "arceuus house scarf": {
+  "arceuus scarf": {
     "id": "19943",
-    "name": "Arceuus house scarf"
+    "name": "Arceuus scarf"
   },
-  "hosidius house scarf": {
+  "hosidius scarf": {
     "id": "19946",
-    "name": "Hosidius house scarf"
+    "name": "Hosidius scarf"
   },
-  "lovakengj house scarf": {
+  "lovakengj scarf": {
     "id": "19949",
-    "name": "Lovakengj house scarf"
+    "name": "Lovakengj scarf"
   },
-  "piscarilius house scarf": {
+  "piscarilius scarf": {
     "id": "19952",
-    "name": "Piscarilius house scarf"
+    "name": "Piscarilius scarf"
   },
-  "shayzien house scarf": {
+  "shayzien scarf": {
     "id": "19955",
-    "name": "Shayzien house scarf"
+    "name": "Shayzien scarf"
   },
   "dark tuxedo jacket": {
     "id": "19958",
@@ -7391,25 +7395,25 @@
     "id": "11920",
     "name": "Dragon pickaxe"
   },
-  "arceuus house hood": {
+  "arceuus hood": {
     "id": "20113",
-    "name": "Arceuus house hood"
+    "name": "Arceuus hood"
   },
   "malediction ward": {
     "id": "11924",
     "name": "Malediction ward"
   },
-  "hosidius house hood": {
+  "hosidius hood": {
     "id": "20116",
-    "name": "Hosidius house hood"
+    "name": "Hosidius hood"
   },
   "odium ward": {
     "id": "11926",
     "name": "Odium ward"
   },
-  "lovakengj house hood": {
+  "lovakengj hood": {
     "id": "20119",
-    "name": "Lovakengj house hood"
+    "name": "Lovakengj hood"
   },
   "odium shard 1": {
     "id": "11928",
@@ -7423,9 +7427,9 @@
     "id": "11930",
     "name": "Odium shard 3"
   },
-  "piscarilius house hood": {
+  "piscarilius hood": {
     "id": "20122",
-    "name": "Piscarilius house hood"
+    "name": "Piscarilius hood"
   },
   "malediction shard 1": {
     "id": "11931",
@@ -7439,9 +7443,9 @@
     "id": "11933",
     "name": "Malediction shard 3"
   },
-  "shayzien house hood": {
+  "shayzien hood": {
     "id": "20125",
-    "name": "Shayzien house hood"
+    "name": "Shayzien hood"
   },
   "raw dark crab": {
     "id": "11934",
@@ -12079,9 +12083,25 @@
     "id": "5940",
     "name": "Weapon poison(++)"
   },
+  "ghrazi rapier": {
+    "id": "22324",
+    "name": "Ghrazi rapier"
+  },
+  "justiciar faceguard": {
+    "id": "22326",
+    "name": "Justiciar faceguard"
+  },
   "antidote+(4)": {
     "id": "5943",
     "name": "Antidote+(4)"
+  },
+  "justiciar chestguard": {
+    "id": "22327",
+    "name": "Justiciar chestguard"
+  },
+  "justiciar legguards": {
+    "id": "22328",
+    "name": "Justiciar legguards"
   },
   "antidote+(3)": {
     "id": "5945",
@@ -12235,6 +12255,10 @@
     "id": "6045",
     "name": "Willow roots"
   },
+  "bloody bracer": {
+    "id": "22430",
+    "name": "Bloody bracer"
+  },
   "maple roots": {
     "id": "6047",
     "name": "Maple roots"
@@ -12247,9 +12271,17 @@
     "id": "6051",
     "name": "Magic roots"
   },
+  "justiciar armour set": {
+    "id": "22438",
+    "name": "Justiciar armour set"
+  },
   "weeds": {
     "id": "6055",
     "name": "Weeds"
+  },
+  "cadantine blood potion (unf)": {
+    "id": "22443",
+    "name": "Cadantine blood potion (unf)"
   },
   "bronze bolts (p+)": {
     "id": "6061",
@@ -12258,6 +12290,54 @@
   "bronze bolts (p++)": {
     "id": "6062",
     "name": "Bronze bolts (p++)"
+  },
+  "vial of blood": {
+    "id": "22446",
+    "name": "Vial of blood"
+  },
+  "battlemage potion(4)": {
+    "id": "22449",
+    "name": "Battlemage potion(4)"
+  },
+  "battlemage potion(3)": {
+    "id": "22452",
+    "name": "Battlemage potion(3)"
+  },
+  "battlemage potion(2)": {
+    "id": "22455",
+    "name": "Battlemage potion(2)"
+  },
+  "battlemage potion(1)": {
+    "id": "22458",
+    "name": "Battlemage potion(1)"
+  },
+  "bastion potion(4)": {
+    "id": "22461",
+    "name": "Bastion potion(4)"
+  },
+  "bastion potion(3)": {
+    "id": "22464",
+    "name": "Bastion potion(3)"
+  },
+  "bastion potion(2)": {
+    "id": "22467",
+    "name": "Bastion potion(2)"
+  },
+  "bastion potion(1)": {
+    "id": "22470",
+    "name": "Bastion potion(1)"
+  },
+  "avernic defender hilt": {
+    "id": "22477",
+    "name": "Avernic defender hilt"
+  },
+  "sanguinesti staff (uncharged)": {
+    "id": "22481",
+    "name": "Sanguinesti staff (uncharged)"
+  },
+  "scythe of vitur (uncharged)": {
+    "id": "22486",
+    "name": "Scythe of vitur (uncharged)"
   },
   "rock-shell helm": {
     "id": "6128",
@@ -12327,6 +12407,10 @@
     "id": "6157",
     "name": "Rock-shell chunk"
   },
+  "viggora's chainmace (u)": {
+    "id": "22542",
+    "name": "Viggora's chainmace (u)"
+  },
   "rock-shell shard": {
     "id": "6159",
     "name": "Rock-shell shard"
@@ -12339,6 +12423,10 @@
     "id": "6163",
     "name": "Skull piece"
   },
+  "craw's bow (u)": {
+    "id": "22547",
+    "name": "Craw's bow (u)"
+  },
   "ribcage piece": {
     "id": "6165",
     "name": "Ribcage piece"
@@ -12346,6 +12434,10 @@
   "fibula piece": {
     "id": "6167",
     "name": "Fibula piece"
+  },
+  "thammaron's sceptre (u)": {
+    "id": "22552",
+    "name": "Thammaron's sceptre (u)"
   },
   "circular hide": {
     "id": "6169",
@@ -12359,21 +12451,73 @@
     "id": "6173",
     "name": "Stretched hide"
   },
+  "amulet of avarice": {
+    "id": "22557",
+    "name": "Amulet of avarice"
+  },
+  "te salt": {
+    "id": "22593",
+    "name": "Te salt"
+  },
   "teak pyre logs": {
     "id": "6211",
     "name": "Teak pyre logs"
+  },
+  "efh salt": {
+    "id": "22595",
+    "name": "Efh salt"
   },
   "mahogany pyre log": {
     "id": "6213",
     "name": "Mahogany pyre log"
   },
+  "urt salt": {
+    "id": "22597",
+    "name": "Urt salt"
+  },
   "broodoo shield (10)": {
     "id": "6259",
     "name": "Broodoo shield (10)"
   },
+  "icy basalt": {
+    "id": "22599",
+    "name": "Icy basalt"
+  },
+  "stony basalt": {
+    "id": "22601",
+    "name": "Stony basalt"
+  },
+  "basalt": {
+    "id": "22603",
+    "name": "Basalt"
+  },
+  "vesta's spear": {
+    "id": "22610",
+    "name": "Vesta's spear"
+  },
+  "vesta's longsword": {
+    "id": "22613",
+    "name": "Vesta's longsword"
+  },
   "broodoo shield": {
     "id": "6279",
     "name": "Broodoo shield"
+  },
+  "statius's warhammer": {
+    "id": "22622",
+    "name": "Statius's warhammer"
+  },
+  "morrigan's throwing axe": {
+    "id": "22634",
+    "name": "Morrigan's throwing axe"
+  },
+  "morrigan's javelin": {
+    "id": "22636",
+    "name": "Morrigan's javelin"
+  },
+  "zuriel's staff": {
+    "id": "22647",
+    "name": "Zuriel's staff"
   },
   "thatch spar light": {
     "id": "6281",
@@ -12483,9 +12627,25 @@
     "id": "6379",
     "name": "Villager armband"
   },
+  "dragon hasta": {
+    "id": "22731",
+    "name": "Dragon hasta"
+  },
   "villager sandals": {
     "id": "6377",
     "name": "Villager sandals"
+  },
+  "dragon hasta(p)": {
+    "id": "22734",
+    "name": "Dragon hasta(p)"
+  },
+  "dragon hasta(p+)": {
+    "id": "22737",
+    "name": "Dragon hasta(p+)"
+  },
+  "dragon hasta(p++)": {
+    "id": "22740",
+    "name": "Dragon hasta(p++)"
   },
   "fez": {
     "id": "6382",
@@ -12515,9 +12675,17 @@
     "id": "6396",
     "name": "Menaphite purple robe"
   },
+  "wyrm bones": {
+    "id": "22780",
+    "name": "Wyrm bones"
+  },
   "menaphite purple kilt": {
     "id": "6398",
     "name": "Menaphite purple kilt"
+  },
+  "drake bones": {
+    "id": "22783",
+    "name": "Drake bones"
   },
   "menaphite red hat": {
     "id": "6400",
@@ -12527,9 +12695,17 @@
     "id": "6402",
     "name": "Menaphite red top"
   },
+  "hydra bones": {
+    "id": "22786",
+    "name": "Hydra bones"
+  },
   "menaphite red robe": {
     "id": "6404",
     "name": "Menaphite red robe"
+  },
+  "uncooked dragonfruit pie": {
+    "id": "22789",
+    "name": "Uncooked dragonfruit pie"
   },
   "menaphite red kilt": {
     "id": "6406",
@@ -12542,6 +12718,10 @@
   "oak blackjack(d)": {
     "id": "6410",
     "name": "Oak blackjack(d)"
+  },
+  "dragonfruit pie": {
+    "id": "22795",
+    "name": "Dragonfruit pie"
   },
   "willow blackjack(o)": {
     "id": "6412",
@@ -12563,6 +12743,42 @@
     "id": "6420",
     "name": "Maple blackjack(d)"
   },
+  "dragon knife": {
+    "id": "22804",
+    "name": "Dragon knife"
+  },
+  "dragon knife(p)": {
+    "id": "22806",
+    "name": "Dragon knife(p)"
+  },
+  "dragon knife(p+)": {
+    "id": "22808",
+    "name": "Dragon knife(p+)"
+  },
+  "dragon knife(p++)": {
+    "id": "22810",
+    "name": "Dragon knife(p++)"
+  },
+  "fish chunks": {
+    "id": "22818",
+    "name": "Fish chunks"
+  },
+  "bluegill": {
+    "id": "22826",
+    "name": "Bluegill"
+  },
+  "common tench": {
+    "id": "22829",
+    "name": "Common tench"
+  },
+  "mottled eel": {
+    "id": "22832",
+    "name": "Mottled eel"
+  },
+  "greater siren": {
+    "id": "22835",
+    "name": "Greater siren"
+  },
   "compost potion(4)": {
     "id": "6470",
     "name": "Compost potion(4)"
@@ -12571,13 +12787,49 @@
     "id": "6472",
     "name": "Compost potion(3)"
   },
+  "celastrus sapling": {
+    "id": "22856",
+    "name": "Celastrus sapling"
+  },
   "compost potion(2)": {
     "id": "6474",
     "name": "Compost potion(2)"
   },
+  "redwood sapling": {
+    "id": "22859",
+    "name": "Redwood sapling"
+  },
   "compost potion(1)": {
     "id": "6476",
     "name": "Compost potion(1)"
+  },
+  "dragonfruit sapling": {
+    "id": "22866",
+    "name": "Dragonfruit sapling"
+  },
+  "celastrus seed": {
+    "id": "22869",
+    "name": "Celastrus seed"
+  },
+  "redwood tree seed": {
+    "id": "22871",
+    "name": "Redwood tree seed"
+  },
+  "potato cactus seed": {
+    "id": "22873",
+    "name": "Potato cactus seed"
+  },
+  "dragonfruit tree seed": {
+    "id": "22877",
+    "name": "Dragonfruit tree seed"
+  },
+  "snape grass seed": {
+    "id": "22879",
+    "name": "Snape grass seed"
+  },
+  "white lily seed": {
+    "id": "22887",
+    "name": "White lily seed"
   },
   "toktz-xil-ul": {
     "id": "6522",
@@ -12607,6 +12859,18 @@
     "id": "6528",
     "name": "Tzhaar-ket-om"
   },
+  "dragonfruit": {
+    "id": "22929",
+    "name": "Dragonfruit"
+  },
+  "white lily": {
+    "id": "22932",
+    "name": "White lily"
+  },
+  "celastrus bark": {
+    "id": "22935",
+    "name": "Celastrus bark"
+  },
   "mud battlestaff": {
     "id": "6562",
     "name": "Mud battlestaff"
@@ -12615,9 +12879,21 @@
     "id": "6563",
     "name": "Mystic mud staff"
   },
+  "battlefront teleport": {
+    "id": "22949",
+    "name": "Battlefront teleport"
+  },
+  "boots of brimstone": {
+    "id": "22951",
+    "name": "Boots of brimstone"
+  },
   "obsidian cape": {
     "id": "6568",
     "name": "Obsidian cape"
+  },
+  "devout boots": {
+    "id": "22954",
+    "name": "Devout boots"
   },
   "uncut onyx": {
     "id": "6571",
@@ -12627,9 +12903,17 @@
     "id": "6573",
     "name": "Onyx"
   },
+  "drake's claw": {
+    "id": "22957",
+    "name": "Drake's claw"
+  },
   "onyx ring": {
     "id": "6575",
     "name": "Onyx ring"
+  },
+  "drake's tooth": {
+    "id": "22960",
+    "name": "Drake's tooth"
   },
   "onyx necklace": {
     "id": "6577",
@@ -12639,9 +12923,17 @@
     "id": "6579",
     "name": "Onyx amulet (u)"
   },
+  "broken dragon hasta": {
+    "id": "22963",
+    "name": "Broken dragon hasta"
+  },
   "onyx amulet": {
     "id": "6581",
     "name": "Onyx amulet"
+  },
+  "hydra's claw": {
+    "id": "22966",
+    "name": "Hydra's claw"
   },
   "ring of stone": {
     "id": "6583",
@@ -12663,9 +12955,17 @@
     "id": "6591",
     "name": "White dagger"
   },
+  "brimstone ring": {
+    "id": "22975",
+    "name": "Brimstone ring"
+  },
   "white dagger(p)": {
     "id": "6593",
     "name": "White dagger(p)"
+  },
+  "dragon hunter lance": {
+    "id": "22978",
+    "name": "Dragon hunter lance"
   },
   "white dagger(p+)": {
     "id": "6595",
@@ -12679,6 +12979,10 @@
     "id": "6599",
     "name": "White halberd"
   },
+  "hydra leather": {
+    "id": "22983",
+    "name": "Hydra leather"
+  },
   "white mace": {
     "id": "6601",
     "name": "White mace"
@@ -12686,6 +12990,10 @@
   "white magic staff": {
     "id": "6603",
     "name": "White magic staff"
+  },
+  "hydra tail": {
+    "id": "22988",
+    "name": "Hydra tail"
   },
   "white sword": {
     "id": "6605",
@@ -12699,6 +13007,10 @@
     "id": "6609",
     "name": "White 2h sword"
   },
+  "bottomless compost bucket": {
+    "id": "22994",
+    "name": "Bottomless compost bucket"
+  },
   "white scimitar": {
     "id": "6611",
     "name": "White scimitar"
@@ -12711,9 +13023,17 @@
     "id": "6615",
     "name": "White chainbody"
   },
+  "bottled dragonbreath (unpowered)": {
+    "id": "22999",
+    "name": "Bottled dragonbreath (unpowered)"
+  },
   "white platebody": {
     "id": "6617",
     "name": "White platebody"
+  },
+  "bottled dragonbreath": {
+    "id": "23002",
+    "name": "Bottled dragonbreath"
   },
   "white boots": {
     "id": "6619",
@@ -12747,9 +13067,37 @@
     "id": "6633",
     "name": "White kiteshield"
   },
+  "boots of stone": {
+    "id": "23037",
+    "name": "Boots of stone"
+  },
+  "mystic hat (dusk)": {
+    "id": "23047",
+    "name": "Mystic hat (dusk)"
+  },
+  "mystic robe top (dusk)": {
+    "id": "23050",
+    "name": "Mystic robe top (dusk)"
+  },
   "empty fishbowl": {
     "id": "6667",
     "name": "Empty fishbowl"
+  },
+  "mystic robe bottom (dusk)": {
+    "id": "23053",
+    "name": "Mystic robe bottom (dusk)"
+  },
+  "mystic gloves (dusk)": {
+    "id": "23056",
+    "name": "Mystic gloves (dusk)"
+  },
+  "mystic boots (dusk)": {
+    "id": "23059",
+    "name": "Mystic boots (dusk)"
+  },
+  "jar of chemicals": {
+    "id": "23064",
+    "name": "Jar of chemicals"
   },
   "ground guam": {
     "id": "6681",

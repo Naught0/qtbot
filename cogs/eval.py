@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 
-class Eval:
+class Eval(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db_conn = bot.pg_con
@@ -67,9 +67,12 @@ class Eval:
             return await ctx.error(f'Sorry, `{query}` did not return anything.')
 
         em = discord.Embed(color=self.orange, title='SQL Fetch')
-        for k, v in res[0].items():
-            em.add_field(name=k, value=v)
 
+        fmt_str = ''
+        bullet = "\u2022"
+        for idx, record in enumerate(res):
+            fmt_str += f'{idx+1}. {record}\n\n'
+        em.description = f'```py\n{fmt_str}```'
         await ctx.send(embed=em)
 
 

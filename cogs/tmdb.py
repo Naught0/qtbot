@@ -9,7 +9,7 @@ with open('data/apikeys.json') as f:
     tmdb.API_KEY = json.load(f)['tmdb']
 
 
-class MyTMDb:
+class MyTMDb(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

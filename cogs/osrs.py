@@ -10,7 +10,7 @@ from utils import dict_manip as dm
 from utils.user_funcs import PGDB
 
 
-class OSRS:
+class OSRS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.db = PGDB(bot.pg_con)

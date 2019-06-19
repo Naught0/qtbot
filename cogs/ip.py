@@ -3,7 +3,7 @@ from discord.ext import commands
 from utils import aiohttp_wrap as aw
 import time
 
-class IPLookup:
+class IPLookup(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.aio_session = bot.aio_session

@@ -10,7 +10,7 @@ from discord.ext import commands
 from nltk.corpus import stopwords
 
 
-class Comics:
+class Comics(commands.Cog):
     """A cog which allows you to fetch random / search for XKCD comics.
 
     Attributes

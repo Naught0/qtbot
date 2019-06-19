@@ -9,3 +9,8 @@ __pycache__/
 .idea/workspace.xml___jb_old___
 .vscode/
 
+launcher.bat
+Pipfile
+Pipfile.lock
+rename_script.py
+*.swp

@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from discord.ext import commands
 
 
-class DownDetect:
+class DownDetect(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.uri = 'http://downforeveryoneorjustme.com/{}'

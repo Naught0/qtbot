@@ -4,7 +4,7 @@ from datetime import datetime
 from discord.ext import commands
 
 
-class Tag:
+class Tag(commands.Cog):
     def __init__(self, bot):
        self.bot = bot
        self.pg_con = bot.pg_con

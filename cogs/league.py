@@ -15,7 +15,7 @@ from utils import league as lu
 from utils.user_funcs import PGDB
 
 
-class League:
+class League(commands.Cog):
     """
     This thing is HUGE and I should probably chop it into little bits at some point.
     """

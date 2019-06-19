@@ -3,7 +3,7 @@ from discord.ext import commands
 from utils import aiohttp_wrap as aw
 
 
-class Wiki:
+class Wiki(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.search_uri = 'http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search={}'
