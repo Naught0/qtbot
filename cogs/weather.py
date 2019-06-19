@@ -14,6 +14,7 @@ class Weather(commands.Cog):
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
         self.db = PGDB(bot.pg_con)
+        self.color = 0xb1d9f4
         self.cache_ttl = 3600
         self.url = 'http://bing.com/search'
         # Oh uh, this will make more sense later
@@ -107,7 +108,7 @@ class Weather(commands.Cog):
 
         c_wt = weather_data['weather']
         # Create the embed
-        em = discord.Embed(title=c_wt['loc'])
+        em = discord.Embed(title=c_wt['loc'], color=self.color)
         em.add_field(name='Temperature',
                      value=f"{c_wt['temp']}°F" if not celsius else f"{c_wt['temp']}°C")
         em.add_field(name='Conditions', value=c_wt['curr_cond'])
