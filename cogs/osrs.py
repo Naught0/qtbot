@@ -19,7 +19,7 @@ class OSRS(commands.Cog):
 
         self.items_uri = 'https://rsbuddy.com/exchange/names.json'
         # self.api_uri = 'https://api.rsbuddy.com/grandExchange?a=guidePrice&i={}'
-        self.prices_uri = 'https://storage.googleapis.com/osbuddy-exchange/summary.json'
+        self.prices_uri = 'https://storage.googleapis.com/osb-exchange/summary.json'
 
         self.player_uri = 'http://services.runescape.com/m=hiscore_oldschool/index_lite.ws?player={}'
         self.player_click_uri = 'http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={}'
