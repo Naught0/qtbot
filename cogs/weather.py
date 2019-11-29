@@ -1,5 +1,7 @@
 import json
 
+from types import SimpleNamespace
+
 import discord
 from bs4 import BeautifulSoup
 from discord.ext import commands
@@ -10,57 +12,27 @@ from utils.user_funcs import PGDB
 
 class Weather(commands.Cog):
     def __init__(self, bot):
+        self.weather_url = "https://api.openweathermap.org/data/2.5/weather"
+        self.forecast_url = "https://api.openweathermap.org/data/2.5/forecast"
+        self.icon_url = "http://openweathermap.org/img/wn/{}@2x.png"
+        self.api_key = bot.api_keys['open_weather']
         self.bot = bot
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
         self.db = PGDB(bot.pg_con)
         self.color = 0xb1d9f4
         self.cache_ttl = 3600
-        self.url = 'http://bing.com/search'
-        # Oh uh, this will make more sense later
-        self.states = {"Alabama","Alaska","Arizona","Arkansas","California","Colorado",
-                       "Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois",
-                       "Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland",
-                       "Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana",
-                       "Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York",
-                       "North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania",
-                       "Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah",
-                       "Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"}
-        # These are some old IE headers that give an easier page to scrape
-        self.headers = {'User-Agent': 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; GTB6.5; SLCC2; '
-                                      '.NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0;'
-                                      ' .NET4.0C; TheWorld)'}
 
     @staticmethod
     def f2c(weather_data: dict) -> dict:
         """ Converts F to C and returns the dict anew """
+        # if (response['sys']['country'] != 'US')
         # Celsius conversion
-        weather_data['weather']['temp'] = int((weather_data['weather']['temp'] - 32) * (5 / 9))
+        weather_data['main']['temp'] = int((weather_data['main']['temp'] - 32) * (5 / 9))
         # MPH -> M/s
-        weather_data['weather']['wind'] = int(weather_data['weather']['wind'] * 0.44704)
+        weather_data['wind']['speed'] = int(weather_data['wind']['speed'] * 0.44704)
 
         return weather_data
-
-    def get_weather_json(self, html: str) -> dict:
-        """ Returns a dict representation of Bing weather """
-        soup = BeautifulSoup(html, 'lxml')
-        data = {
-            'weather': {
-                'loc': soup.find('div', class_='wtr_locTitle').text,
-                'temp': int(soup.find('div', class_='wtr_currTemp').text),
-                'precip': soup.find('div', class_='wtr_currPerci').text.split(': ')[-1],
-                'img_url': soup.find('img', class_='wtr_currImg')['src'],
-                'curr_cond': soup.find('div', class_='wtr_caption').text,
-                'wind': int(soup.find('div', class_='wtr_currWind').text.split(': ')[-1].split(' ')[0]),
-                'humidity': soup.find('div', class_='wtr_currHumi').text.split(': ')[-1]},
-
-            'forecast': [x['aria-label'] for x in soup.find_all('div', class_='wtr_forecastDay')]
-        }
-        # This bit checks for a union of the sets
-        # Evaluates to False if the union is not an empty set, True otherwise
-        data['needs_conversion'] = not self.states & set(data['weather']['loc'].split(' '))
-
-        return data
 
     @commands.command(aliases=['az', 'al'])
     async def add_location(self, ctx, *, location: str):
@@ -78,45 +50,47 @@ class Weather(commands.Cog):
     @commands.command(aliases=['wt', 'w'])
     async def weather(self, ctx, *, location: str = None):
         """ Get the weather of a given area (zipcode, city, etc.) """
+        # Handle shortcut no location given
         if location is None:
             location = await self.db.fetch_user_info(ctx.author.id, 'zipcode')
             if location is None:
                 return await ctx.error("You don't have a location saved!",
                                        description="Feel free to use `al` to add your location, or supply one to the command.")
 
+        # Check for redis cached response
         redis_key = f'{location}:weather'
         if await self.redis_client.exists(redis_key):
-            raw_weather_str = await self.redis_client.get(redis_key)
-            weather_data = json.loads(raw_weather_str)
+            weather_data = json.loads(await self.redis_client.get(redis_key))
         else:
+            if (location.isnumeric()):
+                weather_data = await aw.aio_get_json(self.aio_session, self.weather_url,
+                                            params={'zip': location, 'units': 'imperial', 'APPID': self.api_key})
+            else:
+                weather_data = await aw.aio_get_json(self.aio_session, self.weather_url,
+                                            params={'q': location, 'units': 'imperial', 'APPID': self.api_key})
+            # Check for valid response
+            if (weather_data is None):
+                return await ctx.error(f"Sorry, couldn't find weather for {location}")
 
-            resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers,
-                                         params={'q': f'weather {location}'})
-            try:
-                weather_data = self.get_weather_json(resp)
-            except AttributeError:
-                return await ctx.error("Couldn't find that location.")
-
+            # Add key to redis after fetching
             await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
 
         # Make SI conversions if needed
-        if weather_data['needs_conversion']:
-            celsius = True
-            weather_data = self.f2c(weather_data)
-        else:
+        if (weather_data['sys']['country'] == 'US'):
             celsius = False
+        else:
+            weather_data = self.f2c(weather_data)
+            celsius = True
 
-        c_wt = weather_data['weather']
         # Create the embed
-        em = discord.Embed(title=c_wt['loc'], color=self.color)
+        em = discord.Embed(title=f"{weather_data['name']}, {weather_data['sys']['country']}", color=self.color)
+        em.description = weather_data['weather'][0]['description'].capitalize()
         em.add_field(name='Temperature',
-                     value=f"{c_wt['temp']}°F" if not celsius else f"{c_wt['temp']}°C")
-        em.add_field(name='Conditions', value=c_wt['curr_cond'])
+                     value=f"{int(round(weather_data['main']['temp']))}°F" if not celsius else f"{weather_data['main']['temp']}°C")
         em.add_field(name='Wind',
-                     value=f"{c_wt['wind']} MPH" if not celsius else f"{c_wt['wind']} m/s")
-        em.add_field(name='Precip.', value=c_wt['precip'])
-        em.add_field(name='Humidity', value=c_wt['humidity'])
-        em.set_thumbnail(url=c_wt['img_url'])
+                     value=f"{int(round(weather_data['wind']['speed']))} MPH" if not celsius else f"{weather_data['wind']['speed']} m/s")
+        em.add_field(name='Humidity', value=f"{weather_data['main']['humidity']}%")
+        em.set_thumbnail(url=self.icon_url.format(weather_data['weather'][0]['icon']))
 
         await ctx.send(embed=em)
 
@@ -129,18 +103,53 @@ class Weather(commands.Cog):
                 return await ctx.send("You don't have a location saved!",
                                       description="Feel free to use `al` to add your location, or supply one to the command")
 
-        redis_key = f'{location}:weather'
+        redis_key = f'{location}:forecast'
         if await self.redis_client.exists(redis_key):
             raw_weather_str = await self.redis_client.get(redis_key)
-            weather_data = json.loads(raw_weather_str)
+            forecast_data = json.loads(raw_weather_str)
         else:
-            resp = await aw.aio_get_text(self.aio_session, self.url, headers=self.headers,
-                                         params={'q': f'weather {location}'})
-            weather_data = self.get_weather_json(resp)
+            # Zipcode
+            if (location.isnumeric()):
+                forecast_data = await aw.aio_get_json(self.aio_session, self.forecast_url,
+                                            params={'zip': location, 'units': 'imperial', 'APPID': self.api_key})
+            else:
+                forecast_data = await aw.aio_get_json(self.aio_session, self.forecast_url,
+                                            params={'q': location, 'units': 'imperial', 'APPID': self.api_key})
+            # Check for valid response
+            if (forecast_data is None):
+                return await ctx.error(f"Sorry, couldn't find a forecast for {location}")
 
-            await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
+            # Add key to redis after fetching
+            await self.redis_client.set(redis_key, json.dumps(forecast_data), ex=self.cache_ttl)
 
-        await ctx.send('\n'.join([x.replace('°', '°F') for x in weather_data['forecast'][:2]]))
+        if forecast_data['city']['country'] == 'US':
+            celsius = False
+        else:
+            celsius = True
+
+        # Now make the embed
+        # List contains every 3 hours, so 8 would be 24 hours from now
+        _t = forecast_data['list'][8]
+
+        if celsius:
+            _t = self.f2c(_t)
+
+        tomorrow_d = {'conditions': _t['weather'][0]['description'].capitalize(),
+                    'temp': _t['main']['temp'],
+                    'humid': _t['main']['humidity'],
+                    'wind': _t['wind']['speed'],
+                    'icon': _t['weather'][0]['icon']}
+
+        tm = SimpleNamespace(**tomorrow_d)
+
+        em = discord.Embed(title=f"The forecast for `{location}`, tomorrow", color=self.color)
+        em.description = tm.conditions
+        em.add_field(name='Temperature', value=f"{int(round(tm.temp))} \u00B0F" if not celsius else f"{int(round(tm.temp))} \u00B0C")
+        em.add_field(name='Humidity', value=f"{int(round(tm.humid))}%")
+        em.add_field(name='Wind', value=f"{int(round(tm.wind))} MPH" if not celsius else f"{int(round(tm.wind))} M/s")
+        em.set_thumbnail(url=self.icon_url.format(tm.icon))
+
+        await ctx.send(embed=em)
 
 
 def setup(bot):
