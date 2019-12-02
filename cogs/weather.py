@@ -39,13 +39,13 @@ class Weather(commands.Cog):
         """ Add your location (zip, city, etc) to qtbot's database so 
         you don't have to supply it later """
         await self.db.insert_user_info(ctx.author.id, 'zipcode', location)
-        await ctx.send(f'Successfully added location `{location}`.')
+        await ctx.success(f'Successfully added location `{location}`.')
 
     @commands.command(aliases=['rz', 'rl'])
     async def remove_location(self, ctx):
         """ Remove your location from the database """
         await self.db.remove_user_info(ctx.author.id, 'zipcode')
-        await ctx.send(f'Successfully removed location for `{ctx.author}`.')
+        await ctx.success(f'Successfully removed location for `{ctx.author}`.')
 
     @commands.command(aliases=['wt', 'w'])
     async def weather(self, ctx, *, location: str = None):
