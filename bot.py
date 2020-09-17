@@ -23,7 +23,7 @@ class QTBot(commands.Bot):
         self.token = self.api_keys['discord']
 
         super().__init__(command_prefix=self.get_prefix, description=self.description,
-                         pm_help=None, case_insensitive=True, *args, **kwargs)
+                         pm_help=True, case_insensitive=True, *args, **kwargs)
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
         # self.rune_client = lolrune.AioRuneClient()
