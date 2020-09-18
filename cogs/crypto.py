@@ -29,11 +29,13 @@ class Crypto(commands.Cog):
 
         # If not found, cache for 5 minutes
         else:
-            resp = await aw.aio_get_json(
-                self.session,
-                self.URL_BTC,
-                headers=self.HEADERS,
-                params={"id": self.BTC_ID},
+            resp = (
+                await aw.aio_get_json(
+                    self.session,
+                    self.URL_BTC,
+                    headers=self.HEADERS,
+                    params={"id": self.BTC_ID},
+                )
             )["data"]["quote"]["USD"]
             await self.redis.set("btc", json.dumps(resp), ex=self.CACHE_TTL)
 
