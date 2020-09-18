@@ -74,7 +74,7 @@ class Moderator(commands.Cog):
 
     @commands.command(name="prefix", aliases=["set_pre", "pre"])
     @commands.has_permissions(manage_guild=True)
-    async def set_prefix(self, ctx, *, prefix: str):
+    async def set_prefix(self, ctx, *, prefix: str=None):
         """ Set the server's command prefix for qtbot """
         # Return prefix if not provided with a change
         if not prefix:
