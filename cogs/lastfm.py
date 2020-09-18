@@ -72,7 +72,7 @@ class LastFM(commands.Cog):
             icon_url="https://www.last.fm/static/images/lastfm_avatar_applemusic.b06eb8ad89be.png",
         )
         # Time played
-        em.timestamp = dt.utcfromtimestamp(track.date["uts"])
+        em.timestamp = dt.utcfromtimestamp(int(track.date["uts"]))
 
         await ctx.send(embed=em)
 
