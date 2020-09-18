@@ -70,7 +70,7 @@ class Crypto(commands.Cog):
         # Weekly trend
         change_7d = resp["percent_change_7d"]
         change_7d_str = (
-            f":arrow_up: {change_7d):.2f}%"
+            f":arrow_up: {change_7d:.2f}%"
             if "-" not in str(change_7d)
             else f":arrow_down: {change_7d:.2f}%"
         )
