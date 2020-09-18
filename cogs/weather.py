@@ -21,7 +21,7 @@ class Weather(commands.Cog):
         self.redis_client = bot.redis_client
         self.db = PGDB(bot.pg_con)
         self.color = 0xB1D9F4
-        self.cache_ttl = 3600
+        self.cache_ttl = 10 * 60
 
     @staticmethod
     def f2c(weather_data: dict) -> dict:
