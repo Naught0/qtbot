@@ -73,7 +73,7 @@ class Dictionary(commands.Cog):
             icon_url="https://i.imgur.com/nzyqrIj.png",
         )
         em.description = result.definition
-        em.set_footer(text=f"UD user: {result.author}")
+        em.set_footer(text=f"from user {result.author}")
         await ctx.send(embed=em)
 
 
