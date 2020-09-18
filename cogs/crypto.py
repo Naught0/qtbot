@@ -46,7 +46,7 @@ class Crypto(commands.Cog):
             name="Price USD", value=f"${float(resp['price']):,.2f}", inline=False
         )
         em.set_footer(text="Last updated")
-        em.timestamp = datetime.datetime.fromtimestamp(int(resp["last_updated"]))
+        em.timestamp = datetime.datetime.strptime(resp["last_updated"], "%Y-%m-%dT%H:%M:%S.%f%z")
 
         # Hourly trend
         change_1h = resp["percent_change_1h"]
