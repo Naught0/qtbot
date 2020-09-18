@@ -18,6 +18,7 @@ class LastFM(commands.Cog):
         self.PARAMS = {
             "method": "user.getrecenttracks",
             "api_key": bot.api_keys["lastfm"],
+            "limit": 1,
             "user": None,
             "format": "json",
         }
@@ -48,7 +49,7 @@ class LastFM(commands.Cog):
             )
 
         resp = await self.get_most_recent_track(lfm_user_name)
-        print(resp)
+        print(json.dumps(resp, indent=2))
 
         # API error
         if resp is None:
