@@ -19,22 +19,22 @@ class UserFacts(commands.Cog):
     @staticmethod
     def numify(s: str) -> int:
         """Small helper method to turn alphanum -> num"""
-        return int(re.sub('[^0-9]', '', s))
+        return int(re.sub("[^0-9]", "", s))
 
     async def get_fact(self, guild_id: int, did: int):
         """Gets a specific fact (row from psql)"""
-        query = '''SELECT * from user_facts
+        query = """SELECT * from user_facts
                    WHERE guild_id = $1
-                   AND id = $2;'''
+                   AND id = $2;"""
 
         return await self.pg_con.fetchrow(query, guild_id, did)
 
     async def get_random_fact(self, guild_id: int):
         """Returns a random fact"""
-        query = '''SELECT * from user_facts
+        query = """SELECT * from user_facts
                    WHERE guild_id = $1
                    ORDER BY RANDOM()
-                   LIMIT 1;'''
+                   LIMIT 1;"""
 
         return await self.pg_con.fetchrow(query, guild_id)
 
@@ -50,14 +50,17 @@ class UserFacts(commands.Cog):
         if not fact:
             return None
 
-        fact_owner = fact['member_id']
+        fact_owner = fact["member_id"]
 
-        return ctx.message.channel.permissions_for(ctx.author).administrator or fact_owner == ctx.author.id
+        return (
+            ctx.message.channel.permissions_for(ctx.author).administrator
+            or fact_owner == ctx.author.id
+        )
 
     async def total_facts(self, ctx):
         """Check whether a server has any facts"""
-        query = '''SELECT COUNT(*) FROM user_facts
-                   WHERE guild_id = $1;'''
+        query = """SELECT COUNT(*) FROM user_facts
+                   WHERE guild_id = $1;"""
 
         return await self.pg_con.fetchval(query, ctx.guild.id)
 
@@ -66,38 +69,46 @@ class UserFacts(commands.Cog):
         """Get a random user-created fact from your server"""
         # Check to see whether any facts have been created
         if await self.total_facts(ctx) < 1:
-            return await ctx.error('Your server does not have any facts set up!',
-                                   description=f'Use the `{self.bot.get_prefix(ctx.message)[-1]}ufact add` command to '
-                                               'start getting random facts you\'ve created.')
+            return await ctx.error(
+                "Your server does not have any facts set up!",
+                description=f"Use the `{self.bot.get_prefix(ctx.message)[-1]}ufact add` command to "
+                "start getting random facts you've created.",
+            )
 
         fact = await self.get_random_fact(ctx.guild.id)
-        user = ctx.guild.get_member(fact['member_id'])
-        contents = fact['contents']
+        user = ctx.guild.get_member(fact["member_id"])
+        contents = fact["contents"]
 
-        em = discord.Embed(title=f':bookmark: Fact #{fact["id"]}', description=contents, timestamp=fact['created'])
-        em.set_footer(text=f'Created by {user.display_name}', icon_url=user.avatar_url)
+        em = discord.Embed(
+            title=f':bookmark: Fact #{fact["id"]}',
+            description=contents,
+            timestamp=fact["created"],
+        )
+        em.set_footer(text=f"Created by {user.display_name}", icon_url=user.avatar_url)
 
         await ctx.send(embed=em)
 
-    @ufact.command(aliases=['create', 'ad'])
+    @ufact.command(aliases=["create", "ad"])
     async def add(self, ctx, *, contents: str = None):
         """Add a 100% true™ fact to the database"""
         if contents is None:
             return await ctx.error("Can't add an empty fact boss, sorry!")
 
-        query = '''INSERT INTO user_facts
+        query = """INSERT INTO user_facts
                    (guild_id, member_id, contents, created)
-                   VALUES ($1, $2, $3, now());'''
+                   VALUES ($1, $2, $3, now());"""
 
         try:
             await self.pg_con.execute(query, ctx.guild.id, ctx.author.id, contents)
         except asyncpg.UniqueViolationError:
-            return await ctx.error('Sorry, that fact already exists.')
+            return await ctx.error("Sorry, that fact already exists.")
 
-        fact_id = await self.pg_con.fetchval('''SELECT id FROM user_facts WHERE contents = $1''', contents)
-        await ctx.success(f'Added that fact for ya! (#{fact_id})')
+        fact_id = await self.pg_con.fetchval(
+            """SELECT id FROM user_facts WHERE contents = $1""", contents
+        )
+        await ctx.success(f"Added that fact for ya! (#{fact_id})")
 
-    @ufact.command(name='delete', aliases=['remove', 'del', 'rm'])
+    @ufact.command(name="delete", aliases=["remove", "del", "rm"])
     async def _delete(self, ctx, *, fact_id: str):
         """Remove a fact from the database via fact number"""
         did = self.numify(fact_id)
@@ -108,11 +119,11 @@ class UserFacts(commands.Cog):
         if not can_delete:
             return await ctx.error("You can't delete that fact.")
 
-        query = '''DELETE FROM user_facts
-                   WHERE id = $1;'''
+        query = """DELETE FROM user_facts
+                   WHERE id = $1;"""
         await self.pg_con.execute(query, did)
 
-        await ctx.success(f'Deleted fact #{did}')
+        await ctx.success(f"Deleted fact #{did}")
 
 
 def setup(bot):

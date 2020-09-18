@@ -34,12 +34,13 @@ class Comics(commands.Cog):
     process_text command below, which strips common words. The below command(s) test user searches
     based on the # of whole-word matches present in the keys of the blob file.
     """
-    STOPWORDS = set(stopwords.words('english'))
-    with open('data/xkcd_comics.json', encoding='utf8') as f:
+
+    STOPWORDS = set(stopwords.words("english"))
+    with open("data/xkcd_comics.json", encoding="utf8") as f:
         COMICS = json.load(f)
-    with open('data/xkcd_blob.json') as f:
+    with open("data/xkcd_blob.json") as f:
         BLOB = json.load(f)
-    CURRENT_URL = 'https://xkcd.com/info.0.json'
+    CURRENT_URL = "https://xkcd.com/info.0.json"
 
     def __init__(self, bot):
         self.bot = bot
@@ -58,8 +59,8 @@ class Comics(commands.Cog):
         str
             The stripped text.
         """
-        stripped_set = set([re.sub('\W+', '', x) for x in text.lower().split()])
-        return ' '.join(stripped_set - self.STOPWORDS)
+        stripped_set = set([re.sub("\W+", "", x) for x in text.lower().split()])
+        return " ".join(stripped_set - self.STOPWORDS)
 
     def get_best_match(self, query: str) -> Union[Tuple[int, str], None]:
         """A helper method to retrieve a comic most similar to given input.
@@ -113,9 +114,9 @@ class Comics(commands.Cog):
         # Creates the embed
         em = discord.Embed()
         em.title = f"XKCD {comic['num']}: {comic['safe_title']}"
-        em.set_image(url=comic['img'])
+        em.set_image(url=comic["img"])
         # Some responses don't contain links
-        em.url = comic['link'] or f'https://xkcd.com/{comic["num"]}/'
+        em.url = comic["link"] or f'https://xkcd.com/{comic["num"]}/'
 
         # Determines what kind of footer to display
         # If id_tup is None, then it's a random comic
@@ -123,18 +124,18 @@ class Comics(commands.Cog):
             footer = f'(Random comic) {comic["alt"]}'
         # If id_tup[0] is None, then the user searched an exact comic number
         elif id_tup[0] is None:
-            footer = comic['alt']
+            footer = comic["alt"]
         # The user searched via text
         else:
-            footer = f'Matched with {id_tup[0]} hit(s)'
+            footer = f"Matched with {id_tup[0]} hit(s)"
         em.set_footer(text=footer)
-        em.timestamp = datetime(int(comic['year']),
-                                int(comic['month']),
-                                int(comic['day']))
+        em.timestamp = datetime(
+            int(comic["year"]), int(comic["month"]), int(comic["day"])
+        )
 
         return em
 
-    @commands.group(aliases=['xk'], invoke_without_command=True)
+    @commands.group(aliases=["xk"], invoke_without_command=True)
     async def xkcd(self, ctx, number: str = None):
         """Search for an xkcd by its number, or get a random one"""
         if number is None:
@@ -142,17 +143,17 @@ class Comics(commands.Cog):
 
         if number in self.COMICS:
             return await ctx.send(embed=self.comic_to_embed((None, number)))
-        
-        await ctx.error('Comic not found.')
 
-    @xkcd.command(aliases=['s'])
+        await ctx.error("Comic not found.")
+
+    @xkcd.command(aliases=["s"])
     async def search(self, ctx, *, query):
         """Search for an xkcd comic with keywords"""
         best_match = self.get_best_match(query)
         comic = self.comic_to_embed(best_match)
         await ctx.send(embed=comic)
 
-    @xkcd.command(name='update', aliases=['up'])
+    @xkcd.command(name="update", aliases=["up"])
     @commands.is_owner()
     async def _update(self, ctx):
         """Update the xkcd file"""
@@ -162,28 +163,34 @@ class Comics(commands.Cog):
 
         most_recent_in_file = max([int(x) for x in self.COMICS])
         # If comics are already updated
-        if current_comic['num'] == most_recent_in_file:
-            return await ctx.error('Comics already up-to-date boss!')
+        if current_comic["num"] == most_recent_in_file:
+            return await ctx.error("Comics already up-to-date boss!")
 
         # Gather comics to update and download them
-        comics_to_update = list(range(most_recent_in_file + 1, current_comic['num'] + 1))
-        url = 'http://xkcd.com/{}/info.0.json'
+        comics_to_update = list(
+            range(most_recent_in_file + 1, current_comic["num"] + 1)
+        )
+        url = "http://xkcd.com/{}/info.0.json"
         for num_comic in comics_to_update:
             async with self.session.get(url.format(num_comic)) as r:
                 self.COMICS[str(num_comic)] = await r.json()
 
-            self.BLOB[self.process_text(f"{self.COMICS[str(num_comic)]['safe_title']} \
-                                        {self.COMICS[str(num_comic)]['alt']}")] = str(num_comic)
+            self.BLOB[
+                self.process_text(
+                    f"{self.COMICS[str(num_comic)]['safe_title']} \
+                                        {self.COMICS[str(num_comic)]['alt']}"
+                )
+            ] = str(num_comic)
 
         # Update comic file
-        with open('data/xkcd_comics.json', 'w', encoding='utf8') as f:
+        with open("data/xkcd_comics.json", "w", encoding="utf8") as f:
             json.dump(self.COMICS, f)
 
         # Update blob file
-        with open('data/xkcd_blob.json', 'w', encoding='utf8') as f:
+        with open("data/xkcd_blob.json", "w", encoding="utf8") as f:
             json.dump(self.BLOB, f)
 
-        await ctx.success(f'Updated {len(comics_to_update)} comic(s)!')
+        await ctx.success(f"Updated {len(comics_to_update)} comic(s)!")
 
 
 def setup(bot):

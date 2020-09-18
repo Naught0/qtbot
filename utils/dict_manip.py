@@ -13,6 +13,7 @@ def get_closest(word_dict, word):
     # return key w/ least edits
     return min(distance_dict, key=distance_dict.get)
 
+
 def key_with_max_value(d):
     """
     a) create a list of the dict's keys and values;
@@ -23,6 +24,7 @@ def key_with_max_value(d):
     v = list(d.values())
     k = list(d.keys())
     return k[v.index(max(v))]
+
 
 def key_with_min_value(d):
     """

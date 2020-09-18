@@ -11,68 +11,80 @@ class Eval(commands.Cog):
         self.green = discord.Color.dark_green()
         self.orange = discord.Color.dark_orange()
 
-    @commands.command(name='eval', hidden=True)
+    @commands.command(name="eval", hidden=True)
     @commands.is_owner()
     async def shell_access(self, ctx, *, cmd):
         """ Lets me access the VPS command line via the bot """
-        process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE)
+        process = await asyncio.create_subprocess_shell(
+            cmd, stdout=asyncio.subprocess.PIPE
+        )
         stdout, stderr = await process.communicate()
         try:
             if stdout:
-                await ctx.send(embed=discord.Embed(title=cmd,
-                                                   description=f'```{stdout.decode().strip()}```',
-                                                   color=self.green))
+                await ctx.send(
+                    embed=discord.Embed(
+                        title=cmd,
+                        description=f"```{stdout.decode().strip()}```",
+                        color=self.green,
+                    )
+                )
             elif stderr:
-                await ctx.send(embed=discord.Embed(title=cmd,
-                                                   description=f'```{stderr.decode().strip()}```',
-                                                   color=self.green))
+                await ctx.send(
+                    embed=discord.Embed(
+                        title=cmd,
+                        description=f"```{stderr.decode().strip()}```",
+                        color=self.green,
+                    )
+                )
             else:
-                await ctx.error(f'Couldn\'t grab output for ```{cmd}```.')
+                await ctx.error(f"Couldn't grab output for ```{cmd}```.")
 
         except Exception as e:
-            await ctx.error(f'Unable to send output ```py\n{e}```')
+            await ctx.error(f"Unable to send output ```py\n{e}```")
 
-    @commands.command(name='git', hidden=True)
+    @commands.command(name="git", hidden=True)
     @commands.is_owner()
     async def git_pull(self, ctx):
         """ Shortcut for .eval git pull origin master """
-        cmd = self.bot.get_command('eval')
-        await ctx.invoke(cmd, cmd='git pull origin master')
+        cmd = self.bot.get_command("eval")
+        await ctx.invoke(cmd, cmd="git pull origin master")
 
-    @commands.group(invoke_without_command=True, name='sql', hidden=True)
+    @commands.group(invoke_without_command=True, name="sql", hidden=True)
     @commands.is_owner()
     async def sql_execute(self, ctx, *, query):
         """ Lets me access the postgres database via discord """
         try:
             res = await self.db_conn.execute(query)
         except Exception as e:
-            return await ctx.error(f'\n{type(e).__name__}\n{str(e)}')
+            return await ctx.error(f"\n{type(e).__name__}\n{str(e)}")
 
         if not res:
-            return await ctx.error(f'Sorry, `{query}` did not return anything.')
+            return await ctx.error(f"Sorry, `{query}` did not return anything.")
 
-        await ctx.send(embed=discord.Embed(title=query,
-                                           description=f'```sql\n{res}```',
-                                           color=self.orange))
+        await ctx.send(
+            embed=discord.Embed(
+                title=query, description=f"```sql\n{res}```", color=self.orange
+            )
+        )
 
-    @sql_execute.command(name='fetch')
+    @sql_execute.command(name="fetch")
     @commands.is_owner()
     async def sql_fetch(self, ctx, *, query):
         try:
             res = await self.db_conn.fetch(query)
         except Exception as e:
-            return await ctx.error(f'{type(e).__name__}\n{str(e)}')
+            return await ctx.error(f"{type(e).__name__}\n{str(e)}")
 
         if not res:
-            return await ctx.error(f'Sorry, `{query}` did not return anything.')
+            return await ctx.error(f"Sorry, `{query}` did not return anything.")
 
-        em = discord.Embed(color=self.orange, title='SQL Fetch')
+        em = discord.Embed(color=self.orange, title="SQL Fetch")
 
-        fmt_str = ''
+        fmt_str = ""
         bullet = "\u2022"
         for idx, record in enumerate(res):
-            fmt_str += f'{idx+1}. {record}\n\n'
-        em.description = f'```py\n{fmt_str}```'
+            fmt_str += f"{idx+1}. {record}\n\n"
+        em.description = f"```py\n{fmt_str}```"
         await ctx.send(embed=em)
 
 

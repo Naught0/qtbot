@@ -11,15 +11,17 @@ class YouTube(commands.Cog):
         """ Sync youtube function (lib uses requests) """
         return yt.get_video_info(query, num_results=1)
 
-    @commands.command(name='yt')
+    @commands.command(name="yt")
     async def get_youtube_video(self, ctx, *, query):
         """ Returns a matching youtube video for a query  """
 
         if not query:
-            return await ctx.send('Go on, search something.')
+            return await ctx.send("Go on, search something.")
 
         # Executor for sync function
-        video_list = await self.bot.loop.run_in_executor(None, YouTube.sync_get_youtube_video, query)
+        video_list = await self.bot.loop.run_in_executor(
+            None, YouTube.sync_get_youtube_video, query
+        )
 
         if not video_list:
             return await ctx.say(f"Sorry, couldn't find anything for `{query}`")

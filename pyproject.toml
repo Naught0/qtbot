@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "qtbot"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "2.24.0"
+aiohttp = "3.6.2"
+aredis = "1.1.8"
+asyncpg = "0.21.0"
+asyncurban = "0.3.3"
+beautifulsoup4 = "4.9.1"
+discord = "1.0.1"
+lxml = "4.5.2"
+nltk = "3.5"
+riotwatcher = "3.1.0"
+tmdbsimple = "2.6.6"
+wolframalpha = "4.0.0"
+wordnik = "2.1.3"
+
+[tool.poetry.dev-dependencies]
+pylint = "^2.6.0"
+black = {version = "^20.8b1", allow-prereleases = true}
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

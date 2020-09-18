@@ -26,41 +26,42 @@ class Moderator(commands.Cog):
         self.bot = bot
         self.pg = bot.pg_con
 
-    @commands.command(aliases=['k'])
+    @commands.command(aliases=["k"])
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         """ Kick a member from the server """
         await ctx.guild.kick(member, reason=reason)
-        await ctx.send(f'Member `{member}` kicked.\n'
-                       f'Reason: `{reason}`.')
+        await ctx.send(f"Member `{member}` kicked.\n" f"Reason: `{reason}`.")
 
-    @commands.command(aliases=['kb'])
+    @commands.command(aliases=["kb"])
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         """ Ban a member from the server """
         await ctx.guild.ban(member, reason=reason, delete_message_days=0)
-        await ctx.send(f'Member `{member}` banned.\n'
-                       f'Reason: `{reason}`.')
+        await ctx.send(f"Member `{member}` banned.\n" f"Reason: `{reason}`.")
 
-    @commands.command(aliases=['ub'])
+    @commands.command(aliases=["ub"])
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, member: BannedMember, *, reason=None):
-        """ Unban a member from the server
-        Since you can't highlight them anymore use their name#discrim or ID """
+        """Unban a member from the server
+        Since you can't highlight them anymore use their name#discrim or ID"""
         if member is not None:
             await ctx.guild.unban(member.user, reason=reason)
-            await ctx.send(f'Member `{member.user}` unbanned.\n'
-                           f'Reason: `{reason}`.')
+            await ctx.send(f"Member `{member.user}` unbanned.\n" f"Reason: `{reason}`.")
 
         else:
-            await ctx.send("Sorry, I couldn't find that user. Maybe they're not banned :thinking:")
+            await ctx.send(
+                "Sorry, I couldn't find that user. Maybe they're not banned :thinking:"
+            )
 
-    @commands.command(aliases=['purge'])
+    @commands.command(aliases=["purge"])
     @commands.has_permissions(manage_messages=True)
     async def clean(self, ctx, num_msg: int):
         """ Remove bot messages from the last X messages """
         if num_msg > 100:
-            return await ctx.send('Sorry, number of messages to be deleted must not exceed 100.')
+            return await ctx.send(
+                "Sorry, number of messages to be deleted must not exceed 100."
+            )
 
         # Check so that only bot msgs are removed
         def check(message):
@@ -69,15 +70,15 @@ class Moderator(commands.Cog):
         try:
             await ctx.channel.purge(check=check, limit=num_msg)
         except Exception as e:
-            await ctx.send(f'Failed to delete messages.\n ```py\n{e}```')
+            await ctx.send(f"Failed to delete messages.\n ```py\n{e}```")
 
-    @commands.command(name='prefix', aliases=['set_pre', 'pre'])
+    @commands.command(name="prefix", aliases=["set_pre", "pre"])
     @commands.has_permissions(manage_guild=True)
     async def set_prefix(self, ctx, *, prefix):
         """ Set the server's command prefix for qtbot """
-        execute = f'''INSERT INTO custom_prefix (guild_id, prefix) VALUES ({ctx.guild.id}, $1)
+        execute = f"""INSERT INTO custom_prefix (guild_id, prefix) VALUES ({ctx.guild.id}, $1)
                       ON CONFLICT (guild_id) DO 
-                          UPDATE SET prefix = $1;'''
+                          UPDATE SET prefix = $1;"""
         try:
             await self.pg.execute(execute, prefix)
         except Exception as e:
@@ -87,7 +88,7 @@ class Moderator(commands.Cog):
             # Update the prefix dict
             self.bot.pre_dict[ctx.guild.id] = prefix
 
-        await ctx.send(f'Changed command prefix to `{prefix}`.')
+        await ctx.send(f"Changed command prefix to `{prefix}`.")
 
 
 def setup(bot):

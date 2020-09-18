@@ -12,22 +12,29 @@ class Dictionary(commands.Cog):
         self.urban = UrbanDictionary(loop=bot.loop, session=bot.aio_session)
 
     # Load API key
-    with open('data/apikeys.json') as f:
+    with open("data/apikeys.json") as f:
         apiKeys = json.load(f)
 
     # Init wordnik objects
-    wordnikKey = apiKeys['wordnik']
-    WordClient = swagger.ApiClient(wordnikKey, 'http://api.wordnik.com/v4')
+    wordnikKey = apiKeys["wordnik"]
+    WordClient = swagger.ApiClient(wordnikKey, "http://api.wordnik.com/v4")
 
     # Returns the most common definition of a word
-    @commands.command(name='define', aliases=['d'])
+    @commands.command(name="define", aliases=["d"])
     async def wordnik_define(self, ctx, *, word):
         """ Provides the definition of a word """
         wordApi = WordApi.WordApi(Dictionary.WordClient)
 
-        parts_of_speech = {'noun': 'n.', 'verb': 'v.', 'adjective': 'adj.', 'adverb': 'adv.',
-                           'interjection': 'interj.', 'conjunction': 'conj.', 'preposition': 'prep.',
-                           'pronoun': 'pron.'}
+        parts_of_speech = {
+            "noun": "n.",
+            "verb": "v.",
+            "adjective": "adj.",
+            "adverb": "adv.",
+            "interjection": "interj.",
+            "conjunction": "conj.",
+            "preposition": "prep.",
+            "pronoun": "pron.",
+        }
 
         result = wordApi.getDefinitions(word)
 
@@ -37,17 +44,21 @@ class Dictionary(commands.Cog):
         final_result = result[0]
 
         for pos in parts_of_speech:
-            if pos in final_result.partOfSpeech.split('-'):
+            if pos in final_result.partOfSpeech.split("-"):
                 word_pos = parts_of_speech[pos]
                 break
             else:
                 word_pos = final_result.partOfSpeech
 
-        em = discord.Embed(title=f':book: {word.title()} - {word_pos}',
-                           description=f'```{final_result.text}```')
+        em = discord.Embed(
+            title=f":book: {word.title()} - {word_pos}",
+            description=f"```{final_result.text}```",
+        )
         await ctx.send(embed=em)
 
-    @commands.group(invoke_without_subcommand=True, name='urban', aliases=['ud', 'urband'])
+    @commands.group(
+        invoke_without_subcommand=True, name="urban", aliases=["ud", "urband"]
+    )
     async def _urban(self, ctx, *, word):
         """ Consult the world's leading dictionary """
         try:
@@ -57,17 +68,21 @@ class Dictionary(commands.Cog):
         except ConnectionError:
             return await ctx.error(f"Sorry, the UrbanDictionary API buggered off.")
 
-        em = discord.Embed(title=f':closed_book: {word.title()}',
-                           description=f'```{result.definition}```')
+        em = discord.Embed(
+            title=f":closed_book: {word.title()}",
+            description=f"```{result.definition}```",
+        )
         await ctx.send(embed=em)
 
-    @_urban.command(name='-r')
+    @_urban.command(name="-r")
     async def _random(self, ctx):
         """ Get a random word from UrbanDictionary """
         word = await self.urban.get_random()
 
-        em = discord.Embed(title=f':closed_book: {word.title()}',
-                           description=f'```{word.definition}```')
+        em = discord.Embed(
+            title=f":closed_book: {word.title()}",
+            description=f"```{word.definition}```",
+        )
         await ctx.send(embed=em)
 
 
