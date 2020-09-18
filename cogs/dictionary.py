@@ -15,9 +15,9 @@ class Dictionary(commands.Cog):
     def __init__(self, bot):
         self.PARAMS = {
             "limit": 1,
-            "includeRelated": False,
-            "useCanonical": True,
-            "includeTags": False,
+            "includeRelated": "false",
+            "useCanonical": "true",
+            "includeTags": "false",
             "api_key": bot.api_keys["wordnik"],
         }
         self.bot = bot
