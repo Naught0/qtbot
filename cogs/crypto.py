@@ -44,7 +44,7 @@ class Crypto(commands.Cog):
         em = discord.Embed(color=0xF7931A)
         em.set_author(name="Bitcoin", icon_url=self.BTC_LOGO_URL)
         em.add_field(
-            name="Price USD", value=f"${float(resp['price']):,.2f}", inline=False
+            name="Price USD", value=f"${resp['price']:,.2f}", inline=False
         )
         em.set_footer(text="Last updated")
         em.timestamp = dateutil.parser.parse(resp["last_updated"])
@@ -52,27 +52,27 @@ class Crypto(commands.Cog):
         # Hourly trend
         change_1h = resp["percent_change_1h"]
         change_1h_str = (
-            f":arrow_up: {float(change_1h):.2f}%"
-            if "-" not in change_1h
-            else f":arrow_down: {float(change_1h):.2f}%"
+            f":arrow_up: {change_1h:.2f}%"
+            if "-" not in str(change_1h)
+            else f":arrow_down: {change_1h:.2f}%"
         )
         em.add_field(name="Hourly trend", value=change_1h_str)
 
         # Daily trend
         change_24h = resp["percent_change_24h"]
         change_24h_str = (
-            f":arrow_up: {float(change_24h):.2f}%"
-            if "-" not in change_24h
-            else f":arrow_down: {float(change_24h):.2f}%"
+            f":arrow_up: {change_24h:.2f}%"
+            if "-" not in str(change_24h)
+            else f":arrow_down: {change_24h:.2f}%"
         )
         em.add_field(name="Daily trend", value=change_24h_str)
 
         # Weekly trend
         change_7d = resp["percent_change_7d"]
         change_7d_str = (
-            f":arrow_up: {float(change_7d):.2f}%"
-            if "-" not in change_7d
-            else f":arrow_down: {float(change_7d):.2f}%"
+            f":arrow_up: {change_7d):.2f}%"
+            if "-" not in str(change_7d)
+            else f":arrow_down: {change_7d:.2f}%"
         )
         em.add_field(name="Weekly trend", value=change_7d_str)
 
