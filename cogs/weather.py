@@ -188,7 +188,8 @@ class Weather(commands.Cog):
         tm = SimpleNamespace(**tomorrow_d)
 
         em = discord.Embed(
-            title=f"The forecast for `{location}`, tomorrow", color=self.color
+            title=f"The forecast for {forecast_data['city']['name']}, {forecast_data['city']['country']}, tomorrow",
+            color=self.color,
         )
         em.description = tm.conditions
         em.add_field(
