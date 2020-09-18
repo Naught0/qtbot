@@ -29,18 +29,16 @@ class Crypto(commands.Cog):
 
         # If not found, cache for 5 minutes
         else:
-            resp = (
-                await aw.aio_get_json(
-                    self.session,
-                    self.URL_BTC,
-                    headers=self.HEADERS,
-                    params={"id": self.BTC_ID},
-                )
-            )["quote"]["USD"]
+            resp = await aw.aio_get_json(
+                self.session,
+                self.URL_BTC,
+                headers=self.HEADERS,
+                params={"id": self.BTC_ID},
+            )  # ["quote"]["USD"]
+            # Testing
+            return await ctx.send(f"```{json.dumps(resp, indent=2)}```")
             await self.redis.set("btc", json.dumps(resp), ex=self.CACHE_TTL)
 
-        # Testing 
-        return await ctx.send(f"```{json.dumps(resp, indent=2)}```")
         # Create a neat embed with the information
         em = discord.Embed(color=0xF7931A)
         em.set_author(name="Bitcoin", icon_url=self.BTC_LOGO_URL)
