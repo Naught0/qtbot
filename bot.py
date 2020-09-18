@@ -25,7 +25,7 @@ class QTBot(commands.Bot):
         super().__init__(
             command_prefix=self.get_prefix,
             description=self.description,
-            help_command=commands.MinimalHelpCommand(dm_help=True),
+            help_command=commands.DefaultHelpCommand(dm_help=True),
             case_insensitive=True,
             *args,
             **kwargs,
