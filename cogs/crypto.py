@@ -1,6 +1,7 @@
-import datetime
 import json
 import discord
+
+import dateutil.parser
 from discord.ext import commands
 from utils import aiohttp_wrap as aw
 
@@ -46,7 +47,7 @@ class Crypto(commands.Cog):
             name="Price USD", value=f"${float(resp['price']):,.2f}", inline=False
         )
         em.set_footer(text="Last updated")
-        em.timestamp = datetime.datetime.strptime(resp["last_updated"], "%Y-%m-%dT%H:%M:%S.%f%z")
+        em.timestamp = dateutil.parser.parse(resp["last_updated"])
 
         # Hourly trend
         change_1h = resp["percent_change_1h"]
