@@ -37,20 +37,20 @@ class Weather(commands.Cog):
         return weather_data
 
     @commands.command(aliases=["az", "al"])
-    async def add_location(self, ctx, *, location: str):
+    async def add_location(self, ctx: commands.Context, *, location: str):
         """Add your location (zip, city, etc) to qtbot's database so
         you don't have to supply it later"""
         await self.db.insert_user_info(ctx.author.id, "zipcode", location)
         await ctx.success(f"Successfully added location `{location}`.")
 
     @commands.command(aliases=["rz", "rl"])
-    async def remove_location(self, ctx):
+    async def remove_location(self, ctx: commands.Context):
         """ Remove your location from the database """
         await self.db.remove_user_info(ctx.author.id, "zipcode")
         await ctx.success(f"Successfully removed location for `{ctx.author}`.")
 
     @commands.command(aliases=["wt", "w"])
-    async def weather(self, ctx, *, location: str = None):
+    async def weather(self, ctx: commands.Context, *, location: str = None):
         """ Get the weather of a given area (zipcode, city, etc.) """
         # Handle shortcut no location given
         if location is None:
@@ -59,6 +59,14 @@ class Weather(commands.Cog):
                 return await ctx.error(
                     "You don't have a location saved!",
                     description="Feel free to use `al` to add your location, or supply one to the command.",
+                )
+
+        # Handle finding other user's weather
+        if ctx.message.mentions:
+            location = await self.db.fetch_user_info(ctx.message.mentions[0].id, "zipcode")
+            if location is None:
+                return await ctx.error(
+                    f"{ctx.message.mentions[0].mention} does not have a location saved"
                 )
 
         # Check for redis cached response
@@ -122,7 +130,7 @@ class Weather(commands.Cog):
         await ctx.send(embed=em)
 
     @commands.command(aliases=["fc"])
-    async def forecast(self, ctx, *, location: str = None):
+    async def forecast(self, ctx: commands.Context, *, location: str = None):
         """ Get the forecast of a given location """
         if location is None:
             location = await self.db.fetch_user_info(ctx.author.id, "zipcode")
