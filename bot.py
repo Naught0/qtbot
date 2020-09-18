@@ -15,7 +15,7 @@ class QTBot(commands.Bot):
     def __init__(self, config_file, *args, **kwargs):
         self.config_file = config_file
         self.description = "qtbot is a big qt written in python3 and love."
-        self.do_not_load = ("league", "poll", "timer", "ris", "timer", "wiki")
+        self.do_not_load = ("league", "poll", "music", "timer", "ris", "timer", "wiki")
 
         with open(self.config_file) as f:
             self.api_keys = json.load(f)

@@ -50,7 +50,7 @@ class LastFM(commands.Cog):
 
         redis_key = f"lastfm:{lfm_user_name}"
         if await self.redis_client.exists(redis_key):
-            resp = json.loads(await self.redis.get(redis_key))
+            resp = json.loads(await self.redis_client.get(redis_key))
         else:
             resp = await self.get_most_recent_track(lfm_user_name)
             await self.redis_client.set(redis_key, json.dumps(resp), ex=self.TTL)
