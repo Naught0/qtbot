@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+
+from urllib.parse import quote_plus
 from utils import aiohttp_wrap as aw
 
 
@@ -7,7 +9,7 @@ class Wiki(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.search_uri = (
-            "http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search={}"
+            "http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search={}&limit=1&namespace=0"
         )
         self.random_uri = "https://en.wikipedia.org/w/api.php?action=query&list=random&format=json&rnnamespace=0&rnlimit=1"
         self.headers = {
@@ -27,7 +29,7 @@ class Wiki(commands.Cog):
             query = random_response["query"]["random"][0]["title"]
 
         # Spaces -> +
-        formatted_query = query.replace(" ", "+")
+        formatted_query = quote_plus(query)
 
         # Get wiki page
         wiki_info = await aw.aio_get_json(
