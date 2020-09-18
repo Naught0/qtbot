@@ -29,7 +29,7 @@ class Dictionary(commands.Cog):
         """ Provides the definition of a word """
 
         query = quote_plus(word)
-        resp = aw.aio_get_json(self.bot.aio_session, self.WORDNIK_URL.format(query), params=self.PARAMS)
+        resp = await aw.aio_get_json(self.bot.aio_session, self.WORDNIK_URL.format(query), params=self.PARAMS)
         if resp is None:
             return await ctx.error(f"Couldn't find anything on `{word}`")
 
