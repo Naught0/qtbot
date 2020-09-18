@@ -36,7 +36,7 @@ class Crypto(commands.Cog):
                     headers=self.HEADERS,
                     params={"id": self.BTC_ID},
                 )
-            )["data"]["quote"]["USD"]
+            )["data"][str(self.BTC_ID)]["quote"]["USD"]
             await self.redis.set("btc", json.dumps(resp), ex=self.CACHE_TTL)
 
         # Create a neat embed with the information
