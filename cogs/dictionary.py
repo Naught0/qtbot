@@ -68,7 +68,7 @@ class Dictionary(commands.Cog):
 
         em = discord.Embed(color=discord.Color.blurple())
         em.set_author(
-            name=word.title(),
+            name=result.word.title(),
             url=result.permalink,
             icon_url="https://i.imgur.com/nzyqrIj.png",
         )
