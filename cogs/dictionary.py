@@ -10,7 +10,8 @@ from utils import aiohttp_wrap as aw
 
 
 class Dictionary(commands.Cog):
-    WORDNIK_URL = "https://api.wordnik.com/v4/word.json/{}"
+    WORDNIK_URL = "https://api.wordnik.com/v4/word.json/{}/definitions"
+    HEADERS = {"Accept": "application/json"}
 
     def __init__(self, bot):
         self.PARAMS = {
@@ -29,7 +30,12 @@ class Dictionary(commands.Cog):
         """ Provides the definition of a word """
 
         query = quote_plus(word)
-        resp = await aw.aio_get_json(self.bot.aio_session, self.WORDNIK_URL.format(query), params=self.PARAMS)
+        resp = await aw.aio_get_json(
+            self.bot.aio_session, 
+            self.WORDNIK_URL.format(query), 
+            params=self.PARAMS, 
+            headers=self.HEADERS
+        )
         if resp is None:
             return await ctx.error(f"Couldn't find anything on `{word}`")
 
@@ -48,7 +54,7 @@ class Dictionary(commands.Cog):
     @commands.group(
         invoke_without_subcommand=True, name="urban", aliases=["ud", "urband"]
     )
-    async def _urban(self, ctx, *, word: str=None):
+    async def _urban(self, ctx, *, word: str = None):
         """ Consult the world's leading dictionary or get a random word by searching nothing"""
         try:
             if word is None:
@@ -69,6 +75,7 @@ class Dictionary(commands.Cog):
         em.description = result.definition
         em.set_footer(text=f"UD user: {result.author}")
         await ctx.send(embed=em)
+
 
 def setup(bot):
     bot.add_cog(Dictionary(bot))
