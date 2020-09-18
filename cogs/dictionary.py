@@ -11,13 +11,13 @@ class Dictionary(commands.Cog):
         self.bot = bot
         self.urban = UrbanDictionary(loop=bot.loop, session=bot.aio_session)
 
-    # Load API key
-    with open("data/apikeys.json") as f:
-        apiKeys = json.load(f)
+        # Load API key
+        with open("data/apikeys.json") as f:
+            apiKeys = json.load(f)
 
-    # Init wordnik objects
-    wordnikKey = apiKeys["wordnik"]
-    WordClient = swagger.ApiClient(wordnikKey, "http://api.wordnik.com/v4")
+        # Init wordnik objects
+        wordnikKey = apiKeys["wordnik"]
+        WordClient = swagger.ApiClient(wordnikKey, "http://api.wordnik.com/v4")
 
     # Returns the most common definition of a word
     @commands.command(name="define", aliases=["d"])
