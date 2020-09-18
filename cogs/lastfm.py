@@ -55,7 +55,7 @@ class LastFM(commands.Cog):
         if resp is None:
             return await ctx.error(f"Could not get info for {lfm_user_name}.")
         # Easy dotted notation for track info
-        track = SimpleNamespace(**resp["track"][0])
+        track = SimpleNamespace(**resp["recenttracks"]["track"][0])
 
         em = discord.Embed()
         em.title = f"{track.artist['#text']} - {track.name}"
