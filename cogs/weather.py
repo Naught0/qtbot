@@ -63,10 +63,12 @@ class Weather(commands.Cog):
 
         # Handle finding other user's weather
         if ctx.message.mentions:
-            location = await self.db.fetch_user_info(ctx.message.mentions[0].id, "zipcode")
+            location = await self.db.fetch_user_info(
+                ctx.message.mentions[0].id, "zipcode"
+            )
             if location is None:
                 return await ctx.error(
-                    f"{ctx.message.mentions[0].mention} does not have a location saved"
+                    f"{ctx.message.mentions[0].display_name} does not have a location saved"
                 )
 
         # Check for redis cached response
@@ -138,6 +140,16 @@ class Weather(commands.Cog):
                 return await ctx.send(
                     "You don't have a location saved!",
                     description="Feel free to use `al` to add your location, or supply one to the command",
+                )
+
+        # Handle finding other user's weather
+        if ctx.message.mentions:
+            location = await self.db.fetch_user_info(
+                ctx.message.mentions[0].id, "zipcode"
+            )
+            if location is None:
+                return await ctx.error(
+                    f"{ctx.message.mentions[0].display_name} does not have a location saved"
                 )
 
         redis_key = f"{location}:forecast"
