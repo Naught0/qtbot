@@ -48,7 +48,12 @@ class LastFM(commands.Cog):
                 f"{member.display_name} does not have a LastFM username saved"
             )
 
-        resp = await self.get_most_recent_track(lfm_user_name)
+        redis_key = f"lastfm:{lfm_user_name}"
+        if await self.redis_client.exists(redis_key):
+            resp = json.loads(await self.redis.get(redis_key))
+        else:
+            resp = await self.get_most_recent_track(lfm_user_name)
+            await self.redis_client.set(redis_key, json.dumps(resp), ex=self.TTL)
 
         # API error
         if resp is None:
@@ -77,6 +82,8 @@ class LastFM(commands.Cog):
 
     @np.command(name="add", aliases=["user"])
     async def _add(self, ctx: commands.Context, *, user_name: str):
+        if len(user_name) > 128:
+            return await ctx.error("That name's a bit too long")
         await self.db.insert_user_info(ctx.author.id, "lastfm", user_name)
         await ctx.message.add_reaction("✅")
 
