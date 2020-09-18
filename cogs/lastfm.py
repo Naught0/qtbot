@@ -48,6 +48,7 @@ class LastFM(commands.Cog):
             )
 
         resp = await self.get_most_recent_track(lfm_user_name)
+        print(resp)
 
         # API error
         if resp is None:
