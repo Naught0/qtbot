@@ -34,9 +34,7 @@ class Crypto(commands.Cog):
                 self.URL_BTC,
                 headers=self.HEADERS,
                 params={"id": self.BTC_ID},
-            )  # ["quote"]["USD"]
-            # Testing
-            return await ctx.send(f"```{json.dumps(resp, indent=2)}```")
+            )["data"]["quote"]["USD"]
             await self.redis.set("btc", json.dumps(resp), ex=self.CACHE_TTL)
 
         # Create a neat embed with the information
