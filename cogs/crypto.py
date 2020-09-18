@@ -39,6 +39,8 @@ class Crypto(commands.Cog):
             )["quote"]["USD"]
             await self.redis.set("btc", json.dumps(resp), ex=self.CACHE_TTL)
 
+        # Testing 
+        return await ctx.send(f"```{json.dumps(resp, indent=2)}```")
         # Create a neat embed with the information
         em = discord.Embed(color=0xF7931A)
         em.set_author(name="Bitcoin", icon_url=self.BTC_LOGO_URL)
