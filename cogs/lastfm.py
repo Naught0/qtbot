@@ -50,11 +50,8 @@ class LastFM(commands.Cog):
         resp = await self.get_most_recent_track(lfm_user_name)
 
         # API error
-        if "error" in resp:
-            return await ctx.error(
-                f"Error `{resp['error']}` finding {member.display_name}",
-                description=resp["message"],
-            )
+        if resp is None:
+            return await ctx.error(f"Could not get info for {lfm_user_name}.")
         # Easy dotted notation for track info
         track = SimpleNamespace(**resp["track"][0])
 
