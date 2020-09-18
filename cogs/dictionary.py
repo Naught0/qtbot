@@ -48,10 +48,13 @@ class Dictionary(commands.Cog):
     @commands.group(
         invoke_without_subcommand=True, name="urban", aliases=["ud", "urband"]
     )
-    async def _urban(self, ctx, *, word: str):
-        """ Consult the world's leading dictionary """
+    async def _urban(self, ctx, *, word: str=None):
+        """ Consult the world's leading dictionary or get a random word by searching nothing"""
         try:
-            result = await self.urban.get_word(word)
+            if word is None:
+                result = await self.urban.get_random()
+            else:
+                result = await self.urban.get_word(word)
         except WordNotFoundError:
             return await ctx.error(f"Couldn't find anything on `{word}`")
         except ConnectionError:
@@ -64,22 +67,8 @@ class Dictionary(commands.Cog):
             icon_url="https://i.imgur.com/nzyqrIj.png",
         )
         em.description = result.definition
+        em.set_footer(text=f"UD user: {result.author}")
         await ctx.send(embed=em)
-
-    @_urban.command(name="random", aliases=["-r"])
-    async def _random(self, ctx):
-        """ Get a random word from UrbanDictionary """
-        word = await self.urban.get_random()
-
-        em = discord.Embed(color=discord.Color.blurple())
-        em.set_author(
-            name=word.title(),
-            url=word.permalink,
-            icon_url="https://i.imgur.com/nzyqrIj.png",
-        )
-        em.description = word.definition
-        await ctx.send(embed=em)
-
 
 def setup(bot):
     bot.add_cog(Dictionary(bot))
