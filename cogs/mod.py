@@ -74,8 +74,27 @@ class Moderator(commands.Cog):
 
     @commands.command(name="prefix", aliases=["set_pre", "pre"])
     @commands.has_permissions(manage_guild=True)
-    async def set_prefix(self, ctx, *, prefix):
+    async def set_prefix(self, ctx, *, prefix: str):
         """ Set the server's command prefix for qtbot """
+        # Return prefix if not provided with a change
+        if not prefix:
+            prefixes = await ctx.bot.get_prefix(ctx.message)
+
+            # If there is only 1 prefix, this returns a string
+            # Transform to a tuple so the loop logic works later on
+            if type(prefixes) != tuple:
+                prefixes = tuple([prefixes])
+
+            em = discord.Embed(color=discord.Color.blurple())
+            em.set_author(
+                name=f"{'Bot prefix' if len(prefixes) == 1 else 'Bot Prefixes'} for {ctx.guild.name}",
+                icon_url=ctx.guild.icon_url,
+            )
+            em.set_footer(text="Use qt.pre <New_Prefix> to set a new prefix")
+
+            em.description = "\n".join([f"\u2022 `{x}`" for x in prefixes])
+            return await ctx.send(embed=em)
+
         execute = f"""INSERT INTO custom_prefix (guild_id, prefix) VALUES ({ctx.guild.id}, $1)
                       ON CONFLICT (guild_id) DO 
                           UPDATE SET prefix = $1;"""
