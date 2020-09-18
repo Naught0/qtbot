@@ -49,7 +49,6 @@ class LastFM(commands.Cog):
             )
 
         resp = await self.get_most_recent_track(lfm_user_name)
-        print(json.dumps(resp, indent=2))
 
         # API error
         if resp is None:
@@ -57,7 +56,7 @@ class LastFM(commands.Cog):
         # Easy dotted notation for track info
         track = SimpleNamespace(**resp["recenttracks"]["track"][0])
 
-        em = discord.Embed()
+        em = discord.Embed(color=self.COLOR)
         em.title = f"{track.artist['#text']} - {track.name}"
         em.add_field(name="Album", value=track.album["#text"])
         # User's info for NP
@@ -72,7 +71,7 @@ class LastFM(commands.Cog):
             icon_url="https://www.last.fm/static/images/lastfm_avatar_applemusic.b06eb8ad89be.png",
         )
         # Time played
-        em.timestamp = dt.utcfromtimestamp(int(track.date["uts"]))
+        em.timestamp = dt.now() if "@attr" in resp["recenttracks"]["track"][0] else dt.utcfromtimestamp(int(track.date["uts"]))
 
         await ctx.send(embed=em)
 
