@@ -38,7 +38,7 @@ class Wiki(commands.Cog):
             self.session, self.SUMMARY_URI.format(article_title), headers=self.HEADERS
         )
         # Create embed
-        em = discord.Embed(title=article_title, color=discord.Color.blurple())
+        em = discord.Embed(title=article_summary["titles"]["display"], color=discord.Color.blurple())
         em.description = article_summary["extract"]
         em.url = article_summary["content_urls"]["desktop"]["page"]
         em.set_thumbnail(
