@@ -50,7 +50,7 @@ class Wiki(commands.Cog):
         em = discord.Embed(
             title=article_summary["titles"]["display"], color=discord.Color.blurple()
         )
-        em.description = ' '.join(article_summary["extract"].split('. ')[:3])
+        em.description = '. '.join(article_summary["extract"].split('. ')[:3])
         em.url = article_summary["content_urls"]["desktop"]["page"]
         em.set_thumbnail(
             url="https://lh5.ggpht.com/1Erjb8gyF0RCc9uhnlfUdbU603IgMm-G-Y3aJuFcfQpno0N4HQIVkTZERCTo65Iz2II=w300"
