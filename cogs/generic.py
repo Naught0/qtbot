@@ -16,25 +16,31 @@ class Generic(commands.Cog):
     @commands.command(name="roll", aliases=["dice"])
     async def _roll(self, ctx: commands.Context, *, dice: str):
         """Roll some dice
-        Format: XdY - where X is up to 10 and Y is up to 20"""
+        Format: XdY - where 1 <= X <= 10 and 1 <= Y <= 20
+        Example: qt.roll 3d6"""
         if not self.DICE_PATTERN.match(dice.lower()):
             return await ctx.error(
-                "Roll must be in the format XdY", description="where X <= 10 and Y <= 20"
+                "Roll must be in the format XdY",
+                description="where 1 <= X <= 10 and 1 <= Y <= 20",
             )
         else:
             match = self.DICE_PATTERN.match(dice.lower()).group()
 
         num, sides = [int(x) for x in match.split("d")]
-        if num > 10 or sides > 20:
+        if 1 > num > 10 or 1 > sides > 20:
             return await ctx.error(
-                "Roll must be in the format XdY", description="where X <= 10 and Y <= 20"
+                "Roll must be in the format XdY",
+                description="where 1 <= X <= 10 and 1 <= Y <= 20",
             )
 
         rolls = [random.choice(range(1, sides + 1)) for x in range(num)]
 
         em = discord.Embed(color=discord.Color.blurple())
-        em.set_author(name=f"{ctx.author.display_name} rolled {num}d{sides}", icon_url=ctx.author.avatar_url)
-        em.add_field(name=":game_die: Rolls", value=', '.join([str(x) for x in rolls]))
+        em.set_author(
+            name=f"{ctx.author.display_name} rolled {num}d{sides}",
+            icon_url=ctx.author.avatar_url,
+        )
+        em.add_field(name=":game_die: Rolls", value=", ".join([str(x) for x in rolls]))
         em.add_field(name=":game_die: Total", value=str(sum(rolls)))
 
         await ctx.send(embed=em)
