@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
 from utils import aiohttp_wrap as aw
 
@@ -37,12 +38,22 @@ class Wiki(commands.Cog):
         article_summary = await aw.aio_get_json(
             self.session, self.SUMMARY_URI.format(article_title), headers=self.HEADERS
         )
+        # Get wiki image
+        article_html = await aw.aio_get_text(
+            self.session, article_summary["content_urls"]["desktop"]["page"]
+        )
+        soup = BeautifulSoup(article_html)
+        article_image = soup.head.find(attrs={"property": "og:image"})
         # Create embed
-        em = discord.Embed(title=article_summary["titles"]["display"], color=discord.Color.blurple())
+        em = discord.Embed(
+            title=article_summary["titles"]["display"], color=discord.Color.blurple()
+        )
         em.description = article_summary["extract"]
         em.url = article_summary["content_urls"]["desktop"]["page"]
         em.set_thumbnail(
             url="https://lh5.ggpht.com/1Erjb8gyF0RCc9uhnlfUdbU603IgMm-G-Y3aJuFcfQpno0N4HQIVkTZERCTo65Iz2II=w300"
+            if article_image is None
+            else article_image.attrs["content"]
         )
 
         await ctx.send(embed=em)
