@@ -16,21 +16,21 @@ class Generic(commands.Cog):
     @commands.command(name="roll", aliases=["dice"])
     async def _roll(self, ctx: commands.Context, *, dice: str):
         """Roll some dice
-        Format: XdY - where 1 <= X <= 10 and 1 <= Y <= 20
+        Format: XdY - where 1 <= X <= 10 and 1 <= Y <= 100
         Example: qt.roll 3d6"""
         if not self.DICE_PATTERN.match(dice.lower()):
             return await ctx.error(
                 "Roll must be in the format XdY",
-                description="where 1 <= X <= 10 and 1 <= Y <= 20",
+                description="where 1 <= X <= 10 and 1 <= Y <= 100",
             )
         else:
             match = self.DICE_PATTERN.match(dice.lower()).group()
 
         num, sides = [int(x) for x in match.split("d")]
-        if num < 1 or num > 10 or sides < 1 or sides > 20:
+        if num < 1 or num > 10 or sides < 1 or sides > 100:
             return await ctx.error(
                 "Roll must be in the format XdY",
-                description="where 1 <= X <= 10 and 1 <= Y <= 20",
+                description="where 1 <= X <= 10 and 1 <= Y <= 100",
             )
 
         rolls = [random.choice(range(1, sides + 1)) for x in range(num)]
