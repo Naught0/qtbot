@@ -41,7 +41,7 @@ class Generic(commands.Cog):
             icon_url=ctx.author.avatar_url,
         )
         em.add_field(name=":game_die: Rolls", value=", ".join([str(x) for x in rolls]))
-        em.add_field(name=":game_die: Total", value=str(sum(rolls)))
+        em.add_field(name=":game_die: Total", value=str(sum(rolls)), inline=False)
 
         await ctx.send(embed=em)
 
