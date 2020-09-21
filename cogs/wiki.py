@@ -3,6 +3,8 @@ from discord.ext import commands
 
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
+from dateutil.parser import isoparse
+
 from utils import aiohttp_wrap as aw
 
 
@@ -55,6 +57,8 @@ class Wiki(commands.Cog):
             if article_image is None
             else article_image.attrs["content"]
         )
+        em.set_footer(text="last edited")
+        em.timestamp = isoparse(article_summary["timestamp"])
 
         await ctx.send(embed=em)
 
