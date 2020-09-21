@@ -27,7 +27,7 @@ class Generic(commands.Cog):
             match = self.DICE_PATTERN.match(dice.lower()).group()
 
         num, sides = [int(x) for x in match.split("d")]
-        if 1 > num > 10 or 1 > sides > 20:
+        if num < 1 or num > 10 or sides < 1 or sides > 20:
             return await ctx.error(
                 "Roll must be in the format XdY",
                 description="where 1 <= X <= 10 and 1 <= Y <= 20",
