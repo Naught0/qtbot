@@ -7,23 +7,46 @@ from discord.ext import commands
 
 
 class Generic(commands.Cog):
-    GOT_AIR_DATE = datetime.fromtimestamp(1555236000)
-    GOT_LOGO = (
-        "https://upload.wikimedia.org/wikipedia/en/d/d8/Game_of_Thrones_title_card.jpg"
-    )
+    DICE_PATTERN = re.compile("\d+d\d+")
 
     def __init__(self, bot):
         self.bot = bot
         self.blue = discord.Color.dark_blue()
 
+    @commands.command(name="roll", aliases=["dice"])
+    async def _roll(self, ctx: commands.Context, *, dice: str):
+        """Roll some dice
+        Format: XdY - where X is up to 10 and Y is up to 20"""
+        if not self.DICE_PATTERN.match(dice.lower()):
+            return await ctx.error(
+                "Roll must be in the format XdY", description="where X <= 10 and Y <= 20"
+            )
+        else:
+            match = self.DICE_PATTERN.match(dice.lower()).group()
+
+        num, sides = [int(x) for x in match.split("d")]
+        if num > 10 or sides > 20:
+            return await ctx.error(
+                "Roll must be in the format XdY", description="where X <= 10 and Y <= 20"
+            )
+
+        rolls = [random.choice(range(1, sides + 1)) for x in range(num)]
+
+        em = discord.Embed(color=discord.Color.blurple())
+        em.set_author(name=f"{ctx.author.display_name} rolled {num}d{sides}", icon_url=ctx.author.avatar_url)
+        em.add_field(name=":game_die: Rolls", value=', '.join(rolls))
+        em.add_field(name=":game_die: Total", value=str(sum(rolls)))
+
+        await ctx.send(embed=em)
+
     @commands.command(hidden=True)
-    async def say(self, ctx, *, message):
+    async def say(self, ctx: commands.Context, *, message):
         """ Make qtbot say anything ;) """
         await ctx.message.delete()
         await ctx.send(message)
 
     @commands.command(name="8ball", aliases=["ball"])
-    async def ball(self, ctx, *, query=None):
+    async def ball(self, ctx: commands.Context, *, query=None):
         """ Ask the magic 8ball """
         if query is None:
             return await ctx.error("The 8Ball's wisdom is not to be wasted.")
@@ -75,7 +98,7 @@ class Generic(commands.Cog):
         await ctx.send("```[✓] same\n[✓] re:same\n[ ] unsame```")
 
     @commands.command()
-    async def slap(self, ctx, *, target=None):
+    async def slap(self, ctx: commands.Context, *, target=None):
         """ Teach someone a lesson """
         if target is None:
             return await ctx.send(
@@ -95,22 +118,18 @@ class Generic(commands.Cog):
         )
 
     @commands.command()
-    async def love(self, ctx, *, target=None):
+    async def love(self, ctx: commands.Context, *, target=None):
         """ Give someone some lovin' """
-        if ctx.author.nick is None:
-            member = ctx.author
-        else:
-            member = ctx.author.nick
 
         if not target:
-            return await ctx.send(f"{member} loves ... nothing")
+            return await ctx.send(f"{ctx.author.display_name} loves ... nothing")
 
         await ctx.send(
-            f":heart_decoration: {member} gives {target} some good ol' fashioned lovin'. :heart_decoration:"
+            f":heart_decoration: {ctx.author.display_name} gives {target} some good ol' fashioned lovin'. :heart_decoration:"
         )
 
     @commands.command(aliases=["at"])
-    async def aesthetify(self, ctx, *, a_text):
+    async def aesthetify(self, ctx: commands.Context, *, a_text):
         """ Make your message ａｅｓｔｈｅｔｉｃ，　ｍａｎ """
         ascii_to_wide = dict((i, chr(i + 0xFEE0)) for i in range(0x21, 0x7F))
         ascii_to_wide.update({0x20: "\u3000", 0x2D: "\u2212"})
@@ -122,10 +141,8 @@ class Generic(commands.Cog):
     async def uptime(self, ctx):
         """Get current bot uptime."""
         current_time = datetime.now()
-        current_time_str = current_time.strftime("%B %d %H:%M:%S")
         em = discord.Embed(title=":clock1: Qtbot Uptime", color=self.blue)
         em.add_field(name="Initialized", value=self.bot.start_time_str, inline=False)
-        em.add_field(name="Current time (EST)", value=current_time_str, inline=False)
         em.add_field(
             name="Uptime", value=str(current_time - self.bot.start_time).split(".")[0]
         )
