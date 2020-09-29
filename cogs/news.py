@@ -106,7 +106,7 @@ class News(commands.Cog):
     def json_to_embed(json_dict: dict) -> discord.Embed:
         em = discord.Embed()
         em.title = json_dict["title"]
-        em.description = json_dict["description"]
+        em.description = json_dict["description"] if len(json_dict["description"]) < 1000 else f"{json_dict['description'][:800]} ..."
         em.url = json_dict["url"]
 
         # This field is empty sometimes -> handle it
