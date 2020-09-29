@@ -32,7 +32,7 @@ class News(commands.Cog):
         # This regex string brought to you by Jared :)
         pattern = "https?://(?:www\.)?(\w+).*"
         organization = re.match(pattern, json_dict["url"]).group(1)
-        em.set_footer(text=json_dict["source"]["name"])
+        em.set_footer(text=organization.upper())
         em.timestamp = parse(json_dict["publishedAt"])
 
         return em
@@ -75,12 +75,12 @@ class News(commands.Cog):
 
             await self.redis_client.set(redis_key, json.dumps(api_response), ex=10 * 60)
 
-            for idx, article in enumerate(article_list[:9]):
+            for idx, article in enumerate(article_list):
                 em_dict[emoji_tup[idx]] = self.json_to_embed(article)
 
         bot_message = await ctx.send(embed=em_dict[emoji_tup[0]])
 
-        for emoji in emoji_tup:
+        for emoji in emoji_tup[len(article_list)]:
             await bot_message.add_reaction(emoji)
 
         def check(reaction, user):
