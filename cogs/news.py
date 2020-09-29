@@ -3,6 +3,8 @@ import asyncio
 import re
 import discord
 from datetime import datetime
+from dateutil.parser import parse
+
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
 
@@ -12,11 +14,9 @@ class News(commands.Cog):
         self.bot = bot
         self.redis_client = bot.redis_client
         self.aio_session = bot.aio_session
-        self.uri = (
-            "https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey={}"
-        )
-        with open("data/apikeys.json") as f:
-            self.api_key = json.load(f)["news"]
+        self.uri = "https://newsapi.org/v2/top-headlines"
+        self.api_key = bot.api_keys["news"]
+        self.headers = {"X-Api-Key": self.api_key}
 
     @staticmethod
     def json_to_embed(json_dict: dict) -> discord.Embed:
@@ -26,31 +26,24 @@ class News(commands.Cog):
         em.url = json_dict["url"]
 
         # This field is empty sometimes -> handle it
-        if json_dict["urlToImage"] is None:
-            pass
-
-        # The image is sometimes missing http:
-        elif json_dict["urlToImage"].startswith("//"):
-            em.set_image(url=f'http:{json_dict["urlToImage"]}')
-
-        # No funny business in the URL
-        else:
-            em.set_image(url=json_dict["urlToImage"])
-
-        # This is just some cute news icon I found
-        em.set_thumbnail(
-            url="http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/News-And-Weather-icon.png"
-        )
+        if json_dict["urlToImage"]:
+            em.set_thumbnail(url=json_dict["urlToImage"])
 
         # This regex string brought to you by Jared :)
         pattern = "https?://(?:www\.)?(\w+).*"
         organization = re.match(pattern, json_dict["url"]).group(1)
-        em.set_footer(text=f'{organization.upper()} | {json_dict["publishedAt"]}')
+        em.set_footer(text=json_dict["source"]["name"])
+        em.timestamp = parse(json_dict["publishedAt"])
 
         return em
 
     @commands.command(name="news")
-    async def get_news(self, ctx):
+    async def get_news(
+        self,
+        ctx: commands.Context,
+        *,
+        query: commands.clean_content(escape_markdown=True) = None,
+    ):
         """ Get the top 5 articles from Google News (http://newsapi.org) (Paginated) """
 
         # Add Emojis for navigation
@@ -58,8 +51,11 @@ class News(commands.Cog):
 
         em_dict = {}
 
-        if await self.redis_client.exists("news"):
-            raw_json_string = await self.redis_client.get("news")
+        params = {"q": query, "pageSize": 9, "sources": "google-news"} if query else {"sources": "google-news", "pageSize": 9}
+
+        redis_key = f"news:{query}" if query else "news"
+        if await self.redis_client.exists(redis_key):
+            raw_json_string = await self.redis_client.get(redis_key)
             raw_json_dict = json.loads(raw_json_string)
             article_list = raw_json_dict["articles"]
 
@@ -68,10 +64,16 @@ class News(commands.Cog):
 
         else:
             api_response = await aw.aio_get_json(
-                self.aio_session, self.uri.format(self.api_key)
+                self.aio_session, self.uri, params=params, headers=self.headers
             )
+            if api_response is None:
+                return await ctx.error("API error", description="Something went wrong with that request. Try again later.")
+
             article_list = api_response["articles"]
-            await self.redis_client.set("news", json.dumps(api_response), ex=300)
+            if len(article) == 0:
+                return await ctx.error("No articles found", description=f"Couldn't find any news on `{query}`")
+                
+            await self.redis_client.set(redis_key, json.dumps(api_response), ex=10 * 60)
 
             for idx, article in enumerate(article_list[:9]):
                 em_dict[emoji_tup[idx]] = self.json_to_embed(article)
