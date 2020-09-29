@@ -24,7 +24,6 @@ class News(commands.Cog):
         "bloomberg",
         "business-insider",
         "business-insider-uk",
-        "buzzfeed",
         "cbc-news",
         "cbs-news",
         "cnn",
