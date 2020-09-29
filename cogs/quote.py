@@ -43,12 +43,10 @@ class Quote(commands.Cog):
         # DMChannel doesn't have a name attr, not doing any fancy ternary op, its already messy
         if not isinstance(ctx.channel, discord.DMChannel):
             emb.set_footer(
-                text=f'#{ctx.channel.name} | {message.created_at.strftime("%a, %d %b %Y at %I:%M%p")}'
+                text=f'#{ctx.channel.name}'
             )
-        else:
-            emb.set_footer(
-                text=f'{message.created_at.strftime("%a, %d %b %Y at %I:%M%p")}'
-            )
+
+        emb.timestamp = message.created_at
 
         await ctx.send(embed=emb)
 
@@ -90,12 +88,10 @@ class Quote(commands.Cog):
         # DMChannel doesn't have a name attr, not doing any fancy ternary op, its already messy
         if not isinstance(ctx.channel, discord.DMChannel):
             emb.set_footer(
-                text=f'#{ctx.channel.name} | {message.created_at.strftime("%a, %d %b %Y at %I:%M%p")}'
+                text=f'#{ctx.channel.name}'
             )
-        else:
-            emb.set_footer(
-                text=f'{message.created_at.strftime("%a, %d %b %Y at %I:%M%p")}'
-            )
+
+        emb.timestamp = message.created_at
 
         await ctx.message.delete()
 
