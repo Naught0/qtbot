@@ -41,6 +41,7 @@ class Stonks(commands.Cog):
                 return await ctx.error("Stock error", description=f"Couldn't find any stock information for `{symbol}`")
             
             company_profile = await aio_get_json(self.session, self.PROFILE_URL, params=params, headers=self.headers)
+            resp["company_profile"] = company_profile
             await self.redis_client.set(redis_key, json.dumps(resp), ex=self.TTL)
         
         em = discord.Embed(color=discord.Color.blurple())
