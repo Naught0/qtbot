@@ -47,8 +47,8 @@ class Stonks(commands.Cog):
         em = discord.Embed(color=discord.Color.blurple())
         em.set_author(
             name=f"{resp['company_profile']['name']} ({symbol})" if resp["company_profile"] else symbol, 
-            icon_url=resp["company_profile"]["logo"] if resp["company_profile"] else "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-increasing_1f4c8.png", 
-            url=resp["company_profile"]["weburl"] if resp["company_profile"] else ""
+            icon_url=resp["company_profile"]["logo"] if "logo" in resp["company_profile"] else "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-increasing_1f4c8.png", 
+            url=resp["company_profile"]["weburl"] if "weburl" in resp["company_profile"] else ""
         )
         em.add_field(name="Current Price", value=f"${resp['c']:,.2f}")
         em.add_field(name="Previous Close", value=f"${resp['pc']:,.2f}")
