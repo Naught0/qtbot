@@ -70,9 +70,9 @@ class News(commands.Cog):
                 return await ctx.error("API error", description="Something went wrong with that request. Try again later.")
 
             article_list = api_response["articles"]
-            if len(article) == 0:
+            if len(article_list) == 0:
                 return await ctx.error("No articles found", description=f"Couldn't find any news on `{query}`")
-                
+
             await self.redis_client.set(redis_key, json.dumps(api_response), ex=10 * 60)
 
             for idx, article in enumerate(article_list[:9]):
