@@ -67,7 +67,6 @@ class News(commands.Cog):
         "politico",
         "polygon",
         "recode",
-        "reddit-r-all",
         "reuters",
         "rte",
         "talksport",
