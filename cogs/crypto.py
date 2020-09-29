@@ -3,6 +3,8 @@ import discord
 
 import dateutil.parser
 from discord.ext import commands
+from discord.utils import escape_markdown
+
 from utils import aiohttp_wrap as aw
 
 
@@ -10,8 +12,6 @@ class Crypto(commands.Cog):
     """ Allows users to track bitcoin and other currencies (eventually) """
 
     URL_BTC = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
-    BTC_LOGO_URL = "https://en.bitcoin.it/w/images/en/2/29/BC_Logo_.png"
-    BTC_ID = 1
     CACHE_TTL = 10 * 60
 
     def __init__(self, bot):
@@ -20,35 +20,65 @@ class Crypto(commands.Cog):
         self.redis = bot.redis_client
         self.HEADERS = {"X-CMC_PRO_API_KEY": bot.api_keys["cmc"]}
 
-    @commands.command(aliases=["btc", "buttcoin"])
-    async def bitcoin(self, ctx):
-        """ Get current information regarding the value of bitcoin """
+        with open("data/cmc_mappings.json") as f:
+            self._mappings = json.load(f)
 
-        # Check the cache for this information
-        if await self.redis.exists("btc"):
-            resp = json.loads(await self.redis.get("btc"))
+        self.cmc_map = {
+            frozenset([entry["name"].lower(), entry["symbol"].lower()]): entry["id"]
+            for entry in self._mappings["data"]
+        }
 
-        # If not found, cache for 5 minutes
+    @commands.command(name="crypto", aliases=["cry", "btc"], invoke_without_command=True)
+    async def _crypto(self, ctx: commands.Context, *, currency: str="btc"):
+        """Get price and trend information for a cryptocurrency
+        You can refer to a currency by its symbol or full name
+        Defaults to BTC if no currency is supplied"""
+        currency = currency.lower()
+
+        if len(currency) < 3:
+            return await ctx.error(
+                "Unrecognized currency",
+                description="Please use the full currency name or symbol, e.g. `eth` or `ethereum`",
+            )
+
+        currency_id = None
+        for item in self.cmc_map:
+            if set([currency]) & item:
+                currency_id = self.cmc_map[item]
+
+        if currency_id == None:
+            return await ctx.error(
+                "Unrecognized currency",
+                description=f"Couldn't find anything for `{escape_markdown(currency)}`",
+            )
+
+        redis_key = "crypto"
+        if await self.redis.exists(redis_key):
+            resp = json.loads(await self.redis.get(redis_key))
+        
+         # Make a single request for top 25 endpoints and cache
         else:
             resp = (
                 await aw.aio_get_json(
                     self.session,
                     self.URL_BTC,
                     headers=self.HEADERS,
-                    params={"id": self.BTC_ID},
+                    params={"id": ",".join([str(x) for x in self.cmc_map.values()])},
                 )
-            )["data"][str(self.BTC_ID)]["quote"]["USD"]
-            await self.redis.set("btc", json.dumps(resp), ex=self.CACHE_TTL)
+            )["data"]
 
-        # Create a neat embed with the information
+            await self.redis.set(redis_key, json.dumps(resp), ex=self.CACHE_TTL)
+
+        crypto_info = resp[str(currency_id)]
+
         em = discord.Embed(color=0xF7931A)
-        em.set_author(name="Bitcoin", icon_url=self.BTC_LOGO_URL)
-        em.add_field(name="Price USD", value=f"${resp['price']:,.2f}", inline=False)
+        em.set_author(name=f"{crypto_info['name']} ({crypto_info['symbol']})", icon_url=f"https://s2.coinmarketcap.com/static/img/coins/64x64/{currency_id}.png")
+        em.add_field(name="Price $USD", value=f"${crypto_info['quote']['USD']['price']:,.2f}", inline=False)
         em.set_footer(text="Last updated")
-        em.timestamp = dateutil.parser.parse(resp["last_updated"])
+        em.timestamp = dateutil.parser.parse(crypto_info["last_updated"])
 
-        # Hourly trend
-        change_1h = resp["percent_change_1h"]
+                # Hourly trend
+        change_1h = crypto_info["quote"]["USD"]["percent_change_1h"]
         change_1h_str = (
             f":arrow_up: {change_1h:.2f}%"
             if "-" not in str(change_1h)
@@ -57,7 +87,7 @@ class Crypto(commands.Cog):
         em.add_field(name="Hourly trend", value=change_1h_str)
 
         # Daily trend
-        change_24h = resp["percent_change_24h"]
+        change_24h = crypto_info["quote"]["USD"]["percent_change_24h"]
         change_24h_str = (
             f":arrow_up: {change_24h:.2f}%"
             if "-" not in str(change_24h)
@@ -66,7 +96,7 @@ class Crypto(commands.Cog):
         em.add_field(name="Daily trend", value=change_24h_str)
 
         # Weekly trend
-        change_7d = resp["percent_change_7d"]
+        change_7d = crypto_info["quote"]["USD"]["percent_change_7d"]
         change_7d_str = (
             f":arrow_up: {change_7d:.2f}%"
             if "-" not in str(change_7d)
@@ -76,10 +106,8 @@ class Crypto(commands.Cog):
 
         # Ticker graph
         em.set_image(
-            url="https://s2.coinmarketcap.com/generated/sparklines/web/7d/usd/1.png"
+            url=f"https://s2.coinmarketcap.com/generated/sparklines/web/7d/usd/{currency_id}.png"
         )
-
-        await ctx.send(embed=em)
 
 
 def setup(bot):
