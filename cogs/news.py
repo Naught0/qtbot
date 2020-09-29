@@ -80,7 +80,7 @@ class News(commands.Cog):
 
         bot_message = await ctx.send(embed=em_dict[emoji_tup[0]])
 
-        for emoji in emoji_tup[len(article_list)]:
+        for emoji in emoji_tup[:len(article_list)]:
             await bot_message.add_reaction(emoji)
 
         def check(reaction, user):
