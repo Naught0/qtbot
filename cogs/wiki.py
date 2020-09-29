@@ -4,13 +4,14 @@ from discord.ext import commands
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
 from dateutil.parser import isoparse
+from discord.utils import escape_markdown
 
 from utils import aiohttp_wrap as aw
 
 
 class Wiki(commands.Cog):
     SUMMARY_URI = "https://en.wikipedia.org/api/rest_v1/page/summary/{}?redirect=true"
-    SEARCH_URI = "http://en.wikipedia.org/w/api.php?action=opensearch&format=json&search={}&limit=1&namespace=0"
+    SEARCH_URI = "https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search={}&limit=1&namespace=0"
     HEADERS = {
         "user-agent": "qtbot/1.0 - A friendly discord bot (https://github.com/Naught0/qtbot)"
     }
@@ -33,7 +34,7 @@ class Wiki(commands.Cog):
 
         # No result found
         if not wiki_info[1]:
-            return await ctx.error(f"Sorry, I couldn't find anything for `{query}`.")
+            return await ctx.error(f"Sorry, I couldn't find anything for `{escape_markdown(query)}`.")
 
         # Get summary
         article_title = quote_plus(wiki_info[1][0].replace(" ", "_"), safe="_")
@@ -48,7 +49,7 @@ class Wiki(commands.Cog):
         article_image = soup.head.find(attrs={"property": "og:image"})
         # Create embed
         em = discord.Embed(
-            title=article_summary["titles"]["display"], color=discord.Color.blurple()
+            title=article_summary["titles"]["normalized"], color=discord.Color.blurple()
         )
         em.description = '. '.join(article_summary["extract"].split('. ')[:3])
         em.url = article_summary["content_urls"]["desktop"]["page"]
