@@ -28,7 +28,7 @@ class Crypto(commands.Cog):
             for entry in self._mappings["data"]
         }
 
-    @commands.command(name="crypto", aliases=["cry", "btc"], invoke_without_command=True)
+    @commands.command(name="crypto", aliases=["cry", "btc"])
     async def _crypto(self, ctx: commands.Context, *, currency: str="btc"):
         """Get price and trend information for a cryptocurrency
         You can refer to a currency by its symbol or full name
@@ -109,6 +109,7 @@ class Crypto(commands.Cog):
             url=f"https://s2.coinmarketcap.com/generated/sparklines/web/7d/usd/{currency_id}.png"
         )
 
+        await ctx.send(embed=em)
 
 def setup(bot):
     bot.add_cog(Crypto(bot))
