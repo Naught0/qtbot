@@ -50,6 +50,8 @@ class Trump(commands.Cog):
         em.timestamp = parse(resp["appeared_at"])
         em.set_footer(text="via twitter", icon_url="https://i.imgur.com/DUUkDwY.png")
 
+        await ctx.send(embed=em)
+        
 
 def setup(bot):
     bot.add_cog(Trump(bot))
