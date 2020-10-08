@@ -78,7 +78,7 @@ class Stonks(commands.Cog):
             emoji = ":arrow_down:"
         else:
             emoji = ":arrow_right:"
-        print(f"STONKS ICON: {icon}")
+
         em = discord.Embed(color=discord.Color.blurple())
         em.set_author(
             name=name,
