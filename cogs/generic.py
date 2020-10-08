@@ -12,6 +12,12 @@ class Generic(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.blue = discord.Color.dark_blue()
+    
+    @commands.command(name="await", hidden=True)
+    async def _await(self, ctx: commands.Context):
+        reactions = ['🅰️', '🇼', '🇦', '🇮', '🇹']
+        for reaction in reactions:
+            await ctx.message.add_reaction(reaction)
 
     @commands.command(name="roll", aliases=["dice"])
     async def _roll(self, ctx: commands.Context, *, dice: str):
