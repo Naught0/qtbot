@@ -45,7 +45,7 @@ class Stonks(commands.Cog):
             await self.redis_client.set(redis_key, json.dumps(resp), ex=self.TTL)
         
         if resp["company_profile"]:
-            name = f"resp['company_profile']['name'] ({symbol})"
+            name = f"{resp['company_profile']['name']} ({symbol})"
         else:
             name = symbol
         
@@ -73,7 +73,7 @@ class Stonks(commands.Cog):
         )
         em.add_field(name="Current Price", value=f"${resp['c']:,.2f}", inline=False)
         em.add_field(name="Previous Close", value=f"${resp['pc']:,.2f}")
-        em.add_field(name="% Change Today", value=f"{emoji} {percent_change}")
+        em.add_field(name="% Change Today", value=f"{emoji} {percent_change:,.2f}")
 
         em.set_footer(text="Last updated")
         em.timestamp = datetime.fromtimestamp(resp['t'])
