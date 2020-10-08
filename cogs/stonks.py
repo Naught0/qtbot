@@ -65,7 +65,7 @@ class Stonks(commands.Cog):
         if "logo" in resp["company_profile"] and resp["company_profile"]["logo"] != "":
             icon = resp["company_profile"]["logo"]
         else:
-            if (resp["c"] - resp["pc"]) / resp["pc"] < 0:
+            if float(resp["9. change"]) < 0:
                 icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-decreasing_1f4c9.png"
             else:
                 icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-increasing_1f4c8.png"
@@ -88,7 +88,7 @@ class Stonks(commands.Cog):
         )
         em.add_field(name="Current Price", value=f"${float(resp['05. price']):,.2f}", inline=False)
         em.add_field(name="Previous Close", value=f"${float(resp['08. previous close']):,.2f}")
-        em.add_field(name="% Change Today", value=f"{emoji} {float(resp['10. change percent']):,.3f}%")
+        em.add_field(name="% Change Today", value=f"{emoji} {resp['10. change percent']}")
 
         em.set_footer(text="Last updated")
         em.timestamp = ctx.message.created_at
