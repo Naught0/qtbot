@@ -44,17 +44,38 @@ class Stonks(commands.Cog):
             resp["company_profile"] = company_profile
             await self.redis_client.set(redis_key, json.dumps(resp), ex=self.TTL)
         
+        if resp["company_profile"]:
+            name = f"resp['company_profile']['name'] ({symbol})"
+        else:
+            name = symbol
+        
+        if "logo" in resp["company_profile"]:
+            icon = resp["company_profile"]["logo"]
+        else:
+            if (resp['c'] - resp['pc'])/resp['pc'] < 0:
+                icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/259/chart-decreasing_1f4c9.png"
+            else:
+                icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/259/chart-increasing_1f4c8.png"
+
+        percent_change = (resp['c'] - resp['pc'])/resp['pc']
+        if percent_change > 0:
+            emoji = ":arrow_up:"
+        elif percent_change < 0:
+            emoji = ":arrow_down:"
+        else:
+            emoji = ":arrow_right:"
+        
         em = discord.Embed(color=discord.Color.blurple())
         em.set_author(
-            name=f"{resp['company_profile']['name']} ({symbol})" if resp["company_profile"] else symbol, 
-            icon_url=resp["company_profile"]["logo"] if "logo" in resp["company_profile"] else "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-increasing_1f4c8.png", 
+            name=name, 
+            icon_url=icon, 
             url=resp["company_profile"]["weburl"] if "weburl" in resp["company_profile"] else ""
         )
-        em.add_field(name="Current Price", value=f"${resp['c']:,.2f}")
+        em.add_field(name="Current Price", value=f"${resp['c']:,.2f}", inline=False)
         em.add_field(name="Previous Close", value=f"${resp['pc']:,.2f}")
-        em.add_field(name="% Change Today", value=f"{(resp['c'] - resp['pc'])/resp['pc']:.2%}")
+        em.add_field(name="% Change Today", value=f"{emoji} {percent_change}")
 
-        em.set_footer()
+        em.set_footer(text="Last updated")
         em.timestamp = datetime.fromtimestamp(resp['t'])
 
         await ctx.send(embed=em)
