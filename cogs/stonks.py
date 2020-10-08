@@ -73,7 +73,7 @@ class Stonks(commands.Cog):
         )
         em.add_field(name="Current Price", value=f"${resp['c']:,.2f}", inline=False)
         em.add_field(name="Previous Close", value=f"${resp['pc']:,.2f}")
-        em.add_field(name="% Change Today", value=f"{emoji} {percent_change:,.3f}")
+        em.add_field(name="% Change Today", value=f"{emoji} {percent_change:,.3f}%")
 
         em.set_footer(text="Last updated")
         em.timestamp = datetime.fromtimestamp(resp['t'])
