@@ -70,7 +70,6 @@ class Stonks(commands.Cog):
             else:
                 icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-increasing_1f4c8.png"
 
-        percent_change = (resp["c"] - resp["pc"]) / resp["pc"]
         if percent_change > 0:
             emoji = ":arrow_up:"
         elif percent_change < 0:
