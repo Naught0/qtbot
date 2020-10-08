@@ -4,7 +4,7 @@ import random
 from discord.ext import commands
 
 
-class GM(commands.Command):
+class GM(commands.Cog):
     def __init__(self, bot):
         with open("data/good_morning.json") as f:
             gm_dictionary = json.load(f)
