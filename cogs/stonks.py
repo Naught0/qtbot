@@ -8,7 +8,7 @@ from utils.aiohttp_wrap import aio_get_json
 
 
 class Stonks(commands.Cog):
-    URL = "https://finnhub.io/api/v1/quote"
+    URL = "https://www.alphavantage.co/query"
     PROFILE_URL = "https://finnhub.io/api/v1/stock/profile2"
     TTL = 60 * 15
 
@@ -19,7 +19,6 @@ class Stonks(commands.Cog):
         # self.headers = {'X-Finnhub-Token': bot.api_keys["stonks"]}
         with open("data/apikeys.json") as f:
             self.api_key = json.load(f)["stonks"]
-        self.headers = {"X-Finnhub-Token": self.api_key}
 
     @commands.command(name="stonk", aliases=["stonks", "stock", "stocks"])
     async def stonks(self, ctx: commands.Context, *, symbol: str):
@@ -30,15 +29,13 @@ class Stonks(commands.Cog):
             )
 
         symbol = symbol.upper()
-        params = {"symbol": symbol}
+        params = {"symbol": symbol, "apikey": self.api_key, "function": "GLOBAL_QUOTE"}
 
         redis_key = f"stonks:{symbol}"
         if await self.redis_client.exists(redis_key):
             resp = json.loads(await self.redis_client.get(redis_key))
         else:
-            resp = await aio_get_json(
-                self.session, self.URL, headers=self.headers, params=params
-            )
+            resp = await aio_get_json(self.session, self.URL, params=params)
 
             if resp is None:
                 return await ctx.error(
@@ -46,14 +43,16 @@ class Stonks(commands.Cog):
                     description="There was an issue with the stocks API, try again later",
                 )
 
-            if resp["t"] == 0:
+            if not resp["Global Quote"]:
                 return await ctx.error(
                     "Stock error",
                     description=f"Couldn't find any stock information for `{symbol}`",
                 )
 
             company_profile = await aio_get_json(
-                self.session, self.PROFILE_URL, params=params, headers=self.headers
+                self.session,
+                self.PROFILE_URL,
+                params={"symbol": symbol},
             )
             resp["company_profile"] = company_profile
             await self.redis_client.set(redis_key, json.dumps(resp), ex=self.TTL)
@@ -87,12 +86,12 @@ class Stonks(commands.Cog):
             if "weburl" in resp["company_profile"]
             else "",
         )
-        em.add_field(name="Current Price", value=f"${resp['c']:,.2f}", inline=False)
-        em.add_field(name="Previous Close", value=f"${resp['pc']:,.2f}")
-        em.add_field(name="% Change Today", value=f"{emoji} {percent_change:,.3f}%")
+        em.add_field(name="Current Price", value=f"${float(resp['05. price']):,.2f}", inline=False)
+        em.add_field(name="Previous Close", value=f"${float(resp['08. previous close']):,.2f}")
+        em.add_field(name="% Change Today", value=f"{emoji} {float(resp['10. change percent']):,.3f}%")
 
         em.set_footer(text="Last updated")
-        em.timestamp = datetime.fromtimestamp(resp["t"])
+        em.timestamp = ctx.message.created_at
 
         await ctx.send(embed=em)
 
