@@ -125,6 +125,8 @@ class Stonks(commands.Cog):
 
         await ctx.send(file=file, embed=em)
 
+        plt.close()
+
 
 def setup(bot):
     bot.add_cog(Stonks(bot))
