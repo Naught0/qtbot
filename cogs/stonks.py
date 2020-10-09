@@ -100,7 +100,7 @@ class Stonks(commands.Cog):
 
         graph_image = io.BytesIO()
         plt.figure(figsize=(16,9))
-        plt.plot(series, linewidth=10, color="gold", solid_capstyle="round")
+        plt.plot(series, linewidth=12, color="gold", solid_capstyle="round")
         plt.axis("off")
         plt.savefig(graph_image, format="png", transparent=True, dpi=10)
         graph_image.seek(0)
