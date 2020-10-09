@@ -87,7 +87,7 @@ class Stonks(commands.Cog):
         series = []
         for dt in rrule(DAILY, dtstart=start_date, until=today):
             d = dt.strftime("%Y-%m-%d")
-            if d in graph_resp:
+            if d in resp["historical_data"]:
                 series.append(float(resp["historical_data"][d]["4. close"]))
             else:
                 continue
