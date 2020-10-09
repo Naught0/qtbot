@@ -1,9 +1,9 @@
 import discord
 import json
 import io
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 
-from dateutil.rrule import rrule, DAILY 
+from dateutil.rrule import rrule, DAILY
 from datetime import datetime, timedelta
 from discord.ext import commands
 from discord.utils import escape_markdown
@@ -19,11 +19,11 @@ class Stonks(commands.Cog):
         self.bot = bot
         self.session = bot.aio_session
         self.redis_client = bot.redis_client
-        self.headers = {'X-Finnhub-Token': bot.api_keys["stonks"]}
+        self.headers = {"X-Finnhub-Token": bot.api_keys["stonks"]}
         with open("data/apikeys.json") as f:
             keys = json.load(f)
-            self.av_key = keys['alpha_vantage']
-            self.api_key = keys['stonks']
+            self.av_key = keys["alpha_vantage"]
+            self.api_key = keys["stonks"]
 
     @commands.command(name="stonk", aliases=["stonks", "stock", "stocks"])
     async def stonks(self, ctx: commands.Context, *, symbol: str):
@@ -41,8 +41,14 @@ class Stonks(commands.Cog):
             resp = json.loads(await self.redis_client.get(redis_key))
         else:
             resp = await aio_get_json(self.session, self.URL, params=params)
-            graph_params = {"function": "TIME_SERIES_DAILY", "apikey": self.av_key, "symbol": symbol}
-            graph_resp = (await aio_get_json(self.session, self.URL, params=graph_params))["Time Series (Daily)"]
+            graph_params = {
+                "function": "TIME_SERIES_DAILY",
+                "apikey": self.av_key,
+                "symbol": symbol,
+            }
+            graph_resp = (
+                await aio_get_json(self.session, self.URL, params=graph_params)
+            )["Time Series (Daily)"]
 
             if resp is None:
                 return await ctx.error(
@@ -60,10 +66,10 @@ class Stonks(commands.Cog):
                 self.session,
                 self.PROFILE_URL,
                 params={"symbol": symbol},
-                headers={'X-Finnhub-Token': self.api_key},
+                headers={"X-Finnhub-Token": self.api_key},
             )
             resp["company_profile"] = company_profile
-            resp["historical_data"] = graph_resp 
+            resp["historical_data"] = graph_resp
 
             await self.redis_client.set(redis_key, json.dumps(resp), ex=self.TTL)
 
@@ -91,12 +97,13 @@ class Stonks(commands.Cog):
                 series.append(float(resp["historical_data"][d]["4. close"]))
             else:
                 continue
-        
-        graph_file_name = f"data/{symbol}_{today.isoformat()}.png"
-        plt.plot(series, linewidth=3, color='gold', solid_capstyle="round")
+
+        graph_image = io.BytesIO()
+        plt.plot(series, linewidth=3, color="gold", solid_capstyle="round")
         plt.axis("off")
-        plt.savefig(graph_file_name, transparent=True)
-        file = discord.File(graph_file_name, filename=f"{symbol}.png")
+        plt.figure(figsize=(16, 9), dpi=100)
+        plt.savefig(graph_image, format="png", transparent=True, dpi=100)
+        file = discord.File(graph_image, filename=f"{symbol}.png")
 
         percent_change = float(resp["Global Quote"]["09. change"])
         if percent_change > 0:
@@ -114,9 +121,19 @@ class Stonks(commands.Cog):
             if "weburl" in resp["company_profile"]
             else "",
         )
-        em.add_field(name="Current Price", value=f"${float(resp['Global Quote']['05. price']):,.2f}", inline=False)
-        em.add_field(name="Previous Close", value=f"${float(resp['Global Quote']['08. previous close']):,.2f}")
-        em.add_field(name="% Change Today", value=f"{emoji} {resp['Global Quote']['10. change percent']}")
+        em.add_field(
+            name="Current Price",
+            value=f"${float(resp['Global Quote']['05. price']):,.2f}",
+            inline=False,
+        )
+        em.add_field(
+            name="Previous Close",
+            value=f"${float(resp['Global Quote']['08. previous close']):,.2f}",
+        )
+        em.add_field(
+            name="% Change Today",
+            value=f"{emoji} {resp['Global Quote']['10. change percent']}",
+        )
 
         em.set_image(url=f"attachment://{symbol}.png")
 
