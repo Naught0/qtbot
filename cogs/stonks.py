@@ -39,7 +39,6 @@ class Stonks(commands.Cog):
         else:
             resp = await aio_get_json(self.session, self.URL, params=params)
 
-            print(json.dumps(resp, indent=2))
             if resp is None:
                 return await ctx.error(
                     "API Error",
@@ -66,6 +65,7 @@ class Stonks(commands.Cog):
         else:
             name = symbol
 
+        print(json.dumps(resp, indent=2))
         if "logo" in resp["company_profile"] and resp["company_profile"]["logo"] != "":
             icon = resp["company_profile"]["logo"]
         else:
