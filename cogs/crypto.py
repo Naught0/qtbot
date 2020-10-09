@@ -1,4 +1,5 @@
 import json
+import time
 import discord
 
 import dateutil.parser
@@ -10,7 +11,6 @@ from utils import aiohttp_wrap as aw
 
 class Crypto(commands.Cog):
     """ Allows users to track bitcoin and other currencies (eventually) """
-
     URL_BTC = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
     CACHE_TTL = 10 * 60
 
@@ -106,7 +106,7 @@ class Crypto(commands.Cog):
 
         # Ticker graph
         em.set_image(
-            url=f"https://s2.coinmarketcap.com/generated/sparklines/web/7d/usd/{currency_id}.png"
+            url=f"https://s2.coinmarketcap.com/generated/sparklines/web/7d/usd/{currency_id}.png?{int(time.time())}"
         )
 
         await ctx.send(embed=em)
