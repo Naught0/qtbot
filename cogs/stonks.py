@@ -42,7 +42,7 @@ class Stonks(commands.Cog):
         else:
             resp = await aio_get_json(self.session, self.URL, params=params)
             graph_params = {"function": "TIME_SERIES_DAILY", "apikey": self.av_key, "symbol": symbol}
-            graph_resp = (await aio_get_json(self.URL, params=params))["Time Series (Daily)"]
+            graph_resp = (await aio_get_json(self.session, self.URL, params=graph_params))["Time Series (Daily)"]
 
             if resp is None:
                 return await ctx.error(
@@ -117,7 +117,7 @@ class Stonks(commands.Cog):
         em.add_field(name="% Change Today", value=f"{emoji} {resp['Global Quote']['10. change percent']}")
 
         em.set_image(url=f"attachment://data/{symbol}_{today.isoformat()}.png")
-        
+
         em.set_footer(text="Last updated")
         em.timestamp = ctx.message.created_at
 
