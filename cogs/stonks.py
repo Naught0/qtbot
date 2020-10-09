@@ -103,7 +103,7 @@ class Stonks(commands.Cog):
         plt.axis("off")
         plt.savefig(graph_image, format="png", transparent=True)
         graph_image.seek(0)
-        file = discord.File(graph_image.read(), filename=f"{symbol}.png")
+        file = discord.File(graph_image, filename=f"{symbol}.png")
 
         percent_change = float(resp["Global Quote"]["09. change"])
         if percent_change > 0:
