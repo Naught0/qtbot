@@ -39,6 +39,7 @@ class Stonks(commands.Cog):
         else:
             resp = await aio_get_json(self.session, self.URL, params=params)
 
+            print(json.dumps(resp, indent=2))
             if resp is None:
                 return await ctx.error(
                     "API Error",
