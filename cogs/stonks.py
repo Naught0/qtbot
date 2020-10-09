@@ -68,7 +68,7 @@ class Stonks(commands.Cog):
         if "logo" in resp["company_profile"] and resp["company_profile"]["logo"] != "":
             icon = resp["company_profile"]["logo"]
         else:
-            if float(resp["9. change"]) < 0:
+            if float(resp["09. change"]) < 0:
                 icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-decreasing_1f4c9.png"
             else:
                 icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-increasing_1f4c8.png"
