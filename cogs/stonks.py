@@ -16,9 +16,11 @@ class Stonks(commands.Cog):
         self.bot = bot
         self.session = bot.aio_session
         self.redis_client = bot.redis_client
-        # self.headers = {'X-Finnhub-Token': bot.api_keys["stonks"]}
+        self.headers = {'X-Finnhub-Token': bot.api_keys["stonks"]}
         with open("data/apikeys.json") as f:
-            self.api_key = json.load(f)["stonks"]
+            keys = json.load(f)
+            self.av_key = keys['alpha_vantage']
+            self.api_key = keys['stonks']
 
     @commands.command(name="stonk", aliases=["stonks", "stock", "stocks"])
     async def stonks(self, ctx: commands.Context, *, symbol: str):
@@ -29,7 +31,7 @@ class Stonks(commands.Cog):
             )
 
         symbol = symbol.upper()
-        params = {"symbol": symbol, "apikey": self.api_key, "function": "GLOBAL_QUOTE"}
+        params = {"symbol": symbol, "apikey": self.av_key, "function": "GLOBAL_QUOTE"}
 
         redis_key = f"stonks:{symbol}"
         if await self.redis_client.exists(redis_key):
@@ -53,6 +55,7 @@ class Stonks(commands.Cog):
                 self.session,
                 self.PROFILE_URL,
                 params={"symbol": symbol},
+                headers={'X-Finnhub-Token': self.api_key},
             )
             resp["company_profile"] = company_profile
             await self.redis_client.set(redis_key, json.dumps(resp), ex=self.TTL)
@@ -65,12 +68,12 @@ class Stonks(commands.Cog):
         if "logo" in resp["company_profile"] and resp["company_profile"]["logo"] != "":
             icon = resp["company_profile"]["logo"]
         else:
-            if float(resp["9. change"]) < 0:
+            if float(resp["Global Quote"]["09. change"]) < 0:
                 icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-decreasing_1f4c9.png"
             else:
                 icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-increasing_1f4c8.png"
 
-        percent_change = float(resp["09. change"])
+        percent_change = float(resp["Global Quote"]["09. change"])
         if percent_change > 0:
             emoji = ":arrow_up:"
         elif percent_change < 0:
@@ -86,9 +89,9 @@ class Stonks(commands.Cog):
             if "weburl" in resp["company_profile"]
             else "",
         )
-        em.add_field(name="Current Price", value=f"${float(resp['05. price']):,.2f}", inline=False)
-        em.add_field(name="Previous Close", value=f"${float(resp['08. previous close']):,.2f}")
-        em.add_field(name="% Change Today", value=f"{emoji} {resp['10. change percent']}")
+        em.add_field(name="Current Price", value=f"${float(resp['Global Quote']['05. price']):,.2f}", inline=False)
+        em.add_field(name="Previous Close", value=f"${float(resp['Global Quote']['08. previous close']):,.2f}")
+        em.add_field(name="% Change Today", value=f"{emoji} {resp['Global Quote']['10. change percent']}")
 
         em.set_footer(text="Last updated")
         em.timestamp = ctx.message.created_at
