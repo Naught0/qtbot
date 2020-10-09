@@ -65,7 +65,6 @@ class Stonks(commands.Cog):
         else:
             name = symbol
 
-        print(json.dumps(resp, indent=2))
         if "logo" in resp["company_profile"] and resp["company_profile"]["logo"] != "":
             icon = resp["company_profile"]["logo"]
         else:
@@ -74,7 +73,7 @@ class Stonks(commands.Cog):
             else:
                 icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-increasing_1f4c8.png"
 
-        percent_change = float(resp["09. change"])
+        percent_change = float(resp["Global Quote"]["09. change"])
         if percent_change > 0:
             emoji = ":arrow_up:"
         elif percent_change < 0:
@@ -90,9 +89,9 @@ class Stonks(commands.Cog):
             if "weburl" in resp["company_profile"]
             else "",
         )
-        em.add_field(name="Current Price", value=f"${float(resp['05. price']):,.2f}", inline=False)
-        em.add_field(name="Previous Close", value=f"${float(resp['08. previous close']):,.2f}")
-        em.add_field(name="% Change Today", value=f"{emoji} {resp['10. change percent']}")
+        em.add_field(name="Current Price", value=f"${float(resp['Global Quote']['05. price']):,.2f}", inline=False)
+        em.add_field(name="Previous Close", value=f"${float(resp['Global Quote']['08. previous close']):,.2f}")
+        em.add_field(name="% Change Today", value=f"{emoji} {resp['Global Quote']['10. change percent']}")
 
         em.set_footer(text="Last updated")
         em.timestamp = ctx.message.created_at
