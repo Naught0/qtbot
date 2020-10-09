@@ -20,6 +20,7 @@ riotwatcher = "3.1.0"
 tmdbsimple = "2.6.6"
 wolframalpha = "4.0.0"
 python-dateutil = "^2.8.1"
+matplotlib = "^3.3.2"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.6.0"

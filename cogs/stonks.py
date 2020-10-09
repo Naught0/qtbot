@@ -1,7 +1,10 @@
 import discord
 import json
+import io
+import matplotlib.pyplot as plt 
 
-from datetime import datetime
+from dateutil.rrule import rrule, DAILY 
+from datetime import datetime, timedelta
 from discord.ext import commands
 from discord.utils import escape_markdown
 from utils.aiohttp_wrap import aio_get_json
@@ -38,6 +41,8 @@ class Stonks(commands.Cog):
             resp = json.loads(await self.redis_client.get(redis_key))
         else:
             resp = await aio_get_json(self.session, self.URL, params=params)
+            graph_params = {"function": "TIME_SERIES_DAILY", "apikey": self.av_key, "symbol": symbol}
+            graph_resp = (await aio_get_json(self.URL, params=params))["Time Series (Daily)"]
 
             if resp is None:
                 return await ctx.error(
@@ -58,6 +63,8 @@ class Stonks(commands.Cog):
                 headers={'X-Finnhub-Token': self.api_key},
             )
             resp["company_profile"] = company_profile
+            resp["historical_data"] = graph_resp 
+
             await self.redis_client.set(redis_key, json.dumps(resp), ex=self.TTL)
 
         if resp["company_profile"]:
@@ -72,6 +79,22 @@ class Stonks(commands.Cog):
                 icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-decreasing_1f4c9.png"
             else:
                 icon = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/259/chart-increasing_1f4c8.png"
+
+        # Create the graph
+
+        today = datetime.today().date()
+        start_date = today - timedelta(days=30)
+        series = []
+        for dt in rrule(DAILY, dtstart=start_date, until=today):
+            d = dt.strftime("%Y-%m-%d")
+            if d in graph_resp:
+                series.append(float(resp["historical_data"][d]["4. close"]))
+            else:
+                continue
+        
+        plt.plot(series, linewidth=3, color='gold', solid_capstyle="round")
+        plt.axis("off")
+        plt.savefig(f"data/{symbol}_{today.isoformat()}.png", transparent=True)
 
         percent_change = float(resp["Global Quote"]["09. change"])
         if percent_change > 0:
@@ -93,6 +116,8 @@ class Stonks(commands.Cog):
         em.add_field(name="Previous Close", value=f"${float(resp['Global Quote']['08. previous close']):,.2f}")
         em.add_field(name="% Change Today", value=f"{emoji} {resp['Global Quote']['10. change percent']}")
 
+        em.set_image(url=f"attachment://data/{symbol}_{today.isoformat()}.png")
+        
         em.set_footer(text="Last updated")
         em.timestamp = ctx.message.created_at
 
