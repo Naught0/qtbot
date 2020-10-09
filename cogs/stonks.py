@@ -101,8 +101,7 @@ class Stonks(commands.Cog):
         graph_image = io.BytesIO()
         plt.plot(series, linewidth=3, color="gold", solid_capstyle="round")
         plt.axis("off")
-        plt.figure(figsize=(16, 9), dpi=100)
-        plt.savefig(graph_image, format="png", transparent=True, dpi=100)
+        plt.savefig(graph_image, format="png", transparent=True)
         file = discord.File(graph_image.read(), filename=f"{symbol}.png")
 
         percent_change = float(resp["Global Quote"]["09. change"])
