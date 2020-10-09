@@ -99,9 +99,10 @@ class Stonks(commands.Cog):
                 continue
 
         graph_image = io.BytesIO()
-        plt.plot(series, linewidth=3, color="gold", solid_capstyle="round")
+        plt.figure(figsize=(16,9))
+        plt.plot(series, linewidth=10, color="gold", solid_capstyle="round")
         plt.axis("off")
-        plt.savefig(graph_image, format="png", transparent=True)
+        plt.savefig(graph_image, format="png", transparent=True, dpi=10)
         graph_image.seek(0)
         file = discord.File(graph_image, filename=f"{symbol}.png")
 
