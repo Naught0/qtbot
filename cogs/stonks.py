@@ -16,9 +16,11 @@ class Stonks(commands.Cog):
         self.bot = bot
         self.session = bot.aio_session
         self.redis_client = bot.redis_client
-        # self.headers = {'X-Finnhub-Token': bot.api_keys["stonks"]}
+        self.headers = {'X-Finnhub-Token': bot.api_keys["stonks"]}
         with open("data/apikeys.json") as f:
-            self.api_key = json.load(f)["stonks"]
+            keys = json.load(f)
+            self.av_key = keys['alpha_vantage']
+            self.api_key = keys['stonks']
 
     @commands.command(name="stonk", aliases=["stonks", "stock", "stocks"])
     async def stonks(self, ctx: commands.Context, *, symbol: str):
@@ -29,7 +31,7 @@ class Stonks(commands.Cog):
             )
 
         symbol = symbol.upper()
-        params = {"symbol": symbol, "apikey": self.api_key, "function": "GLOBAL_QUOTE"}
+        params = {"symbol": symbol, "apikey": self.av_key, "function": "GLOBAL_QUOTE"}
 
         redis_key = f"stonks:{symbol}"
         if await self.redis_client.exists(redis_key):
@@ -53,6 +55,7 @@ class Stonks(commands.Cog):
                 self.session,
                 self.PROFILE_URL,
                 params={"symbol": symbol},
+                headers={'X-Finnhub-Token': self.api_key},
             )
             resp["company_profile"] = company_profile
             await self.redis_client.set(redis_key, json.dumps(resp), ex=self.TTL)
