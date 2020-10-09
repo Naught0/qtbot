@@ -92,9 +92,11 @@ class Stonks(commands.Cog):
             else:
                 continue
         
+        graph_file_name = f"data/{symbol}_{today.isoformat()}.png"
         plt.plot(series, linewidth=3, color='gold', solid_capstyle="round")
         plt.axis("off")
-        plt.savefig(f"data/{symbol}_{today.isoformat()}.png", transparent=True)
+        plt.savefig(graph_file_name, transparent=True)
+        file = discord.File(graph_file_name, filename=graph_file_name)
 
         percent_change = float(resp["Global Quote"]["09. change"])
         if percent_change > 0:
@@ -116,12 +118,12 @@ class Stonks(commands.Cog):
         em.add_field(name="Previous Close", value=f"${float(resp['Global Quote']['08. previous close']):,.2f}")
         em.add_field(name="% Change Today", value=f"{emoji} {resp['Global Quote']['10. change percent']}")
 
-        em.set_image(url=f"attachment://data/{symbol}_{today.isoformat()}.png")
+        em.set_image(url=f"attachment://{graph_file_name}")
 
         em.set_footer(text="Last updated")
         em.timestamp = ctx.message.created_at
 
-        await ctx.send(embed=em)
+        await ctx.send(file=file, embed=em)
 
 
 def setup(bot):
