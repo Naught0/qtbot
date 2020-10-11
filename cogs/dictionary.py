@@ -20,6 +20,7 @@ class Dictionary(commands.Cog):
             "useCanonical": "true",
             "includeTags": "false",
             "api_key": bot.api_keys["wordnik"],
+            "sourceDictionaries": "ahd,webster,century,wordnet"
         }
         self.bot = bot
         self.urban = UrbanDictionary(loop=bot.loop, session=bot.aio_session)
