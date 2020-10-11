@@ -48,7 +48,7 @@ class Dictionary(commands.Cog):
             url=result.wordnikUrl,
             icon_url="https://i.imgur.com/9jO7EYk.png",
         )
-        em.description = result.text
+        em.description = f"_{resp.partOfSpeech}_\n{result.text}"
         em.set_footer(text=result.attributionText)
         await ctx.send(embed=em)
 
