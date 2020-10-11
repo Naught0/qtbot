@@ -11,6 +11,7 @@ from utils import aiohttp_wrap as aw
 
 class Crypto(commands.Cog):
     """ Allows users to track bitcoin and other currencies (eventually) """
+
     URL_BTC = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
     CACHE_TTL = 10 * 60
 
@@ -29,7 +30,7 @@ class Crypto(commands.Cog):
         }
 
     @commands.command(name="crypto", aliases=["cry", "btc"])
-    async def _crypto(self, ctx: commands.Context, *, currency: str="btc"):
+    async def _crypto(self, ctx: commands.Context, *, currency: str = "btc"):
         """Get price and trend information for a cryptocurrency
         You can refer to a currency by its symbol or full name
         Defaults to BTC if no currency is supplied"""
@@ -55,8 +56,8 @@ class Crypto(commands.Cog):
         redis_key = "crypto"
         if await self.redis.exists(redis_key):
             resp = json.loads(await self.redis.get(redis_key))
-        
-         # Make a single request for top 25 endpoints and cache
+
+        # Make a single request for top 25 endpoints and cache
         else:
             resp = (
                 await aw.aio_get_json(
@@ -72,12 +73,19 @@ class Crypto(commands.Cog):
         crypto_info = resp[str(currency_id)]
 
         em = discord.Embed(color=0xF7931A)
-        em.set_author(name=f"{crypto_info['name']} ({crypto_info['symbol']})", icon_url=f"https://s2.coinmarketcap.com/static/img/coins/64x64/{currency_id}.png")
-        em.add_field(name="Price $USD", value=f"${crypto_info['quote']['USD']['price']:,.2f}", inline=False)
+        em.set_author(
+            name=f"{crypto_info['name']} ({crypto_info['symbol']})",
+            icon_url=f"https://s2.coinmarketcap.com/static/img/coins/64x64/{currency_id}.png",
+        )
+        em.add_field(
+            name="Price $USD",
+            value=f"${crypto_info['quote']['USD']['price']:,.2f}",
+            inline=False,
+        )
         em.set_footer(text="Last updated")
         em.timestamp = dateutil.parser.parse(crypto_info["last_updated"])
 
-                # Hourly trend
+        # Hourly trend
         change_1h = crypto_info["quote"]["USD"]["percent_change_1h"]
         change_1h_str = (
             f":arrow_up: {change_1h:.2f}%"
@@ -110,6 +118,7 @@ class Crypto(commands.Cog):
         )
 
         await ctx.send(embed=em)
+
 
 def setup(bot):
     bot.add_cog(Crypto(bot))

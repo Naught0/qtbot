@@ -39,13 +39,17 @@ class Trump(commands.Cog):
                     "No results",
                     description=f"Couldn't find any Trumpisms on `{escape_markdown(query)}`",
                 )
-            
+
             resp = random.choice(search_results["_embedded"]["quotes"])
         else:
             resp = await aio_get_json(ctx.bot.aio_session, self.RAND_URL)
-        
-        em = discord.Embed(color=0x00acee)
-        em.set_author(name="Donald J. Trump ☑️", icon_url=self.PIC_URL, url=resp["_embedded"]["source"][0]["url"])
+
+        em = discord.Embed(color=0x00ACEE)
+        em.set_author(
+            name="Donald J. Trump ☑️",
+            icon_url=self.PIC_URL,
+            url=resp["_embedded"]["source"][0]["url"],
+        )
         em.description = resp["value"]
         em.timestamp = parse(resp["appeared_at"])
         em.set_footer(text="via twitter", icon_url="https://i.imgur.com/DUUkDwY.png")

@@ -42,9 +42,7 @@ class Quote(commands.Cog):
 
         # DMChannel doesn't have a name attr, not doing any fancy ternary op, its already messy
         if not isinstance(ctx.channel, discord.DMChannel):
-            emb.set_footer(
-                text=f'#{ctx.channel.name}'
-            )
+            emb.set_footer(text=f"#{ctx.channel.name}")
 
         emb.timestamp = message.created_at
 
@@ -87,9 +85,7 @@ class Quote(commands.Cog):
 
         # DMChannel doesn't have a name attr, not doing any fancy ternary op, its already messy
         if not isinstance(ctx.channel, discord.DMChannel):
-            emb.set_footer(
-                text=f'#{ctx.channel.name}'
-            )
+            emb.set_footer(text=f"#{ctx.channel.name}")
 
         emb.timestamp = message.created_at
 

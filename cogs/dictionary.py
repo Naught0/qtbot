@@ -31,10 +31,10 @@ class Dictionary(commands.Cog):
 
         query = quote_plus(word)
         resp = await aw.aio_get_json(
-            self.bot.aio_session, 
-            self.WORDNIK_URL.format(query), 
-            params=self.PARAMS, 
-            headers=self.HEADERS
+            self.bot.aio_session,
+            self.WORDNIK_URL.format(query),
+            params=self.PARAMS,
+            headers=self.HEADERS,
         )
         if resp is None:
             return await ctx.error(f"Couldn't find anything on `{word}`")

@@ -34,7 +34,9 @@ class Wiki(commands.Cog):
 
         # No result found
         if not wiki_info[1]:
-            return await ctx.error(f"Sorry, I couldn't find anything for `{escape_markdown(query)}`.")
+            return await ctx.error(
+                f"Sorry, I couldn't find anything for `{escape_markdown(query)}`."
+            )
 
         # Get summary
         article_title = quote_plus(wiki_info[1][0].replace(" ", "_"), safe="_")
@@ -51,7 +53,7 @@ class Wiki(commands.Cog):
         em = discord.Embed(
             title=article_summary["titles"]["normalized"], color=discord.Color.blurple()
         )
-        em.description = '. '.join(article_summary["extract"].split('. ')[:3])
+        em.description = ". ".join(article_summary["extract"].split(". ")[:3])
         em.url = article_summary["content_urls"]["desktop"]["page"]
         em.set_thumbnail(
             url="https://lh5.ggpht.com/1Erjb8gyF0RCc9uhnlfUdbU603IgMm-G-Y3aJuFcfQpno0N4HQIVkTZERCTo65Iz2II=w300"

@@ -47,7 +47,7 @@ class Stonks(commands.Cog):
                     "API Error",
                     description="There was an issue with the stocks API, try again later",
                 )
-            
+
             if not resp["Global Quote"]:
                 return await ctx.error(
                     "Stock error",
@@ -100,7 +100,7 @@ class Stonks(commands.Cog):
                 continue
 
         graph_image = io.BytesIO()
-        plt.figure(figsize=(16,9))
+        plt.figure(figsize=(16, 9))
         plt.plot(series, linewidth=12, color="gold", solid_capstyle="round")
         plt.axis("off")
         plt.savefig(graph_image, format="png", transparent=True, dpi=10)
