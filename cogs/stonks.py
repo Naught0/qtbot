@@ -41,6 +41,19 @@ class Stonks(commands.Cog):
             resp = json.loads(await self.redis_client.get(redis_key))
         else:
             resp = await aio_get_json(self.session, self.URL, params=params)
+
+            if resp is None:
+                return await ctx.error(
+                    "API Error",
+                    description="There was an issue with the stocks API, try again later",
+                )
+            
+            if not resp["Global Quote"]:
+                return await ctx.error(
+                    "Stock error",
+                    description=f"Couldn't find any stock information for `{symbol}`",
+                )
+
             graph_params = {
                 "function": "TIME_SERIES_DAILY",
                 "apikey": self.av_key,
@@ -49,18 +62,6 @@ class Stonks(commands.Cog):
             graph_resp = (
                 await aio_get_json(self.session, self.URL, params=graph_params)
             )["Time Series (Daily)"]
-
-            if resp is None:
-                return await ctx.error(
-                    "API Error",
-                    description="There was an issue with the stocks API, try again later",
-                )
-
-            if not resp["Global Quote"]:
-                return await ctx.error(
-                    "Stock error",
-                    description=f"Couldn't find any stock information for `{symbol}`",
-                )
 
             company_profile = await aio_get_json(
                 self.session,
