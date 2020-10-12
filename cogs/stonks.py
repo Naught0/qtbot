@@ -90,7 +90,7 @@ class Stonks(commands.Cog):
         # Create the graph
 
         today = datetime.today().date()
-        start_date = today - timedelta(days=30)
+        start_date = today - timedelta(days=45)
         series = []
         for dt in rrule(DAILY, dtstart=start_date, until=today):
             d = dt.strftime("%Y-%m-%d")
