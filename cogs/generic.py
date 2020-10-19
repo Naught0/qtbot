@@ -4,7 +4,6 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
-from discord.utils import escape_mentions
 
 
 class Generic(commands.Cog):
@@ -20,7 +19,9 @@ class Generic(commands.Cog):
         options = [x.strip() for x in to_decide.split(",")]
         choice = random.choice(options)
 
-        await ctx.send(escape_mentions(choice))
+        await ctx.send(
+            embed=discord.Embed(color=discord.Color.blurple(), description=choice)
+        )
 
     @commands.command(name="await", hidden=True)
     async def _await(self, ctx: commands.Context):
