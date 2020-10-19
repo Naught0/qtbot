@@ -4,6 +4,7 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
+from discord.utils import escape_mentions
 
 
 class Generic(commands.Cog):
@@ -12,6 +13,14 @@ class Generic(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.blue = discord.Color.dark_blue()
+
+    @commands.command(name="decide")
+    async def _decide(self, ctx: commands.Context, *, to_decide: str):
+        """Decide between a list of comma separated options"""
+        options = [x.strip() for x in to_decide.split(",")]
+        choice = random.choice(options)
+
+        await ctx.send(escape_mentions(choice))
 
     @commands.command(name="await", hidden=True)
     async def _await(self, ctx: commands.Context):
