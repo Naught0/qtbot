@@ -75,7 +75,7 @@ class Crypto(commands.Cog):
         em = discord.Embed(color=0xF7931A)
         em.set_author(
             name=f"{crypto_info['name']} ({crypto_info['symbol']})",
-            icon_url=f"https://s2.coinmarketcap.com/static/img/coins/64x64/{currency_id}.png",
+            icon_url=f"https://s3.coinmarketcap.com/static/img/coins/64x64/{currency_id}.png",
         )
         em.add_field(
             name="Price $USD",
@@ -114,7 +114,7 @@ class Crypto(commands.Cog):
 
         # Ticker graph
         em.set_image(
-            url=f"https://s2.coinmarketcap.com/generated/sparklines/web/7d/usd/{currency_id}.png?{int(time.time())}"
+            url=f"https://s3.coinmarketcap.com/generated/sparklines/web/7d/usd/{currency_id}.png?{int(time.time())}"
         )
 
         await ctx.send(embed=em)
