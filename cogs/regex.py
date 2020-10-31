@@ -94,7 +94,7 @@ class ConvertRegex(Converter):
             return regex.compile(supposed_regex)
         except (regex.error, re.error) as e:
             error_lines = "\n".join(format_error(e))
-            raise BadArgument(
+            return (
                 ":x: Syntax error in a regular expression: \n"
                 f"```diff\n{error_lines}\n```"
             )
