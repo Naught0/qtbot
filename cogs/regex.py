@@ -1,16 +1,17 @@
 # https://github.com/decorator-factory/bot/blob/c46e728f8e27d93692087516ef902eeed5efb8b7/bot/cogs/regular_expressions.py
+
 import re
 from typing import Iterable, Optional, Union
 
-from discord.ext import commands
+import regex
 from discord.ext.commands import BadArgument, Cog, Context, Converter, group
-
+from discord.ext import commands
 
 
 REGEX_TIMEOUT = 0.05  # maximum time until
 
 
-def format_error(e: re.error) -> Iterable[str]:
+def format_error(e: Union[re.error, regex.error]) -> Iterable[str]:
     r"""
     Format a regexp parsing error message to display in a response.
 
@@ -60,7 +61,7 @@ def format_match(match: Optional[re.Match]) -> Iterable[str]:
         return ["      " + match.string, *group_carets]
 
 
-def match_and_format(pattern: re.Regex, test: str) -> str:
+def match_and_format(pattern: regex.Regex, test: str) -> str:
     """Attempt to match a regex with a test string and return a formatted result."""
     try:
         match_lines = "\n".join(format_match(pattern.search(test, timeout=REGEX_TIMEOUT)))
@@ -80,7 +81,7 @@ class ConvertRegex(Converter):
     def __init__(self, supports_extended_features: bool = False):
         self.supports_extended_features = supports_extended_features
 
-    async def convert(self, ctx: Context, supposed_regex: str) -> re.Regex:
+    async def convert(self, ctx: Context, supposed_regex: str) -> regex.Regex:
         """
         Attempt to parse the input string as a regular expression.
 
@@ -90,8 +91,8 @@ class ConvertRegex(Converter):
         try:
             if not self.supports_extended_features:
                 re.compile(supposed_regex)
-            return re.compile(supposed_regex)
-        except (re.error, re.error) as e:
+            return regex.compile(supposed_regex)
+        except (regex.error, re.error) as e:
             error_lines = "\n".join(format_error(e))
             raise BadArgument(
                 ":x: Syntax error in a regular expression: \n"
@@ -112,7 +113,7 @@ class RegularExpressions(Cog):
     @group(name='regexp', aliases=('regex', 're'), invoke_without_command=True)
     async def regexp_group(self, ctx: Context) -> None:
         """Commands for exploring the mysterious world of regular expressions."""
-        await ctx.invoke(self.bot.get_command("help"))
+        await ctx.invoke(self.bot.get_command("help"), "regexp")
 
     @regexp_group.command(name='search', aliases=('find', 's'))
     async def match_command(self, ctx: Context, pattern: Regex, *, string: str) -> None:
@@ -130,6 +131,6 @@ class RegularExpressions(Cog):
         await ctx.send(match_and_format(pattern, string))
 
 
-def setup(bot):
+def setup(bot: commands.Bot) -> None:
     """Load the RegularExpressions cog."""
     bot.add_cog(RegularExpressions(bot))
