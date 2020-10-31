@@ -6,6 +6,7 @@ from pathlib import Path
 import aiohttp
 import aredis
 import asyncpg
+import discord
 from discord.ext import commands
 
 from utils.custom_context import CustomContext
@@ -21,12 +22,15 @@ class QTBot(commands.Bot):
             self.api_keys = json.load(f)
 
         self.token = self.api_keys["discord"]
+        intents = discord.Intents.default()
+        intents.members = True
 
         super().__init__(
             command_prefix=self.get_prefix,
             description=self.description,
             help_command=commands.DefaultHelpCommand(dm_help=True),
             case_insensitive=True,
+            intents=intents,
             *args,
             **kwargs,
         )
