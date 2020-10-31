@@ -38,7 +38,7 @@ class RNG(commands.Cog):
 
         await ctx.send(embed=em)
 
-    @commands.command(aliases=["re"])
+    @commands.command()
     async def react(self, ctx):
         """ Have qtbot react with something inane """
         # Have to get text because it has the wrong content-type
