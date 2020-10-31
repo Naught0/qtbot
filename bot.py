@@ -3,6 +3,7 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 
+import discord
 import aiohttp
 import aredis
 import asyncpg
@@ -27,6 +28,7 @@ class QTBot(commands.Bot):
             description=self.description,
             help_command=commands.DefaultHelpCommand(dm_help=True),
             case_insensitive=True,
+            intents=discord.Intents(members=True),
             *args,
             **kwargs,
         )
