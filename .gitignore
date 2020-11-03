@@ -15,3 +15,4 @@ Pipfile.lock
 rename_script.py
 *.swp
 data/.DS_Store
+.DS_Store
