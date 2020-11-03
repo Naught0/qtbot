@@ -1,4 +1,5 @@
 import json
+import re
 from urllib.parse import quote_plus
 from types import SimpleNamespace
 
@@ -22,6 +23,7 @@ class Dictionary(commands.Cog):
             "api_key": bot.api_keys["wordnik"],
             "sourceDictionaries": "ahd,webster,century,wordnet"
         }
+        self.pattern = re.compile('<.*?>')
         self.bot = bot
         self.urban = UrbanDictionary(loop=bot.loop, session=bot.aio_session)
 
@@ -48,7 +50,7 @@ class Dictionary(commands.Cog):
             url=result.wordnikUrl,
             icon_url="https://i.imgur.com/9jO7EYk.png",
         )
-        em.description = result.text
+        em.description = self.pattern.sub('', result.text)
         em.set_footer(text=result.attributionText)
         await ctx.send(embed=em)
 
