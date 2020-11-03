@@ -6,12 +6,19 @@ from discord.ext import commands
 
 class GM(commands.Cog):
     def __init__(self, bot):
+        with open('data/hwords.json') as f:
+            self.h = json.load(f)
         with open("data/good_morning.json") as f:
             gm_dictionary = json.load(f)
         self.g = gm_dictionary["g"]
         self.m = gm_dictionary["m"]
         self.a = gm_dictionary["a"]
         self.e = gm_dictionary["e"]
+
+    @commands.command(name="h", hidden=True)
+    async def _h(self, ctx: commands.Context):
+        """h"""
+        await ctx.send(random.choice(self.h))
 
     @commands.command(name="gm", hidden=True)
     async def _gm(self, ctx: commands.Context):
