@@ -109,15 +109,15 @@ class Generic(commands.Cog):
 
     @commands.command()
     async def same(self, ctx):
-        await ctx.send("```[✓] same\n[ ] unsame```")
+        await ctx.send(":white_check_mark: same\n:green_square: unsame")
 
     @commands.command()
     async def unsame(self, ctx):
-        await ctx.send("```[ ] same\n[✓] unsame```")
+        await ctx.send(":green_square: same\n:white_check_mark: unsame")
 
     @commands.command()
     async def resame(self, ctx):
-        await ctx.send("```[✓] same\n[✓] re:same\n[ ] unsame```")
+        await ctx.send(":white_check_mark: same\n:white_check_mark: re:same\n:green_square: unsame")
 
     @commands.command()
     async def slap(self, ctx: commands.Context, *, target=None):
