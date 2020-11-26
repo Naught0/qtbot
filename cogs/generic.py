@@ -68,8 +68,8 @@ class Generic(commands.Cog):
         hanksgivin = list("hanksgivin")
         random.shuffle(app)
         random.shuffle(hanksgivin)
-        happy = f"h{app}y"
-        thanksgiving = f"t{hanksgivin}g"
+        happy = f"h{''.join(app)}y"
+        thanksgiving = f"t{''.join(hanksgivin)}g"
 
         await ctx.send(f"{happy} {thanksgiving} :turkey:")
 
