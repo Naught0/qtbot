@@ -61,6 +61,18 @@ class Generic(commands.Cog):
 
         await ctx.send(embed=em)
 
+    @commands.command(name="ht", hidden=True)
+    async def _ht(self, ctx: commands.Context):
+        """Habby thnaksgiving"""
+        app = list("app")
+        hanksgivin = list("hanksgivin")
+        random.shuffle(app)
+        random.shuffle(hanksgivin)
+        happy = f"h{app}y"
+        thanksgiving = f"t{hanksgivin}g"
+
+        await ctx.send(f"{happy} {thanksgiving} :turkey:")
+
     @commands.command(hidden=True)
     async def say(self, ctx: commands.Context, *, message):
         """ Make qtbot say anything ;) """
@@ -117,7 +129,9 @@ class Generic(commands.Cog):
 
     @commands.command()
     async def resame(self, ctx):
-        await ctx.send(":white_check_mark: same\n:white_check_mark: re:same\n:green_square: unsame")
+        await ctx.send(
+            ":white_check_mark: same\n:white_check_mark: re:same\n:green_square: unsame"
+        )
 
     @commands.command()
     async def slap(self, ctx: commands.Context, *, target=None):
