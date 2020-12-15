@@ -81,6 +81,14 @@ class Generic(commands.Cog):
             f"m{''.join(random.sample('err', 3))}y c{''.join(random.sample('hristma', 7))}s {random.choice(mojis)}"
         )
 
+    @commands.command(name="hh", hidden=True)
+    async def _hh(self, ctx: commands.Context):
+        """Harry Hannuka"""
+        mojis = ":menorah: :star_of_david: :snowflake: :candle:"
+        await ctx.send(
+            f"h{''.join(random.sample('app', 3))}y h{''.join(random.sample('anukka', 6))}h {random.choice(mojis)}"
+        )
+
     @commands.command(hidden=True)
     async def say(self, ctx: commands.Context, *, message):
         """ Make qtbot say anything ;) """
