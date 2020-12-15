@@ -81,6 +81,11 @@ class Generic(commands.Cog):
             f"m{''.join(random.sample('err', 3))}y c{''.join(random.sample('hristma', 7))}s {random.choice(mojis)}"
         )
 
+    @commands.command(name="mx", hidden=True)
+    async def _mx(self, ctx: commands.Context):
+        """mrrtye chruaitmzxas"""
+        await ctx.send("mrrtye chruaitmzxas")
+
     @commands.command(name="hh", hidden=True)
     async def _hh(self, ctx: commands.Context):
         """Harry Hannuka"""
