@@ -72,11 +72,14 @@ class Generic(commands.Cog):
         thanksgiving = f"t{''.join(hanksgivin)}g"
 
         await ctx.send(f"{happy} {thanksgiving} :turkey:")
-    
+
     @commands.command(name="mc", hidden=True)
     async def _mc(self, ctx: commands.Context):
         """Merry Chrimmins"""
-        await ctx.send(f"m{''.join(random.sample('err', 3))}y c{''.join(random.sample('hristma', 7))}s")
+        mojis = ":snowflake: :christmas_tree: :mrs_claus: :mx_claus: :snowman: :snowman2:".split()
+        await ctx.send(
+            f"m{''.join(random.sample('err', 3))}y c{''.join(random.sample('hristma', 7))}s {random.choice(mojis)}"
+        )
 
     @commands.command(hidden=True)
     async def say(self, ctx: commands.Context, *, message):
