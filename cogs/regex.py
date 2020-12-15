@@ -26,7 +26,7 @@ def format_error(e: Union[re.error, regex.error]) -> Iterable[str]:
     (everything colored red)
     """
     line_with_regexp = "- " + e.pattern
-    line_with_caret = "- " + " "*e.pos + "^"
+    line_with_caret = "- " + " " * e.pos + "^"
     line_with_explanation = "- " + e.msg
     return [line_with_regexp, line_with_caret, line_with_explanation]
 
@@ -55,7 +55,7 @@ def format_match(match: Optional[re.Match]) -> Iterable[str]:
             if not group_is_missing:
                 # TODO: display zero-width groups (how?)
                 group_carets.append(
-                    f"+ {group_index:>2}: " + " "*start + match.string[start:end]
+                    f"+ {group_index:>2}: " + " " * start + match.string[start:end]
                 )
 
         return ["      " + match.string, *group_carets]
@@ -64,7 +64,9 @@ def format_match(match: Optional[re.Match]) -> Iterable[str]:
 def match_and_format(pattern: regex.Regex, test: str) -> str:
     """Attempt to match a regex with a test string and return a formatted result."""
     try:
-        match_lines = "\n".join(format_match(pattern.search(test, timeout=REGEX_TIMEOUT)))
+        match_lines = "\n".join(
+            format_match(pattern.search(test, timeout=REGEX_TIMEOUT))
+        )
         return f"\n```diff\n{match_lines}\n```"
     except TimeoutError:
         return ":x: Searching with this regular expression took too much time"
@@ -110,18 +112,20 @@ class RegularExpressions(Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @group(name='regexp', aliases=('regex', 're'), invoke_without_command=True)
+    @group(name="regexp", aliases=("regex", "re"), invoke_without_command=True)
     async def regexp_group(self, ctx: Context) -> None:
         """Commands for exploring the mysterious world of regular expressions."""
         await ctx.invoke(self.bot.get_command("help"), "regexp")
 
-    @regexp_group.command(name='search', aliases=('find', 's'))
+    @regexp_group.command(name="search", aliases=("find", "s"))
     async def match_command(self, ctx: Context, pattern: Regex, *, string: str) -> None:
         """Look for the first match of a pattern in a string."""
         await ctx.send(match_and_format(pattern, string))
 
-    @regexp_group.command(name='search+', aliases=('find+', 's+'))
-    async def match_plus_command(self, ctx: Context, pattern: ExtendedRegex, *, string: str) -> None:
+    @regexp_group.command(name="search+", aliases=("find+", "s+"))
+    async def match_plus_command(
+        self, ctx: Context, pattern: ExtendedRegex, *, string: str
+    ) -> None:
         """
         Look for the first match of a pattern in a string.
 

@@ -21,9 +21,9 @@ class Dictionary(commands.Cog):
             "useCanonical": "true",
             "includeTags": "false",
             "api_key": bot.api_keys["wordnik"],
-            "sourceDictionaries": "ahd,webster,century,wordnet"
+            "sourceDictionaries": "ahd,webster,century,wordnet",
         }
-        self.pattern = re.compile('<.*?>')
+        self.pattern = re.compile("<.*?>")
         self.bot = bot
         self.urban = UrbanDictionary(loop=bot.loop, session=bot.aio_session)
 
@@ -50,7 +50,7 @@ class Dictionary(commands.Cog):
             url=result.wordnikUrl,
             icon_url="https://i.imgur.com/9jO7EYk.png",
         )
-        em.description = self.pattern.sub('', result.text)
+        em.description = self.pattern.sub("", result.text)
         em.set_footer(text=result.attributionText)
         await ctx.send(embed=em)
 
