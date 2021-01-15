@@ -19,17 +19,15 @@ class Covid(commands.Cog):
 
         if state is None:
             location = "the US"
-            data = await aw.aio_get_json(ctx.bot.aio_session, f"{self.URL}/us/current.json", )
+            data = (await aw.aio_get_json(ctx.bot.aio_session, f"{self.URL}/us/current.json"))[0]
         else:
             location = state.upper()
-            data = await aw.aio_get_json(ctx.bot.aio_session, f"{self.URL}/{state.lower()}/current.json")
+            data = await aw.aio_get_json(ctx.bot.aio_session, f"{self.URL}/states/{state.lower()}/current.json")
 
         if "error" in data:
             if data["error"]:
                 await ctx.message.add_reaction("❌")
                 return await ctx.send("Something went wrong with the covid API :(", delete_after=10)
-
-        data = data[0]
         
         em = discord.Embed()
         em.title = f"😷 Current Covid statistics in {location}"
