@@ -12,9 +12,10 @@ class Covid(commands.Cog):
     @commands.command(name="covid", aliases=["c19", "rona", "corona"])
     async def _covid(self, ctx, *, state: str=None):
         """Get current US covid statistics, optionally passing a 2-letter state code"""
-        if len(state) != 2:
-            await ctx.message.add_reaction("❌")
-            return await ctx.send("Use 2-letter state identifiers", delete_after=10)
+        if state is not None:
+            if len(state) != 2:
+                await ctx.message.add_reaction("❌")
+                return await ctx.send("Use 2-letter state identifiers", delete_after=10)
 
         if state is None:
             location = "the US"
