@@ -7,7 +7,7 @@ from utils import aiohttp_wrap as aw
 
 class Covid(commands.Cog):
     COLOR = discord.Color.red()
-    URL = "https://api.covidtracking.com"
+    URL = "https://api.covidtracking.com/v1"
 
     @commands.command(name="covid", aliases=["c19", "rona", "corona"])
     async def _covid(self, ctx, *, state: str=None):
@@ -19,7 +19,7 @@ class Covid(commands.Cog):
 
         if state is None:
             location = "the US"
-            data = await aw.aio_get_json(ctx.bot.aio_session, f"{self.URL}/us/current.json")
+            data = await aw.aio_get_json(ctx.bot.aio_session, f"{self.URL}/us/current.json", )
         else:
             location = state.upper()
             data = await aw.aio_get_json(ctx.bot.aio_session, f"{self.URL}/{state.lower()}/current.json")
