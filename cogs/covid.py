@@ -40,7 +40,7 @@ class Covid(commands.Cog):
         em = discord.Embed()
         em.color = self.COLOR
         em.set_author(
-            name=f"😷 Current Covid statistics in {location}",
+            name=f"Current Covid statistics in {location}",
             icon_url="https://i.imgur.com/9ka5fCC.png",
             url=f"https://google.com/search?q=covid+cases+in+{location}",
         )
