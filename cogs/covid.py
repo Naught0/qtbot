@@ -37,8 +37,8 @@ class Covid(commands.Cog):
         em.add_field(name="☠️ Deaths today", value=f"{data['deathIncrease']:,}")
         em.add_field(name="⚰️ Total Deaths", value=f"{data['death']:,}", inline=False)
 
-        if "qualityGrade" in data:
-            em.add_field(name="📝 Data quality", value=data["qualityGrade"] or "n/a")
+        if "dataQualityGrade" in data:
+            em.add_field(name="📝 Data quality", value=data["dataQualityGrade"] or "n/a")
 
         em.set_footer(text="Last updated")
 
