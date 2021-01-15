@@ -1,6 +1,7 @@
 import discord
 
 from discord.ext import commands
+from urllib.parse import quote_plus
 from dateutil.parser import isoparse
 from utils import aiohttp_wrap as aw
 
@@ -42,7 +43,7 @@ class Covid(commands.Cog):
         em.set_author(
             name=f"Current Covid statistics in {location}",
             icon_url="https://i.imgur.com/9ka5fCC.png",
-            url=f"https://google.com/search?q=covid+cases+in+{location}",
+            url=f"https://google.com/search?q={quote_plus('covid cases in ' + location)}",
         )
         em.timestamp = isoparse(
             data["lastModified"] if "lastModified" in data else data["dateModified"]
