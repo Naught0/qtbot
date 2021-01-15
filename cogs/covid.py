@@ -31,11 +31,14 @@ class Covid(commands.Cog):
         
         em = discord.Embed()
         em.title = f"😷 Current Covid statistics in {location}"
-        em.timestamp = isoparse(data["lastModified"])
+        em.timestamp = isoparse(data["lastModified"] if "lastModified" in data else data["dateModified"])
 
         em.add_field(name="📈 New cases today", value=f"{data['positiveIncrease']:,}")
         em.add_field(name="☠️ Deaths today", value=f"{data['deathIncrease']:,}")
-        em.add_field(name="⚰️ Total Deaths", value=f"{data['death']:,}")
+        em.add_field(name="⚰️ Total Deaths", value=f"{data['death']:,}", inline=False)
+
+        if "qualityGrade" in data:
+            em.add_field(name="📝 Data quality", value=data["qualityGrade"] or "n/a")
 
         em.set_footer(text="Last updated")
 
