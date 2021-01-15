@@ -35,7 +35,9 @@ class Covid(commands.Cog):
 
         em.add_field(name="📈 New cases today", value=f"{data['positiveIncrease']:,}")
         em.add_field(name="☠️ Deaths today", value=f"{data['deathIncrease']:,}")
-        em.add_field(name="⚰️ Total Deaths", value=str(data["death"]))
+        em.add_field(name="⚰️ Total Deaths", value=f"{data['death']:,}")
+
+        em.set_footer(text="Last updated")
 
         await ctx.send(embed=em)
 
