@@ -13,6 +13,10 @@ class Generic(commands.Cog):
         self.bot = bot
         self.blue = discord.Color.dark_blue()
 
+    @commands.command(name='maize', aliases=['maiz'])
+    async def _maize(self, ctx: commands.Context):
+        await ctx.message.add_reaction('🌽')
+
     @commands.command(name="decide")
     async def _decide(self, ctx: commands.Context, *, to_decide: str):
         """Decide between a list of comma separated options"""
