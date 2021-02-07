@@ -121,6 +121,12 @@ class Weather(commands.Cog):
             else f"{weather_data['main']['temp']}°C",
         )
         em.add_field(
+            name="Feels like", 
+            value=f"{int(round(weather_data['main']['feels_like']))}°F"
+            if not celsius
+            else f"{weather_data['main']['temp']}°C"
+        )
+        em.add_field(
             name="Wind",
             value=f"{int(round(weather_data['wind']['speed']))} MPH"
             if not celsius
