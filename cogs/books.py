@@ -58,8 +58,9 @@ class Books(commands.Cog):
         resp = await aw.aio_get_text(self.session, f"{self.URL}{book_info['book_url']}")
         soup = bs(resp, features="lxml")
         book_info.update(**self.get_book_info(soup))
-
-        await ctx.send(embed=self.to_embed(book_info))
+        
+        await ctx.send(f'```{book_info}```')
+        # await ctx.send(embed=self.to_embed(book_info))
 
 
 def setup(bot):
