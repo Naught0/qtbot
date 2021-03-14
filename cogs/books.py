@@ -21,20 +21,20 @@ class Books(commands.Cog):
         res = soup.select_one("li.searchResultItem")
         return {
             "image_url": res.select_one("span.bookcover img")["src"],
-            "title": res.select_one("h3.booktitle a").text.title(),
+            "title": res.select_one("h3.booktitle a").text.title().strip(),
             "book_url": res.select_one("h3.booktitle a")["href"],
-            "author": res.select_one("span.bookauthor a").text,
+            "author": res.select_one("span.bookauthor a").text.strip(),
         }
 
     def get_book_info(self, soup: bs) -> Dict:
         return {
-            "description": soup.select_one("div.book-description-content p").text,
-            "isbn": soup.select_one('dd[itemprop="isbn"]').text,
-            "published": soup.select_one("p.first-published-date").text,
+            "description": soup.select_one("div.book-description-content p").text.strip(),
+            "isbn": soup.select_one('dd[itemprop="isbn"]').text.strip(),
+            "published": soup.select_one("p.first-published-date").text.strip(),
         }
 
     def to_embed(self, book_info) -> discord.Embed:
-        year = re.search(r"\(\d+\)", book_info["published"])[0]
+        year = re.search(r"(in )(\d+)", book_info["published"]).group(2)
         em = discord.Embed()
         em.title = f"{book_info['title']} by {book_info['author']} ({year})"
         em.url = f"{self.URL}{book_info['book_url']}"
@@ -59,8 +59,7 @@ class Books(commands.Cog):
         soup = bs(resp, features="lxml")
         book_info.update(**self.get_book_info(soup))
         
-        await ctx.send(f'```{book_info}```')
-        # await ctx.send(embed=self.to_embed(book_info))
+        await ctx.send(embed=self.to_embed(book_info))
 
 
 def setup(bot):
