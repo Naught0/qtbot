@@ -40,7 +40,7 @@ class Books(commands.Cog):
         em.url = f"{self.URL}{book_info['book_url']}"
         em.description = book_info["description"]
         em.add_field(name="ISBN", value=book_info["isbn"])
-        em.set_thumbnail(url=f"{self.URL}{book_info['image_url']}")
+        em.set_thumbnail(url=f"https:{book_info['image_url']}")
 
         return em
 
