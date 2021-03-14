@@ -12,6 +12,7 @@ class Books(commands.Cog):
     def __init__(self, bot, *args, **kwargs):
         self.color = 0xB38E86
         self.bot = bot
+        self.session = bot.aio_session
 
     def get_first_result(self, soup: bs):
         res = soup.select_one('li.searchResultItem')
@@ -27,7 +28,7 @@ class Books(commands.Cog):
 
     @commands.command(name="book", aliases=["books"])
     async def _book(self, ctx: commands.Context, *, title: str):
-        resp = await aw.aio_get_text(f"{self.URL}search?title={quote_plus(title)}")
+        resp = await aw.aio_get_text(self.session, f"{self.URL}search?title={quote_plus(title)}")
         search_soup = bs(resp)
 
         if search_soup("span.red", text="No results found."):
