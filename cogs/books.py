@@ -36,6 +36,7 @@ class Books(commands.Cog):
     def to_embed(self, book_info) -> discord.Embed:
         year = re.search(r"(in )(\d+)", book_info["published"]).group(2)
         em = discord.Embed()
+        em.color = self.color
         em.title = f"{book_info['title']} by {book_info['author']} ({year})"
         em.url = f"{self.URL}{book_info['book_url']}"
         em.description = book_info["description"]
