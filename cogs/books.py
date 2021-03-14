@@ -47,6 +47,8 @@ class Books(commands.Cog):
 
     @commands.command(name="book", aliases=["books"])
     async def _book(self, ctx: commands.Context, *, title: str):
+        await ctx.trigger_typing()
+        
         resp = await aw.aio_get_text(
             self.session, f"{self.URL}/search?title={quote_plus(title)}"
         )
