@@ -27,7 +27,7 @@ class Books(commands.Cog):
         }
 
     def get_book_info(self, soup: bs) -> Dict:
-        isbn = soup.select_one('dd[itemprop="isbn"]').text.strip()
+        isbn = soup.select_one('dd[itemprop="isbn"]')
         ret = {
             "description": soup.select_one(
                 "div.book-description-content p"
@@ -35,7 +35,7 @@ class Books(commands.Cog):
             "published": soup.select_one("p.first-published-date").text.strip(),
         }
         if isbn != None:
-            ret["isbn"] = isbn
+            ret["isbn"] = isbn.text.strip()
 
     def to_embed(self, book_info) -> discord.Embed:
         year = re.search(r"(in )(\d+)", book_info["published"]).group(2)
