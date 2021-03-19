@@ -27,11 +27,15 @@ class Books(commands.Cog):
         }
 
     def get_book_info(self, soup: bs) -> Dict:
-        return {
-            "description": soup.select_one("div.book-description-content p").text.strip(),
-            "isbn": soup.select_one('dd[itemprop="isbn"]').text.strip(),
+        isbn = soup.select_one('dd[itemprop="isbn"]').text.strip()
+        ret = {
+            "description": soup.select_one(
+                "div.book-description-content p"
+            ).text.strip(),
             "published": soup.select_one("p.first-published-date").text.strip(),
         }
+        if isbn != None:
+            ret["isbn"] = isbn
 
     def to_embed(self, book_info) -> discord.Embed:
         year = re.search(r"(in )(\d+)", book_info["published"]).group(2)
@@ -40,17 +44,24 @@ class Books(commands.Cog):
         em.title = f"{book_info['title']} by {book_info['author']} ({year})"
         em.url = f"{self.URL}{book_info['book_url']}"
         em.description = book_info["description"]
-        em.add_field(name="ISBN", value=book_info["isbn"])
+        if "isbn" in book_info:
+            em.add_field(name="ISBN", value=book_info["isbn"])
         em.set_thumbnail(url=f"https:{book_info['image_url']}")
 
         return em
 
     @commands.command(name="book", aliases=["books"])
-    async def _book(self, ctx: commands.Context, *, title: str):
+    async def _book(self, ctx: commands.Context, *, search: str):
         await ctx.trigger_typing()
-        
+        if len(search.split("by")) > 1:
+            title, author = search.split("by")
+        else:
+            title = search
+            author = None
+
         resp = await aw.aio_get_text(
-            self.session, f"{self.URL}/search?title={quote_plus(title)}"
+            self.session,
+            f"{self.URL}/search?title={quote_plus(title)}&author={author if author else ''}",
         )
         soup = bs(resp, features="lxml")
 
@@ -61,7 +72,7 @@ class Books(commands.Cog):
         resp = await aw.aio_get_text(self.session, f"{self.URL}{book_info['book_url']}")
         soup = bs(resp, features="lxml")
         book_info.update(**self.get_book_info(soup))
-        
+
         await ctx.send(embed=self.to_embed(book_info))
 
 
