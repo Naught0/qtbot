@@ -36,6 +36,8 @@ class Books(commands.Cog):
         }
         if isbn != None:
             ret["isbn"] = isbn.text.strip()
+        
+        return ret
 
     def to_embed(self, book_info) -> discord.Embed:
         year = re.search(r"(in )(\d+)", book_info["published"]).group(2)
