@@ -91,7 +91,7 @@ class Google(commands.Cog):
                 return await msg.clear_reactions()
 
             if reaction.emoji in self.EMOJIS:
-                await msg.edit_message(embed=embeds[self.EMOJIS.index(reaction.emoji)])
+                await msg.edit(embed=embeds[self.EMOJIS.index(reaction.emoji)])
 
 
 def setup(bot):
