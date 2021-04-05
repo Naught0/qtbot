@@ -70,7 +70,7 @@ class Google(commands.Cog):
             for x in soup.find_all("a", {"class": "thumb"})[:5]
         ]
 
-        msg = await ctx.send(embed=embeds)
+        msg = await ctx.send(embed=embeds[0])
 
         for x in self.EMOJIS[: len(embeds)]:
             await msg.add_reaction(x)
