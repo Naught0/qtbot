@@ -69,7 +69,9 @@ class Google(commands.Cog):
             self.link_to_embed(query, x["href"])
             for x in soup.find_all("a", {"class": "thumb"})[:5]
         ]
-
+        print(soup)
+        print(soup.find_all("a", {"class": "thumb"}))
+        
         msg = await ctx.send(embed=embeds[0])
 
         for x in self.EMOJIS[: len(embeds)]:
