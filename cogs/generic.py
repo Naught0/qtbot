@@ -222,12 +222,12 @@ class Generic(commands.Cog):
 
         await ctx.send(embed=em)
 
-    @commands.command()
+    @commands.command(aliases=["info"])
     async def about(self, ctx):
         """Get information about qtbot"""
         em = discord.Embed(
             title=":information_source: About qtbot",
-            description="Qtbot is a general purpose bot with a load of functionality. Call the help"
+            description="I'm a general purpose bot with too much functionality. Call the help"
             " command via `qt.help` to receive a message with a full list of commands.",
             color=self.blue,
         )
@@ -243,9 +243,9 @@ class Generic(commands.Cog):
             "\u2022 `League of Legends username`\n"
             "\u2022 `Oldschool Runescape username`\n"
             "\u2022 `A link to an Oldschool Runescape screenshot`\n"
-            "If you have any questions about this contact the owner below.",
+            "If you have any questions, talk to my dad.",
         )
-        em.add_field(name="Owner", value="`naught0#4417`")
+        em.add_field(name="Dad", value="`naught0#4417`")
 
         await ctx.send(embed=em)
 
