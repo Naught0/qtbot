@@ -79,6 +79,7 @@ class Google(commands.Cog):
             try:
                 reaction, _ = await self.bot.wait_for(
                     "reaction_add",
+                    timeout=30.0,
                     check=lambda reaction, user: (
                         user == ctx.author
                         and reaction.emoji in self.EMOJIS
