@@ -31,7 +31,7 @@ class Google(commands.Cog):
             return await ctx.error("Feel free to search something")
 
         resp = await aw.aio_get_text(
-            self.session, headers=self.HEADERS, params={"q": query}
+            self.session, self.SEARCH_URI, headers=self.HEADERS, params={"q": query}
         )
 
         soup = BeautifulSoup(resp, 'lxml')
