@@ -11,7 +11,7 @@ from utils import aiohttp_wrap as aw
 
 class Google(commands.Cog):
     SEARCH_URI = "https://duckduckgo.com/html/"
-    IMAGE_URI = "https://bing.com/images/"
+    IMAGE_URI = "https://bing.com/images/search"
     IE6_HEADERS = {
         "user-agent": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)"
     }
@@ -71,7 +71,7 @@ class Google(commands.Cog):
         ]
         print(soup)
         print(soup.find_all("a", {"class": "thumb"}))
-        
+
         msg = await ctx.send(embed=embeds[0])
 
         for x in self.EMOJIS[: len(embeds)]:
