@@ -39,7 +39,7 @@ class Google(commands.Cog):
         if len(links) == 0:
             return await ctx.error(f"Sorry, couldn't find anything for `{escape_markdown(query)}`")
         
-        ctx.send(f"**Top Result:**\n{links[0]}\n**See Also:**\n1. <{links[1]}>\n2. <{links[2]}>")
+        await ctx.send(f"**Top Result:**\n{links[0]}\n**See Also:**\n1. <{links[1]}>\n2. <{links[2]}>")
 
 
 def setup(bot):
