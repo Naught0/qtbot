@@ -65,17 +65,24 @@ class UserFacts(commands.Cog):
         return await self.pg_con.fetchval(query, ctx.guild.id)
 
     @commands.group(invoke_without_command=True)
-    async def ufact(self, ctx):
+    async def ufact(self, ctx, fact_id: int = None):
         """Get a random user-created fact from your server"""
         # Check to see whether any facts have been created
         if await self.total_facts(ctx) < 1:
             return await ctx.error(
                 "Your server does not have any facts set up!",
                 description=f"Use the `{self.bot.get_prefix(ctx.message)[-1]}ufact add` command to "
-                "start getting random facts you've created.",
+                "start getting facts you've created.",
             )
 
-        fact = await self.get_random_fact(ctx.guild.id)
+        if fact_id:
+            fact = await self.get_fact(ctx.guild.id, fact_id)
+        else:
+            fact = await self.get_random_fact(ctx.guild.id)
+
+        if not fact:
+            return await ctx.error(f"Couldn't find fact #{fact_id}")
+
         user = ctx.guild.get_member(fact["member_id"])
         contents = fact["contents"]
 
