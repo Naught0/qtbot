@@ -39,7 +39,7 @@ class Google(commands.Cog):
         )
 
         soup = BeautifulSoup(resp, "lxml")
-        links = [x["href"] for x in soup.find_all("a", {"class": "result__a"})]
+        links = [x["href"] for x in soup.find_all("a", {"class": "result__a"}) if 'y.js' not in x]
         if len(links) == 0:
             return await ctx.error(
                 f"Sorry, couldn't find anything for `{escape_markdown(query)}`"
