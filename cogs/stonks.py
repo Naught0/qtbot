@@ -1,18 +1,20 @@
 import discord
 import json
 import io
+import re
 import matplotlib.pyplot as plt
 
+from bs4 import BeautifulSoup
+from dateutil.parser import parse as parse_date
 from dateutil.rrule import rrule, DAILY
 from datetime import datetime, timedelta
 from discord.ext import commands
 from discord.utils import escape_markdown
-from utils.aiohttp_wrap import aio_get_json
+from utils.aiohttp_wrap import aio_get_json, aio_get_text
 
 
 class Stonks(commands.Cog):
-    URL = "https://www.alphavantage.co/query"
-    PROFILE_URL = "https://finnhub.io/api/v1/stock/profile2"
+    URL = "https://bigcharts.marketwatch.com/quickchart/quickchart.asp?symb="
     TTL = 60 * 15
 
     def __init__(self, bot):
@@ -24,6 +26,23 @@ class Stonks(commands.Cog):
             keys = json.load(f)
             self.av_key = keys["alpha_vantage"]
             self.api_key = keys["stonks"]
+
+    @commands.command(name="stronk", hidden=True) #aliases=["stock", "stocks", "stonks"])
+    async def stronks(self, ctx: commands.Context, *, symbol: str):
+        """Get current information on a stonk"""
+        html = await aio_get_text(self.session, self.URL, params = {"symb": symbol})
+        soup = BeautifulSoup(html, 'lxml')
+        if 'unable to find' in soup.select_one('caption.shaded').text:
+            return await ctx.error(f"Could not find security, fund, or index matching: `{escape_markdown(symbol)}`")
+        
+        em = discord.Embed(title=f"{soup.select_one('.header .fleft:nth-child(2)').text} - {soup.select_one('.header .fleft').text.strip()}")
+        em.add_field(name="Last Price $USD", value=f"${soup.select_one('#quote > tbody > tr:nth-child(3) > td.last > div').text.strip()}", inline=False)
+        percent_change = soup.select_one('#quote > tbody > tr:nth-child(4) > td.change > div').text.strip()
+        em.add_field(name="Percent Change", value=f"{'⬇️' if '-' in percent_change else '⬆️'}${re.sub('[-+]', '', percent_change)}")
+        em.timestamp = parse_date(soup.select_one('#quote > tbody > tr.header > td.soft.time').text)
+        em.set_image(url=soup.select_one('.vatop img')['src'])
+
+        await ctx.send(embed=em)
 
     @commands.command(name="stonk", aliases=["stonks", "stock", "stocks"])
     async def stonks(self, ctx: commands.Context, *, symbol: str):
