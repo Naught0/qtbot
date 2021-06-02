@@ -36,10 +36,10 @@ class Stonks(commands.Cog):
             return await ctx.error(f"Could not find security, fund, or index matching: `{escape_markdown(symbol)}`")
         
         em = discord.Embed(title=f"{soup.select_one('.header .fleft:nth-child(2)').text} - {soup.select_one('.header .fleft').text.strip()}")
-        em.add_field(name="Last Price $USD", value=f"${soup.select_one('#quote > tbody > tr:nth-child(3) > td.last > div').text.strip()}", inline=False)
-        percent_change = soup.select_one('#quote > tbody > tr:nth-child(4) > td.change > div').text.strip()
+        em.add_field(name="Last Price $USD", value=f"${soup.select_one('.last > div').text.strip()}", inline=False)
+        percent_change = soup.select_one('.change:nth-child(1) div').text.strip()
         em.add_field(name="Percent Change", value=f"{'⬇️' if '-' in percent_change else '⬆️'}${re.sub('[-+]', '', percent_change)}")
-        em.timestamp = parse_date(soup.select_one('#quote > tbody > tr.header > td.soft.time').text)
+        em.timestamp = parse_date(soup.select_one('.soft.time').text)
         em.set_image(url=soup.select_one('.vatop img')['src'])
 
         await ctx.send(embed=em)
