@@ -37,9 +37,9 @@ class Stonks(commands.Cog):
         
         em = discord.Embed(title=f"{soup.select_one('.header .fleft:nth-child(2)').text} - {soup.select_one('.header .fleft').text.strip()}")
         em.url = f"https://finance.yahoo.com/quote/{symbol}"
-        em.add_field(name="Last Price $USD", value=f"${float(soup.select_one('.last > div').text.strip()):.2f}", inline=False)
+        em.add_field(name="Last Price $USD", value=f"${float(soup.select_one('.last > div').text.strip()):.2f}")
         percent_change = soup.select_one('.change:nth-child(1) div').text.strip()
-        em.add_field(name="Percent Change", value=f"{'⬇️' if '-' in percent_change else '⬆️'} {re.sub('[-+]', '', percent_change)}")
+        em.add_field(name="Percent Change", value=f"{'⬇️' if '-' in percent_change else '⬆️'} {re.sub('[-+]', '', percent_change)}", inline=False)
         em.add_field(name="Open", value=f"${soup.select_one('tr:nth-child(3) > td:nth-child(3) > div').text}")
         em.add_field(name="High", value=f"${soup.select_one('tr:nth-child(3) > td:nth-child(4) > div').text}")
         em.add_field(name="Low", value=f"${soup.select_one('tr:nth-child(3) > td:nth-child(5) > div').text}")
