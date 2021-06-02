@@ -14,7 +14,7 @@ from utils.aiohttp_wrap import aio_get_json, aio_get_text
 
 
 class Stonks(commands.Cog):
-    URL = "https://bigcharts.marketwatch.com/quickchart/quickchart.asp?symb="
+    URL = "https://bigcharts.marketwatch.com/quickchart/quickchart.asp"
     TTL = 60 * 15
 
     def __init__(self, bot):
