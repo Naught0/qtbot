@@ -36,12 +36,12 @@ class Dictionary(commands.Cog):
             words = "\n".join([f"\u2022 {x}" for x in resp[:3]])
             definitions = f"Did you mean:\n {words}"
             footer = None
-            title = word.title()
+            title = word
         else:
             # Grab the first three defn's, combine to string w/ bullet points
             definitions = "\n".join([f"\u2022 {x}" for x in resp[0]["shortdef"][:3]])
             footer = f"Originated ~{re.sub(r'{.+', '', resp[0]['date'])}"
-            title = f"{word.title()} - ({resp[0]['fl']})"
+            title = f"{word} - ({resp[0]['fl']})"
 
         em = discord.Embed(color=discord.Color.blurple())
         em.set_author(
