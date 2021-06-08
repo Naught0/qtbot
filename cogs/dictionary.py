@@ -32,11 +32,11 @@ class Dictionary(commands.Cog):
             return await ctx.error(f"Couldn't find anything on `{word}`")
 
         # Grab the first three defn's, combine to string w/ bullet points
-        definitions = "\n".join([f"\u2022 {x}" for x in resp[0]["shortdef"][:3]])
+        definitions = "\n".join([f"```\u2022 {x}```" for x in resp[0]["shortdef"][:3]])
 
         em = discord.Embed(color=discord.Color.blurple())
         em.set_author(
-            name=f"{word.title()} - _({resp[0]['fl']})_",
+            name=f"{word.title()} - ({resp[0]['fl']})",
             url=f"https://merriam-webster.com/dictionary/{query}",
             icon_url="https://i.imgur.com/9jO7EYk.png",
         )
