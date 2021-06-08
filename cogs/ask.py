@@ -1,4 +1,5 @@
 import asyncio
+import re
 from typing import List
 
 import discord
@@ -71,8 +72,9 @@ class Google(commands.Cog):
         soup = BeautifulSoup(resp, "lxml")
         embeds = [
             self.link_to_embed(query, x["href"])
-            for x in soup.find_all("a", {"class": "thumb"})[:5]
-        ]
+            for x in soup.find_all("a", {"class": "thumb"})
+            if re.match('^https:\/\/.+', x)
+        ][:5]
 
         msg = await ctx.send(embed=embeds[0])
 
