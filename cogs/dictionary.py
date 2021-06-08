@@ -31,8 +31,15 @@ class Dictionary(commands.Cog):
         if resp is None:
             return await ctx.error(f"Couldn't find anything on `{word}`")
 
-        # Grab the first three defn's, combine to string w/ bullet points
-        definitions = "\n".join([f"\u2022 {x}" for x in resp[0]["shortdef"][:3]])
+        # If I was returned a list of words (no dictionaries)
+        if set([type(x) for x in resp]) == set([str]):
+            words = "\n".join(["\u2022 {x}" for x in resp[:3]])
+            definitions = f"Did you mean:\n {words}"
+            footer = None
+        else:
+            # Grab the first three defn's, combine to string w/ bullet points
+            definitions = "\n".join([f"\u2022 {x}" for x in resp[0]["shortdef"][:3]])
+            footer = f"Originated ~{re.sub(r'{.+', '', resp[0]['date'])}"
 
         em = discord.Embed(color=discord.Color.blurple())
         em.set_author(
@@ -41,7 +48,8 @@ class Dictionary(commands.Cog):
             icon_url="https://i.imgur.com/9jO7EYk.png",
         )
         em.description = definitions
-        em.set_footer(text=f"Originated ~{re.sub(r'{.+', '', resp[0]['date'])}")
+        if footer:
+            em.set_footer(text=footer)
         await ctx.send(embed=em)
 
     @commands.command(name="urban", aliases=["ud", "urband"])
