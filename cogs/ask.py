@@ -73,7 +73,7 @@ class Google(commands.Cog):
         embeds = [
             self.link_to_embed(query, x["href"])
             for x in soup.find_all("a", {"class": "thumb"})
-            if re.match('^https:\/\/.+', x)
+            if re.match('^https:\/\/.+', x["href"])
         ][:5]
 
         msg = await ctx.send(embed=embeds[0])
