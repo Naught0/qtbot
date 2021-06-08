@@ -28,7 +28,7 @@ class Dictionary(commands.Cog):
             self.URL.format(query),
             params={"key": self.dictionary_key},
         )
-        if resp is None:
+        if resp is None or len(resp) == 0:
             return await ctx.error(f"Couldn't find anything on `{word}`")
 
         # If I was returned a list of words (no dictionaries)
