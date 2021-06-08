@@ -33,7 +33,7 @@ class Dictionary(commands.Cog):
 
         # If I was returned a list of words (no dictionaries)
         if set([type(x) for x in resp]) == set([str]):
-            words = "\n".join(["\u2022 {x}" for x in resp[:3]])
+            words = "\n".join([f"\u2022 {x}" for x in resp[:3]])
             definitions = f"Did you mean:\n {words}"
             footer = None
             title = word.title()
