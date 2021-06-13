@@ -83,7 +83,7 @@ class UserFacts(commands.Cog):
         if not fact:
             return await ctx.error(f"Couldn't find fact #{fact_id}")
 
-        user = ctx.guild.get_member(fact["member_id"])
+        user = await ctx.guild.fetch_member(fact["member_id"])
         contents = fact["contents"]
 
         em = discord.Embed(
