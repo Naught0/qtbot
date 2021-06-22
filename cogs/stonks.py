@@ -36,7 +36,7 @@ class Stonks(commands.Cog):
         em.url = f"https://finance.yahoo.com/quote/{symbol}"
         em.add_field(
             name="Last Price $USD",
-            value=f"${float(soup.select_one('.last > div').text.strip()):.2f}",
+            value=f"${float(soup.select_one('.last > div').text.strip().replace(',', '')):.2f}",
         )
         percent_change = soup.select_one(".change:nth-child(1) div").text.strip()
         em.add_field(
