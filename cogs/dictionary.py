@@ -40,7 +40,7 @@ class Dictionary(commands.Cog):
         else:
             # Grab the first three defn's, combine to string w/ bullet points
             definitions = "\n".join([f"\u2022 {x}" for x in resp[0]["shortdef"][:3]])
-            footer = f"Originated ~{re.sub(r'{.+', '', resp[0]['date'])}"
+            footer = f"Originated ~{re.sub(r'{.+', '', resp[0]['date'])}" if "date" in resp[0] else discord.Embed.Empty
             title = f"{word} - ({resp[0]['fl']})"
 
         em = discord.Embed(color=discord.Color.blurple())
