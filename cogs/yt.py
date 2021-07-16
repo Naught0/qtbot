@@ -8,12 +8,12 @@ class YouTube(commands.Cog):
         self.bot = bot
 
     def sync_get_youtube_video(query):
-        """ Sync youtube function (lib uses requests) """
+        """Sync youtube function (lib uses requests)"""
         return yt.get_video_info(query, num_results=1)
 
     @commands.command(name="yt")
     async def get_youtube_video(self, ctx, *, query):
-        """ Returns a matching youtube video for a query  """
+        """Returns a matching youtube video for a query"""
 
         if not query:
             return await ctx.send("Go on, search something.")

@@ -54,13 +54,13 @@ class League(commands.Cog):
 
     @commands.command(name="aln", aliases=["addl"])
     async def add_league_name(self, ctx, *, summoner_name):
-        """ Add your summoner name to the database """
+        """Add your summoner name to the database"""
         await self.db.insert_user_info(ctx.author.id, "league_name", summoner_name)
         await ctx.send(f"Successfully added `{summoner_name}` for `{ctx.author}`.")
 
     @commands.command(name="rln")
     async def remove_league_name(self, ctx):
-        """ Remove your summoner name from the database """
+        """Remove your summoner name from the database"""
         await self.db.remove_user_info(ctx.author.id, "league_name")
         await ctx.send(f"Successfully removed League name for `{ctx.author}`.")
 
@@ -86,7 +86,7 @@ class League(commands.Cog):
 
     @commands.command(name="ci", aliases=["champ"])
     async def get_champ_info(self, ctx, *, champ):
-        """ Return play, ban, and win rate for a champ """
+        """Return play, ban, and win rate for a champ"""
         uri = "http://api.champion.gg/v2/champions/{}?api_key={}"
         if champ.lower() == "wukong":
             champ = "MonkeyKing"
@@ -164,7 +164,7 @@ class League(commands.Cog):
     @commands.command(name="ucf", hidden=True)
     @commands.is_owner()
     async def update_champ_file(self, ctx):
-        """ Creates / updates a json file containing champion IDs, names, titles, etc. """
+        """Creates / updates a json file containing champion IDs, names, titles, etc."""
         func = partial(self.riot_watcher.static_data.champions, "na1")
         champ_data = await self.bot.loop.run_in_executor(None, func)
 
@@ -177,7 +177,7 @@ class League(commands.Cog):
 
     @commands.command(name="elo", aliases=["mmr"])
     async def get_league_elo(self, ctx, *, summoner=""):
-        """ Get League of Legends elo / mmr from na.whatismymmr.com """
+        """Get League of Legends elo / mmr from na.whatismymmr.com"""
         # WhatIsMyMMR API licensed under Creative Commons Attribution 2.0 Generic
         # More information here: https://creativecommons.org/licenses/by/2.0
 
@@ -268,7 +268,7 @@ class League(commands.Cog):
 
     @commands.command(aliases=["patch", "pnotes"])
     async def patch_notes(self, ctx):
-        """ Get the latest League of Legends patch notes """
+        """Get the latest League of Legends patch notes"""
         if await self.redis_client.exists("league_pnotes"):
             em_dict = ast.literal_eval(await self.redis_client.get("league_pnotes"))
             em = discord.Embed.from_data(em_dict)

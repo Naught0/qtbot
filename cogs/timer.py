@@ -10,7 +10,7 @@ class Timer(commands.Cog):
 
     @commands.command(name="timer", aliases=["time"])
     async def create_remind(self, ctx, time):
-        """ Create a timer in seconds """
+        """Create a timer in seconds"""
         sleep = int(time)
 
         if sleep < 7200:

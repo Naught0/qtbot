@@ -295,7 +295,7 @@ class OSRS(commands.Cog):
 
     @_osrs.command(name="ge", invoke_without_command=True)
     async def ge_search(self, ctx, *, query):
-        """ Get the buying/selling price and quantity of an OSRS item """
+        """Get the buying/selling price and quantity of an OSRS item"""
 
         # All items in the JSON are lowercase
         item = query.lower()

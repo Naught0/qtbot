@@ -17,7 +17,7 @@ class Tag(commands.Cog):
         ]
 
     async def get_tag(self, server_id: int, tag_name: str):
-        """ Returns tag value or None """
+        """Returns tag value or None"""
         query = """ SELECT server_id, owner_id, tag_name, tag_contents, created_at, total_uses 
                     FROM tags WHERE server_id = $1 
                     AND tag_name = $2; """
@@ -25,7 +25,7 @@ class Tag(commands.Cog):
         return await self.pg_con.fetchrow(query, server_id, tag_name)
 
     async def can_delete_tag(self, ctx, tag_name):
-        """ Check whether a user is admin or owns the tag """
+        """Check whether a user is admin or owns the tag"""
         tag_record = await self.get_tag(ctx.guild.id, tag_name)
         tag_owner = tag_record["owner_id"]
 
@@ -39,7 +39,7 @@ class Tag(commands.Cog):
 
     @commands.group(invoke_without_command=True)
     async def tag(self, ctx, *, tag_name: str):
-        """ Add a tag to the database for later retrieval """
+        """Add a tag to the database for later retrieval"""
         tag_record = await self.get_tag(ctx.guild.id, tag_name)
 
         if tag_record:
@@ -58,7 +58,7 @@ class Tag(commands.Cog):
 
     @tag.command(aliases=["add"])
     async def create(self, ctx, tag_name, *, contents):
-        """ Create a new tag for later retrieval """
+        """Create a new tag for later retrieval"""
         if len(tag_name) < 3:
             return await ctx.error("Tag name should be longer than 3 characters")
 
@@ -82,7 +82,7 @@ class Tag(commands.Cog):
 
     @tag.command(aliases=["del", "delet"])
     async def delete(self, ctx, *, tag_name):
-        """ Delete a tag you created (or if you're an admin) """
+        """Delete a tag you created (or if you're an admin)"""
         _can_delete = await self.can_delete_tag(ctx, tag_name)
 
         if _can_delete is None:
@@ -102,7 +102,7 @@ class Tag(commands.Cog):
 
     @tag.command(aliases=["ed"])
     async def edit(self, ctx, tag_name, *, contents):
-        """ Edit a tag which you created """
+        """Edit a tag which you created"""
 
         # Get the record
         tag_record = await self.get_tag(ctx.guild.id, tag_name)
@@ -126,7 +126,7 @@ class Tag(commands.Cog):
 
     @tag.command()
     async def info(self, ctx, *, tag_name):
-        """ Retrieve information about a tag """
+        """Retrieve information about a tag"""
 
         # Get the record
         tag_record = await self.get_tag(ctx.guild.id, tag_name)
@@ -154,7 +154,7 @@ class Tag(commands.Cog):
 
     @tag.command()
     async def search(self, ctx, *, query: str):
-        """ Search for some matching tags """
+        """Search for some matching tags"""
 
         if len(query) < 3:
             return await ctx.error("Sorry, you'll have to be more specific.")
@@ -186,7 +186,7 @@ class Tag(commands.Cog):
 
     @tag.command(aliases=["stat"])
     async def stats(self, ctx):
-        """ Get stats about the tags for your guild """
+        """Get stats about the tags for your guild"""
         em = discord.Embed(title="Tag Statistics", color=discord.Color.blue())
         em.set_author(name=f"{ctx.guild.name}", icon_url=ctx.guild.icon_url)
 

@@ -20,7 +20,7 @@ async def aio_get_json(session, url, headers=None, params=None):
 
 
 async def session_get(session: aiohttp.ClientSession, *args, **kwargs):
-    """ A revamped helper function to reduce aiohttp boilerplate """
+    """A revamped helper function to reduce aiohttp boilerplate"""
     async with session.get(*args, **kwargs) as r:
         if r.status == 200:
             return r

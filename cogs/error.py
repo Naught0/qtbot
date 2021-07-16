@@ -9,7 +9,7 @@ class ErrorHandler(commands.Cog):
         self.bot = bot
 
     async def on_command_error(self, ctx, error):
-        """ Handle command errors more gracefully """
+        """Handle command errors more gracefully"""
 
         if isinstance(error, commands.CommandNotFound):
             return

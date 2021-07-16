@@ -10,7 +10,7 @@ class Giphy(commands.Cog):
 
     @commands.command(name="gif", aliases=["jif", "jiff"])
     async def giphy(self, ctx, *, query=None):
-        """ returns a random gif matching a query """
+        """returns a random gif matching a query"""
         gif_result = await gwrap.rand_search(self.aio_session, query=query)
 
         if gif_result:
@@ -21,7 +21,7 @@ class Giphy(commands.Cog):
     @commands.command(aliases=["ty", "thank"])
     @commands.cooldown(rate=1, per=60.0, type=commands.BucketType.user)
     async def thanks(self, ctx):
-        """ Thank your overlord, qtbot """
+        """Thank your overlord, qtbot"""
         gif_result = await gwrap.rand_search(self.aio_session, query="blushing")
 
         em = discord.Embed()

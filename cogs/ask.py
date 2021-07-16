@@ -31,7 +31,7 @@ class Google(commands.Cog):
         invoke_without_command=True, name="google", aliases=["g", "ddg", "ask"]
     )
     async def _google(self, ctx, *, query: str = None):
-        """ Get search results from [REDACTED], now that Google hates me. """
+        """Get search results from [REDACTED], now that Google hates me."""
         if query is None or query.strip() == "":
             return await ctx.error("Feel free to search something")
 
@@ -73,7 +73,7 @@ class Google(commands.Cog):
         embeds = [
             self.link_to_embed(query, x["href"])
             for x in soup.find_all("a", {"class": "thumb"})
-            if re.match('^https:\/\/.+', x["href"])
+            if re.match("^https:\/\/.+", x["href"])
         ][:5]
 
         msg = await ctx.send(embed=embeds[0])

@@ -12,7 +12,7 @@ class Owner(commands.Cog):
     @commands.command(aliases=["l"], hidden=True)
     @commands.is_owner()
     async def load(self, ctx, extension_name: str):
-        """ Loads an extension """
+        """Loads an extension"""
         try:
             self.bot.load_extension(extension_name)
         except (AttributeError, ImportError) as e:
@@ -23,21 +23,21 @@ class Owner(commands.Cog):
     @commands.command(aliases=["unl"], hidden=True)
     @commands.is_owner()
     async def unload(self, ctx, extension_name: str):
-        """ Unloads an extension. """
+        """Unloads an extension."""
         self.bot.unload_extension(extension_name)
         await ctx.success(f"Cog `{extension_name}` has been unloaded.")
 
     @commands.command(aliases=["r"], hidden=True)
     @commands.is_owner()
     async def reload(self, ctx, extension_name: str):
-        """ Reloads an extension """
+        """Reloads an extension"""
         self.bot.reload_extension(extension_name)
         await ctx.success(f"Cog `{extension_name}` has been reloaded.")
 
     @commands.command(name="reload_all", aliases=["ra"], hidden=True)
     @commands.is_owner()
     async def reload_all(self, ctx):
-        """ Reloads all extensions """
+        """Reloads all extensions"""
         # Gets cog list and removes admin cog (can't reload without it)
         ext_list = []
         for extension in self.bot.startup_extensions:

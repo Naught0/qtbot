@@ -25,7 +25,7 @@ class Weather(commands.Cog):
 
     @staticmethod
     def f2c(weather_data: dict) -> dict:
-        """ Converts F to C and returns the dict anew """
+        """Converts F to C and returns the dict anew"""
         # if (response['sys']['country'] != 'US')
         # Celsius conversion
         weather_data["main"]["temp"] = int(
@@ -45,13 +45,13 @@ class Weather(commands.Cog):
 
     @commands.command(aliases=["rz", "rl"])
     async def remove_location(self, ctx: commands.Context):
-        """ Remove your location from the database """
+        """Remove your location from the database"""
         await self.db.remove_user_info(ctx.author.id, "zipcode")
         await ctx.success(f"Successfully removed location for `{ctx.author}`.")
 
     @commands.command(aliases=["wt", "w"])
     async def weather(self, ctx: commands.Context, *, location: str = None):
-        """ Get the weather of a given area (zipcode, city, etc.) """
+        """Get the weather of a given area (zipcode, city, etc.)"""
         # Handle shortcut no location given
         if location is None:
             location = await self.db.fetch_user_info(ctx.author.id, "zipcode")
@@ -139,7 +139,7 @@ class Weather(commands.Cog):
 
     @commands.command(aliases=["fc"])
     async def forecast(self, ctx: commands.Context, *, location: str = None):
-        """ Get the forecast of a given location """
+        """Get the forecast of a given location"""
         if location is None:
             location = await self.db.fetch_user_info(ctx.author.id, "zipcode")
             if location is None:

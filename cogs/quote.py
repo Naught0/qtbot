@@ -10,7 +10,7 @@ class Quote(commands.Cog):
 
     @commands.group(invoke_without_command=True)
     async def quote(self, ctx, message_id: int = None):
-        """ Quote a message by using its ID """
+        """Quote a message by using its ID"""
 
         # Check for message_id, if it wasn't passed, return
         if message_id is None:
@@ -50,7 +50,7 @@ class Quote(commands.Cog):
 
     @quote.command(name="fake")
     async def fake(self, ctx, message_id: int = None, *, fake_text: str = None):
-        """ Make a fake quote with custom text referring to a real message by ID """
+        """Make a fake quote with custom text referring to a real message by ID"""
         # Check for message_id, if it wasn't passed, return
         if message_id is None:
             return await ctx.error("Provide a message id please")

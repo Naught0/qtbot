@@ -14,7 +14,7 @@ class DownDetect(commands.Cog):
     @commands.command(name="isup", aliases=["dd"])
     @commands.cooldown(rate=1, per=2.0, type=commands.BucketType.user)
     async def down_detector(self, ctx, check_url):
-        """ Check whether a website is down or up """
+        """Check whether a website is down or up"""
 
         # Recent result found in cache (< 5 minutes)
         if await self.redis_client.exists(f"isup:{check_url}"):

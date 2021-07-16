@@ -3,7 +3,7 @@ from nltk.metrics import edit_distance as ed
 
 
 def get_closest(word_dict, word):
-    """ returns the key which matches most closely to 'word' """
+    """returns the key which matches most closely to 'word'"""
     # stores keys and their edit distance values
     distance_dict = {}
 

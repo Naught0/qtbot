@@ -9,7 +9,7 @@ from utils.aiohttp_wrap import aio_get_json
 
 
 class Trump(commands.Cog):
-    """ A cog which nobody ever asked for, that fetches a random Trump tweet """
+    """A cog which nobody ever asked for, that fetches a random Trump tweet"""
 
     RAND_URL = "https://api.tronalddump.io/random/quote"
     SEARCH_URL = "https://api.tronalddump.io/search/quote"

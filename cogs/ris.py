@@ -15,7 +15,7 @@ class RIS(commands.Cog):
 
     @commands.command(aliases=["ris"])
     async def reverse_image_search(self, ctx, *, url: str):
-        """ Do a google reverse image search """
+        """Do a google reverse image search"""
         async with self.aiohttp_session.post(self.gyaku_url, data=url) as r:
             resp_data = await r.text()
 

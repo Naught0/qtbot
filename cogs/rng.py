@@ -12,7 +12,7 @@ class RNG(commands.Cog):
 
     @commands.command(aliases=["facts"])
     async def fact(self, ctx):
-        """ Get a random fun fact (potentially NSFW) """
+        """Get a random fun fact (potentially NSFW)"""
         fact = await aw.aio_get_json(self.session, self.fact_url)
 
         if not fact:
@@ -27,14 +27,14 @@ class RNG(commands.Cog):
                 )
             )
         # Create embed
-        em = discord.Embed(description=fact['text'])
+        em = discord.Embed(description=fact["text"])
         em.set_thumbnail(url="https://i.imgur.com/c36rUx9.png")
 
         await ctx.send(embed=em)
 
     @commands.command()
     async def react(self, ctx):
-        """ Have qtbot react with something inane """
+        """Have qtbot react with something inane"""
         # Have to get text because it has the wrong content-type
         word1 = "bites,highs,burns,ruins,humids,leans,quiets,traffics,homes,crashes,trumps,backs,salts,xboxs,closes,records,stops,sevens,pollutes,kills,rents,cleans,extras,boggles,Taylor's,snaps,questions,coffee's,clicks,pops,ticks,maintains,stars,ties,nys,bills,defends,opens,airs,Americans,steals,drinks,yous,businesses,teleys,invents,thanks,students,computers,frees,weathers,vends,severs,allergies,silences,fires,ambers,pushes,screws,smokes,mrs,reds,consumes,let's,classes,makes,draws,lights,butters,celebrates,drives,pulls,toxics,finds,waters,pets,lags,types,environments,grows,builds,moos,tunas,confuses,classifies,births,fails,breaks,emotionals,booms,calls,taxes,burgers,4s,gases,potatoes,pre owns,sends,mows,tickles,lefts,Saharas,nals,unites,camps,roses,shuts down,macs,apples,cheeses,turns,flexes,moves,trucks,necks,swallows,Harry's,flushes,pays,eyes,cities,increases,trains,cooks,i's,cringes,unders,folds,enters,speeds,roads,spends,tacos,pumps,hearts,Willows,reads,suhs,dogs,rocks,cookies,grinds".split(
             ","

@@ -29,14 +29,14 @@ class Moderator(commands.Cog):
     @commands.command(aliases=["k"])
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
-        """ Kick a member from the server """
+        """Kick a member from the server"""
         await ctx.guild.kick(member, reason=reason)
         await ctx.send(f"Member `{member}` kicked.\n" f"Reason: `{reason}`.")
 
     @commands.command(aliases=["kb"])
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
-        """ Ban a member from the server """
+        """Ban a member from the server"""
         await ctx.guild.ban(member, reason=reason, delete_message_days=0)
         await ctx.send(f"Member `{member}` banned.\n" f"Reason: `{reason}`.")
 
@@ -57,7 +57,7 @@ class Moderator(commands.Cog):
     @commands.command(aliases=["purge"])
     @commands.has_permissions(manage_messages=True)
     async def clean(self, ctx, num_msg: int):
-        """ Remove bot messages from the last X messages """
+        """Remove bot messages from the last X messages"""
         if num_msg > 100:
             return await ctx.send(
                 "Sorry, number of messages to be deleted must not exceed 100."
@@ -75,7 +75,7 @@ class Moderator(commands.Cog):
     @commands.command(name="prefix", aliases=["set_pre", "pre"])
     @commands.has_permissions(manage_guild=True)
     async def set_prefix(self, ctx, *, prefix: str = None):
-        """ Set the server's command prefix for qtbot """
+        """Set the server's command prefix for qtbot"""
         # Return prefix if not provided with a change
         if not prefix:
             prefixes = await ctx.bot.get_prefix(ctx.message)

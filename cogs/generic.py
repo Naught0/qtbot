@@ -100,13 +100,13 @@ class Generic(commands.Cog):
 
     @commands.command(hidden=True)
     async def say(self, ctx: commands.Context, *, message):
-        """ Make qtbot say anything ;) """
+        """Make qtbot say anything ;)"""
         await ctx.message.delete()
         await ctx.send(message)
 
     @commands.command(name="8ball", aliases=["ball"])
     async def ball(self, ctx: commands.Context, *, query=None):
-        """ Ask the magic 8ball """
+        """Ask the magic 8ball"""
         if query is None:
             return await ctx.error("The 8Ball's wisdom is not to be wasted.")
 
@@ -160,7 +160,7 @@ class Generic(commands.Cog):
 
     @commands.command()
     async def slap(self, ctx: commands.Context, *, target=None):
-        """ Teach someone a lesson """
+        """Teach someone a lesson"""
         if target is None:
             return await ctx.send(
                 f"{ctx.author.name} thrusts his hands wildly about in the air."
@@ -172,7 +172,7 @@ class Generic(commands.Cog):
 
     @commands.command()
     async def report(self, ctx):
-        """ Report a user """
+        """Report a user"""
         await ctx.success(
             f"Thank you for your report. This incident has been sent to the proper authorities. "
             "We'll take it from here."
@@ -180,7 +180,7 @@ class Generic(commands.Cog):
 
     @commands.command()
     async def love(self, ctx: commands.Context, *, target=None):
-        """ Give someone some lovin' """
+        """Give someone some lovin'"""
 
         if not target:
             return await ctx.send(f"{ctx.author.display_name} loves ... nothing")
@@ -191,7 +191,7 @@ class Generic(commands.Cog):
 
     @commands.command(aliases=["at"])
     async def aesthetify(self, ctx: commands.Context, *, a_text):
-        """ Make your message ａｅｓｔｈｅｔｉｃ，　ｍａｎ """
+        """Make your message ａｅｓｔｈｅｔｉｃ，　ｍａｎ"""
         ascii_to_wide = dict((i, chr(i + 0xFEE0)) for i in range(0x21, 0x7F))
         ascii_to_wide.update({0x20: "\u3000", 0x2D: "\u2212"})
 

@@ -12,7 +12,7 @@ class IPLookup(commands.Cog):
 
     @commands.command(aliases=["ip"])
     async def iplookup(self, ctx, *, query: str):
-        """ Get information about an IP or website """
+        """Get information about an IP or website"""
         res = await aw.aio_get_json(self.aio_session, self.api_uri.format(query))
 
         # Check whether successful

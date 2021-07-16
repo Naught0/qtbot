@@ -22,7 +22,7 @@ class Wiki(commands.Cog):
 
     @commands.command(name="wiki", aliases=["wi"])
     async def wiki_search(self, ctx, *, query=None):
-        """ Get the closest matching Wikipedia article for a given query """
+        """Get the closest matching Wikipedia article for a given query"""
         formatted_query = quote_plus(query)
 
         # Get wiki page

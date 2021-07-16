@@ -17,7 +17,7 @@ class FindMeme(commands.Cog):
 
     @commands.command(name="meme", aliases=["mem", "maymay"])
     async def get_meme_info(self, ctx, *, search):
-        """ Search for some dank meme information """
+        """Search for some dank meme information"""
         f_search = search.replace(" ", "+")
 
         if await self.redis_client.exists(f"memecache:{f_search}"):

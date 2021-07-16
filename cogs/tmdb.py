@@ -14,7 +14,7 @@ class MyTMDb(commands.Cog):
         self.bot = bot
 
     def sync_get_tmdb(query: str, type_search: str):
-        """ Non async tmdb library function """
+        """Non async tmdb library function"""
 
         # Initialize the search
         search = tmdb.Search()
@@ -36,7 +36,7 @@ class MyTMDb(commands.Cog):
 
     @commands.command(name="show", aliases=["ss", "tv"])
     async def get_show(self, ctx, *, query):
-        """ Get TV show information """
+        """Get TV show information"""
 
         # Must run_in_executor for blocking libraries
         result = await self.bot.loop.run_in_executor(
@@ -69,7 +69,7 @@ class MyTMDb(commands.Cog):
 
     @commands.command(name="movie", aliases=["mov"])
     async def get_movie(self, ctx, *, query):
-        """ Get movie information """
+        """Get movie information"""
 
         # Must run_in_executor for blocking libraries
         result = await self.bot.loop.run_in_executor(

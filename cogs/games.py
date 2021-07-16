@@ -7,7 +7,7 @@ from utils import aiohttp_wrap as aw
 
 
 class Game(commands.Cog):
-    """ Cog which allows fetching of video game information """
+    """Cog which allows fetching of video game information"""
 
     IG_URL = "https://api-2445582011268.apicast.io/{}/"
     IG_ICON_URL = "https://www.igdb.com/favicon-196x196.png"
@@ -20,7 +20,7 @@ class Game(commands.Cog):
 
     @commands.command(aliases=["games"])
     async def game(self, ctx, *, query: str):
-        """ Search for some information about a game """
+        """Search for some information about a game"""
         url = self.IG_URL.format("games")
         headers = {"user-key": self.KEY}
         params = {

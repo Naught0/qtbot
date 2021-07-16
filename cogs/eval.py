@@ -14,7 +14,7 @@ class Eval(commands.Cog):
     @commands.command(name="eval", hidden=True)
     @commands.is_owner()
     async def shell_access(self, ctx, *, cmd):
-        """ Lets me access the VPS command line via the bot """
+        """Lets me access the VPS command line via the bot"""
         process = await asyncio.create_subprocess_shell(
             cmd, stdout=asyncio.subprocess.PIPE
         )
@@ -45,14 +45,14 @@ class Eval(commands.Cog):
     @commands.command(name="git", hidden=True)
     @commands.is_owner()
     async def git_pull(self, ctx):
-        """ Shortcut for .eval git pull origin master """
+        """Shortcut for .eval git pull origin master"""
         cmd = self.bot.get_command("eval")
         await ctx.invoke(cmd, cmd="git pull origin master")
 
     @commands.group(invoke_without_command=True, name="sql", hidden=True)
     @commands.is_owner()
     async def sql_execute(self, ctx, *, query):
-        """ Lets me access the postgres database via discord """
+        """Lets me access the postgres database via discord"""
         try:
             res = await self.db_conn.execute(query)
         except Exception as e:

@@ -9,7 +9,7 @@ class Calculator(commands.Cog):
         self.bot = bot
 
     def sync_calc(query):
-        """ Non async wolfrmaalpha lib function """
+        """Non async wolfrmaalpha lib function"""
         with open("data/apikeys.json") as f:
             api_key = json.load(f)["wolfram"]
 
@@ -25,7 +25,7 @@ class Calculator(commands.Cog):
 
     @commands.command(name="calc", aliases=["cal", "c"])
     async def calculate(self, ctx, *, query):
-        """ Calculate like, anything. """
+        """Calculate like, anything."""
 
         if not query:
             return await ctx.error("Please enter something for me to calculate!")

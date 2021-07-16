@@ -40,11 +40,13 @@ class Dictionary(commands.Cog):
         else:
             # Grab the first three defn's, combine to string w/ bullet points
             try:
-                definitions = "\n".join([f"\u2022 {x}" for x in resp[0]["shortdef"][:3]])
+                definitions = "\n".join(
+                    [f"\u2022 {x}" for x in resp[0]["shortdef"][:3]]
+                )
                 footer = f"Originated ~{re.sub(r'{.+', '', resp[0]['date'])}"
                 title = f"{word} - ({resp[0]['fl']})"
             except KeyError:
-                return await ctx.message.add_reaction('❌')
+                return await ctx.message.add_reaction("❌")
 
         em = discord.Embed(color=discord.Color.blurple())
         em.set_author(

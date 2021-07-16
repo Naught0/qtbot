@@ -82,6 +82,6 @@ def get_video_info(query: str, title_append="", num_results=1, thumb_quality=0) 
 
 
 def _get_watch_url(video_id: str) -> str:
-    """ Creates watchable / downloadable URL from video's ID """
+    """Creates watchable / downloadable URL from video's ID"""
 
     return f"https://www.youtube.com/watch?v={video_id}"

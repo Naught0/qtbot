@@ -10,7 +10,7 @@ from utils import aiohttp_wrap as aw
 
 
 class Crypto(commands.Cog):
-    """ Allows users to track bitcoin and other currencies (eventually) """
+    """Allows users to track bitcoin and other currencies (eventually)"""
 
     URL_BTC = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
     CACHE_TTL = 10 * 60
