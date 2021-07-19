@@ -48,9 +48,9 @@ class MyTMDb(commands.Cog):
         soup = BeautifulSoup(rt_resp, "lxml")
         try:
             items = (
-                json.loads(soup.select("#movies-json")[0].contents[0]["items"])
+                json.loads(soup.select("#movies-json")[0].contents[0])["items"]
                 if type == "movie"
-                else json.loads(soup.select("#tvs-json")[0].contents[0]["items"])
+                else json.loads(soup.select("#tvs-json")[0].contents[0])["items"]
             )
         except (JSONDecodeError, TypeError):
             items = None
