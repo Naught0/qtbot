@@ -1,15 +1,14 @@
-from json.decoder import JSONDecodeError
-from urllib import parse
 import discord
 import json
-from discord.ext import commands
-from typing import Dict, Type
 
+from json.decoder import JSONDecodeError
+from urllib import parse
+from typing import Dict
 from dateutil.parser import parse
-from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
+from discord.ext import commands
+from bs4 import BeautifulSoup
 from utils.aiohttp_wrap import aio_get_json as get_json, aio_get_text as get_text
-import tmdbsimple as tmdb
 
 
 class MyTMDb(commands.Cog):
