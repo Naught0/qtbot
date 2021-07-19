@@ -67,7 +67,7 @@ class MyTMDb(commands.Cog):
             )
         else:
             rt_match = None
-            
+
         return {**tmdb_result, "rotten_tomatoes": rt_match}
 
     @staticmethod
@@ -81,7 +81,7 @@ class MyTMDb(commands.Cog):
 
         # Create embed
         em = discord.Embed(color=discord.Color.greyple())
-        em.title = f'{result["name"]} ({parse(result["first_air_date"]).year if type == "show" else parse(result["release_date"]).year})'
+        em.title = f'{result["name"] if type == "show" else result["title"]} ({parse(result["first_air_date"]).year if type == "show" else parse(result["release_date"]).year})'
         em.description = (
             f'{result["overview"]}\n\n[Rotten Tomatoes]({result["rotten_tomatoes"]["url"]})'
             if result["rotten_tomatoes"]
