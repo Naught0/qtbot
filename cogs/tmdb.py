@@ -6,6 +6,7 @@ from urllib import parse
 from typing import Dict
 from dateutil.parser import parse
 from urllib.parse import quote_plus
+
 from discord.ext import commands
 from bs4 import BeautifulSoup
 from utils.aiohttp_wrap import aio_get_json as get_json, aio_get_text as get_text
@@ -64,6 +65,9 @@ class MyTMDb(commands.Cog):
                 ),
                 None,
             )
+        else:
+            rt_match = None
+            
         return {**tmdb_result, "rotten_tomatoes": rt_match}
 
     @staticmethod
