@@ -93,10 +93,17 @@ class MyTMDb(commands.Cog):
         )
         em.set_thumbnail(url=f"https://image.tmdb.org/t/p/w185{result['poster_path']}")
         em.add_field(name="TMDb Rating", value=str(rating))
-        result["rotten_tomatoes"] and em.add_field(
-            name="Rotten Tomatoes",
-            value=f"{':tomato: ' + result['rotten_tomatoes']['tomatometerScore']['score'] + '%' if 'score' in result['rotten_tomatoes']['tomatometerScore'] else ''} {':popcorn: ' + result['rotten_tomatoes']['audienceScore']['score'] + '%' if 'score' in result['rotten_tomatoes']['audienceScore'] else ''}",
-        )
+        if "rotten_tomatoes" in result:
+            if any(
+                (
+                    "score" in result["rotten_tomatoes"]["audienceScore"],
+                    "score" in result["rotten_tomatoes"]["tomatometerScore"],
+                )
+            ):
+                em.add_field(
+                    name="Rotten Tomatoes",
+                    value=f"{':tomato: ' + result['rotten_tomatoes']['tomatometerScore']['score'] + '%' if 'score' in result['rotten_tomatoes']['tomatometerScore'] else ''} {':popcorn: ' + result['rotten_tomatoes']['audienceScore']['score'] + '%' if 'score' in result['rotten_tomatoes']['audienceScore'] else ''}",
+                )
         em.set_footer(text=rec)
 
         return em
