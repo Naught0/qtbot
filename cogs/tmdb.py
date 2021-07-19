@@ -95,6 +95,8 @@ class MyTMDb(commands.Cog):
         )
         em.set_footer(text=rec)
 
+        return em
+
     @commands.command(name="show", aliases=["ss", "tv"])
     async def get_show(self, ctx, *, query):
         """Get TV show information"""
