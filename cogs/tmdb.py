@@ -1,101 +1,119 @@
+from json.decoder import JSONDecodeError
+from urllib import parse
 import discord
 import json
 from discord.ext import commands
+from typing import Dict, Type
+
+from dateutil.parser import parse
+from bs4 import BeautifulSoup
+from urllib.parse import quote_plus
+from utils.aiohttp_wrap import aio_get_json as get_json, aio_get_text as get_text
 import tmdbsimple as tmdb
 
 
-# TMDb key
-with open("data/apikeys.json") as f:
-    tmdb.API_KEY = json.load(f)["tmdb"]
-
-
 class MyTMDb(commands.Cog):
+    URL = "https://api.themoviedb.org/3"
+    RT_URL = "https://www.rottentomatoes.com/search"
+
     def __init__(self, bot):
         self.bot = bot
+        self.session = bot.aio_session
+        with open("data/apikeys.json") as f:
+            self.API_KEY = json.load(f)["tmdb"]
 
-    def sync_get_tmdb(query: str, type_search: str):
-        """Non async tmdb library function"""
+    async def req(self, type: str, query: str) -> Dict:
+        """Wraper for TMDB requests which also fetches RottenTomatoes scores
 
-        # Initialize the search
-        search = tmdb.Search()
+        Args:
+            type (str): movie || show
+            query (str): search term
 
-        # TMDb response & store
-        if type_search == "tv":
-            try:
-                return search.tv(query=query)["results"][0]
-            except IndexError:
-                return None
+        Returns:
+            Dict: API response
+        """
+        params = {"api_key": self.API_KEY, "query": quote_plus(query)}
+        tmdb_resp = await get_json(
+            self.session, f"{self.URL}/search/{type}", params=params
+        )
+        # Short circuit if we don't find anything from the tmdb api
+        if not tmdb_resp:
+            return None
 
-        elif type_search == "movie":
-            try:
-                return search.movie(query=query)["results"][0]
-            except IndexError:
-                return None
+        rt_resp = await get_text(
+            self.session, self.RT_URL, params={"search": quote_plus(query)}
+        )
 
-        return None
+        tmdb_result = tmdb_resp["results"][0]
+        soup = BeautifulSoup(rt_resp, "lxml")
+        try:
+            items = (
+                json.loads(soup.select("#movies-json")[0].contents[0]["items"])
+                if type == "movie"
+                else json.loads(soup.select("#tvs-json")[0].contents[0]["items"])
+            )
+        except (JSONDecodeError, TypeError):
+            items = None
+
+        if items:
+            # Get the RT match which either is an exact match of the title & failing that, year
+            # next() grabs the first result so as not to receive another array
+            rt_match = next(
+                filter(
+                    lambda r: r["name"] == tmdb_result["title"]
+                    or int(r["releaseYear"]) == parse(tmdb_result["release_date"]).year
+                ),
+                None,
+            )
+        return {**tmdb_result, "rotten_tomatoes": rt_match}
+
+    @staticmethod
+    def _to_embed(result, type):
+        # Get qtbot rating
+        rating = float(result["vote_average"])
+        if rating > 7.0:
+            rec = f"This is a qtbot™ recommended {type}."
+        else:
+            rec = f"This is not a qtbot™ recommmended {type}."
+
+        # Create embed
+        em = discord.Embed(color=discord.Color.greyple())
+        em.title = f'{result["name"]} ({parse(result["first_air_date"]).year if type == "show" else parse(result["release_date"]).year})'
+        em.description = (
+            f'{result["overview"]}\n\n[Rotten Tomatoes]({result["rotten_tomatoes"]["url"]})'
+            if result["rotten_tomatoes"]
+            else result["overview"]
+        )
+        em.set_thumbnail(url=f"https://image.tmdb.org/t/p/w185{result['poster_path']}")
+        em.add_field(name="TMDb Rating", value=str(rating))
+        result["rotten_tomatoes"] and em.add_field(
+            name="Rotten Tomatoes",
+            value=f":tomato: {result['rotten_tomatoes']['tomatometerScore']['score']}% :popcorn: {result['rotten_tomatoes']['audienceScore']['score']}%",
+        )
+        em.set_footer(text=rec)
 
     @commands.command(name="show", aliases=["ss", "tv"])
     async def get_show(self, ctx, *, query):
         """Get TV show information"""
 
-        # Must run_in_executor for blocking libraries
-        result = await self.bot.loop.run_in_executor(
-            None, MyTMDb.sync_get_tmdb, query, "tv"
-        )
+        result = await self.req("tv", query)
 
         # If no result are found
         if not result:
-            return await ctx.send("Sorry, couldn't find that one.")
+            return await ctx.error(f"Couldn't find anything for {query}")
 
-        # Get qtbot rating
-        rating = float(result["vote_average"])
-        if rating > 7.0:
-            rec = "This is a qtbot™ recommended show."
-        else:
-            rec = "This is not a qtbot™ recommmended show."
-
-        # For getting poster
-        base_image_uri = "https://image.tmdb.org/t/p/w185{}"
-
-        # Create embed
-        em = discord.Embed(color=discord.Color.greyple())
-        em.title = f'{result["name"]} ({result["first_air_date"].split("-")[0]})'
-        em.description = result["overview"]
-        em.set_thumbnail(url=base_image_uri.format(result["poster_path"]))
-        em.add_field(name="Rating", value=str(rating))
-        em.set_footer(text=rec)
-
+        em = self._to_embed(result, "show")
         await ctx.send(embed=em)
 
     @commands.command(name="movie", aliases=["mov"])
     async def get_movie(self, ctx, *, query):
         """Get movie information"""
-
-        # Must run_in_executor for blocking libraries
-        result = await self.bot.loop.run_in_executor(
-            None, MyTMDb.sync_get_tmdb, query, "movie"
-        )
+        result = await self.req("movie", query)
 
         if not result:
-            return await ctx.send("Sorry, couldn't find that one.")
+            return await ctx.error(f"Couldn't find anything for {query}")
 
-        rating = float(result["vote_average"])
-        if rating < 7.0:
-            rec = "This is not a qtbot™ recommmended film."
-        else:
-            rec = "This is a qtbot™ recommended film."
-
-        # For getting poster
-        base_image_uri = "https://image.tmdb.org/t/p/w185{}"
-
-        # Create embed
-        em = discord.Embed(color=discord.Color.greyple())
-        em.title = f'{result["title"]} ({result["release_date"].split("-")[0]})'
-        em.description = result["overview"]
-        em.set_thumbnail(url=base_image_uri.format(result["poster_path"]))
-        em.add_field(name="Rating", value=str(rating))
-        em.set_footer(text=rec)
-
+        em = self._to_embed(result, "movie")
         await ctx.send(embed=em)
 
 
