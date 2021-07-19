@@ -61,7 +61,8 @@ class MyTMDb(commands.Cog):
             rt_match = next(
                 filter(
                     lambda r: r["name"] == tmdb_result["title"]
-                    or int(r["releaseYear"]) == parse(tmdb_result["release_date"]).year
+                    or int(r["releaseYear"]) == parse(tmdb_result["release_date"]).year,
+                    items,
                 ),
                 None,
             )
