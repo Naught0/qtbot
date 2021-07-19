@@ -60,7 +60,10 @@ class MyTMDb(commands.Cog):
             # next() grabs the first result so as not to receive another array
             rt_match = next(
                 filter(
-                    lambda r: r["name"] == (tmdb_result["title"] if type == "movie" else tmdb_result["name"])
+                    lambda r: r["name"]
+                    == (
+                        tmdb_result["title"] if type == "movie" else tmdb_result["name"]
+                    )
                     or int(r["releaseYear"]) == parse(tmdb_result["release_date"]).year,
                     items,
                 ),
@@ -92,7 +95,7 @@ class MyTMDb(commands.Cog):
         em.add_field(name="TMDb Rating", value=str(rating))
         result["rotten_tomatoes"] and em.add_field(
             name="Rotten Tomatoes",
-            value=f":tomato: {result['rotten_tomatoes']['tomatometerScore']['score']}% :popcorn: {result['rotten_tomatoes']['audienceScore']['score']}%",
+            value=f"{'score' in result['rotten_tomatoes']['tomatometerScore'] and ':tomato: ' + result['rotten_tomatoes']['tomatometerScore']['score']}% {'score' in result['rotten_tomatoes']['audienceScore'] and ':popcorn: ' + result['rotten_tomatoes']['audienceScore']['score']}%",
         )
         em.set_footer(text=rec)
 
