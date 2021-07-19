@@ -37,7 +37,7 @@ class MyTMDb(commands.Cog):
             self.session, f"{self.URL}/search/{type}", params=params
         )
         # Short circuit if we don't find anything from the tmdb api
-        if not tmdb_resp:
+        if not tmdb_resp["results"]:
             return None
 
         rt_resp = await get_text(
