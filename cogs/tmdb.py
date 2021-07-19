@@ -60,7 +60,7 @@ class MyTMDb(commands.Cog):
             # next() grabs the first result so as not to receive another array
             rt_match = next(
                 filter(
-                    lambda r: r["name"] == tmdb_result["title"]
+                    lambda r: r["name"] == (tmdb_result["title"] if type == "movie" else tmdb_result["name"])
                     or int(r["releaseYear"]) == parse(tmdb_result["release_date"]).year,
                     items,
                 ),
