@@ -91,7 +91,7 @@ class MyTMDb(commands.Cog):
             if result["rotten_tomatoes"]
             else result["overview"]
         )
-        em.set_thumbnail(url=f"https://image.tmdb.org/t/p/w185{result['poster_path']}")
+        em.set_thumbnail(url=f"https://image.tmdb.org/t/p/w500{result['poster_path']}")
         em.add_field(name="TMDb Rating", value=str(rating))
         if result["rotten_tomatoes"]:
             if any(
