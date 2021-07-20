@@ -64,7 +64,11 @@ class MyTMDb(commands.Cog):
                     == (
                         tmdb_result["title"] if type == "movie" else tmdb_result["name"]
                     )
-                    or int(r["releaseYear"]) == parse(tmdb_result["release_date"]).year,
+                    or (
+                        int(r["releaseYear"]) == parse(tmdb_result["release_date"]).year
+                        if "releaseYear" in r
+                        else False
+                    ),
                     items,
                 ),
                 None,
