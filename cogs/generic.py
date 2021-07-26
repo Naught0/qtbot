@@ -1,6 +1,7 @@
 import random
 import re
 from datetime import datetime
+from asyncio import sleep
 
 import discord
 from discord.ext import commands
@@ -12,6 +13,21 @@ class Generic(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.blue = discord.Color.dark_blue()
+
+    @commands.command(name="countdown")
+    async def _countdown(self, ctx: commands.Context):
+        cd = [
+            ":five:",
+            ":four:",
+            ":three:",
+            ":two:",
+            ":one:",
+            ":regional_indicator_g:  :regional_indicator_o: :exclamation:",
+        ]
+        msg = await ctx.send(cd[0], delete_after=15.0)
+        for x in range(1, 6):
+            await sleep(1)
+            await msg.edit(content=cd[x])
 
     @commands.command(name="maize", aliases=["maiz"])
     async def _maize(self, ctx: commands.Context):
