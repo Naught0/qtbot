@@ -24,7 +24,7 @@ class Generic(commands.Cog):
             ":one:",
             ":regional_indicator_g:  :regional_indicator_o: :exclamation:",
         ]
-        msg = await ctx.send(cd[0], delete_after=15.0)
+        msg = await ctx.send(cd[0])
         for x in range(1, 6):
             await sleep(1)
             await msg.edit(content=cd[x])
