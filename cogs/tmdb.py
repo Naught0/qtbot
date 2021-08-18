@@ -52,7 +52,7 @@ class MyTMDb(commands.Cog):
                 if type == "movie"
                 else json.loads(soup.select("#tvs-json")[0].contents[0])["items"]
             )
-        except (JSONDecodeError, TypeError):
+        except (JSONDecodeError, TypeError, IndexError):
             items = None
 
         if items:
