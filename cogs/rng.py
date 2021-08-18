@@ -1,5 +1,7 @@
 import discord
 import random
+
+from discord.utils import escape_markdown
 from discord.ext import commands
 from utils import aiohttp_wrap as aw
 
@@ -27,7 +29,7 @@ class RNG(commands.Cog):
                 )
             )
         # Create embed
-        em = discord.Embed(description=fact["text"])
+        em = discord.Embed(description=escape_markdown(fact["text"]))
         em.set_thumbnail(url="https://i.imgur.com/c36rUx9.png")
 
         await ctx.send(embed=em)
