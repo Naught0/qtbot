@@ -21,7 +21,7 @@ class News(commands.Cog):
 
     @staticmethod
     def date_range() -> str:
-        return f"{datetime.today().isoformat().split('T')[0]},{(datetime.today() - timedelta(days=5)).isoformat().split('T')[0]}"
+        return f"{(datetime.today() - timedelta(days=5)).isoformat().split('T')[0]},{datetime.today().isoformat().split('T')[0]}"
 
     @staticmethod
     def json_to_embed(json_dict: dict) -> discord.Embed:
