@@ -53,7 +53,7 @@ class News(commands.Cog):
         em_dict = {}
 
         params = (
-            {"q": quote(query), "language": "en", "pageSize": 9, "sources": ",".join(self.SOURCES)}
+            {"q": quote(query), "language": "en", "pageSize": 9}
             if query
             else {"language": "en", "pageSize": 9}
         )
@@ -69,7 +69,10 @@ class News(commands.Cog):
 
         else:
             api_response = await aw.aio_get_json(
-                self.aio_session, (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines"), params=params, headers=self.headers
+                self.aio_session,
+                (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines"),
+                params=params,
+                headers=self.headers,
             )
             if api_response is None:
                 return await ctx.error(
