@@ -60,6 +60,7 @@ class News(commands.Cog):
                 "limit": 9,
                 "date": self.date_range(),
                 "sort": "popularity",
+                "categories": "-sports,-entertainment,-business",
                 "access_key": self.api_key,
             }
             if query
