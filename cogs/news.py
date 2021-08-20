@@ -17,7 +17,6 @@ class News(commands.Cog):
         self.aio_session = bot.aio_session
         self.uri = "https://newsapi.org/v2"
         self.api_key = bot.api_keys["news"]
-        self.headers = {"X-Api-Key": self.api_key}
 
     @staticmethod
     def json_to_embed(json_dict: dict) -> discord.Embed:
@@ -53,9 +52,9 @@ class News(commands.Cog):
         em_dict = {}
 
         params = (
-            {"q": quote(query), "language": "en", "pageSize": 9}
+            {"q": quote(query), "language": "en", "pageSize": 9, "apiKey": self.api_key}
             if query
-            else {"language": "en", "pageSize": 9}
+            else {"language": "en", "pageSize": 9, "apiKey": self.api_key}
         )
 
         redis_key = f"news:{query}" if query else "news"
@@ -69,12 +68,11 @@ class News(commands.Cog):
 
         else:
             url = (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines")
-            print(url, params, self.headers)
+            print(url, params)
             api_response = await aw.aio_get_json(
                 self.aio_session,
                 (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines"),
-                params=params,
-                headers=self.headers,
+                params=params
             )
             if api_response is None:
                 return await ctx.error(
