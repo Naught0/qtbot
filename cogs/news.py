@@ -51,14 +51,14 @@ class News(commands.Cog):
         params = (
             {
                 "keywords": quote(query),
-                "sources": "en",
+                "languages": "en",
                 "limit": 9,
                 "sort": "popularity",
                 "access_key": self.api_key,
             }
             if query
             else {
-                "sources": "en",
+                "languages": "en",
                 "limit": 9,
                 "sort": "popularity",
                 "access_key": self.api_key,
