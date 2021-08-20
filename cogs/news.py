@@ -14,7 +14,7 @@ class News(commands.Cog):
         self.bot = bot
         self.redis_client = bot.redis_client
         self.aio_session = bot.aio_session
-        self.uri = "http://api.mediastack.com/v1/"
+        self.uri = "http://api.mediastack.com/v1/news"
         with open("data/apikeys.json") as f:
             self.api_key = json.load(f)["news"]
 
@@ -77,7 +77,7 @@ class News(commands.Cog):
         else:
             api_response = await aw.aio_get_json(
                 self.aio_session,
-                (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines"),
+                self.uri,
                 params=params,
             )
             if api_response is None:
