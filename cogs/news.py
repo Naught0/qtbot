@@ -4,6 +4,7 @@ import discord
 
 from urllib.parse import quote
 from dateutil.parser import parse
+from datetime import datetime, timedelta
 
 from utils import aiohttp_wrap as aw
 from discord.ext import commands
@@ -17,6 +18,10 @@ class News(commands.Cog):
         self.uri = "http://api.mediastack.com/v1/news"
         with open("data/apikeys.json") as f:
             self.api_key = json.load(f)["news"]
+
+    @staticmethod
+    def date_range() -> str:
+        return f"{datetime.today().isoformat().split('T')[0]},{(datetime.today() - timedelta(days=5)).isoformat().split('T')[0]}"
 
     @staticmethod
     def json_to_embed(json_dict: dict) -> discord.Embed:
@@ -53,12 +58,14 @@ class News(commands.Cog):
                 "keywords": quote(query),
                 "languages": "en",
                 "limit": 9,
+                "date": self.date_range(),
                 "access_key": self.api_key,
             }
             if query
             else {
                 "languages": "en",
                 "limit": 9,
+                "date": self.date_range(),
                 "access_key": self.api_key,
             }
         )
