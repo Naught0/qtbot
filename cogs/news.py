@@ -86,7 +86,7 @@ class News(commands.Cog):
                     description="Something went wrong with that request. Try again later.",
                 )
 
-            article_list = api_response["articles"]
+            article_list = api_response["data"]
             if len(article_list) == 0:
                 return await ctx.error(
                     "No articles found",
