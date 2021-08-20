@@ -68,6 +68,7 @@ class News(commands.Cog):
                 "limit": 9,
                 "date": self.date_range(),
                 "sort": "popularity",
+                "countries": "us,gb",
                 "access_key": self.api_key,
             }
         )
