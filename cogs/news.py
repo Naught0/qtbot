@@ -1,8 +1,6 @@
 import json
 import asyncio
-import re
 import discord
-import aiohttp
 
 from urllib.parse import quote
 from dateutil.parser import parse
@@ -16,8 +14,9 @@ class News(commands.Cog):
         self.bot = bot
         self.redis_client = bot.redis_client
         self.aio_session = bot.aio_session
-        self.uri = "https://newsapi.org/v2"
-        self.api_key = bot.api_keys["news"]
+        self.uri = "http://api.mediastack.com/v1/"
+        with open("data/apikeys.json") as f:
+            self.api_key = json.load(f)["news"]
 
     @staticmethod
     def json_to_embed(json_dict: dict) -> discord.Embed:
@@ -27,14 +26,11 @@ class News(commands.Cog):
         em.url = json_dict["url"]
 
         # This field is empty sometimes -> handle it
-        if json_dict["urlToImage"]:
-            em.set_thumbnail(url=json_dict["urlToImage"])
+        if json_dict["image"]:
+            em.set_thumbnail(url=json_dict["image"])
 
-        # This regex string brought to you by Jared :)
-        pattern = "https?://(?:www\.)?(\w+).*"
-        organization = re.match(pattern, json_dict["url"]).group(1)
-        em.set_footer(text=organization.upper())
-        em.timestamp = parse(json_dict["publishedAt"])
+        em.set_footer(text=json_dict["source"])
+        em.timestamp = parse(json_dict["published_at"])
 
         return em
 
@@ -54,18 +50,18 @@ class News(commands.Cog):
 
         params = (
             {
-                "q": quote(query),
+                "keywords": quote(query),
                 "language": "en",
-                "country": ["us", "gb", "nz", "au"],
-                "pageSize": 9,
-                "apiKey": self.api_key,
+                "limit": 9,
+                "sort": "popularity",
+                "access_key": self.api_key,
             }
             if query
             else {
                 "language": "en",
-                "country": ["us", "gb", "nz", "au"],
-                "pageSize": 9,
-                "apiKey": self.api_key,
+                "limit": 9,
+                "sort": "popularity",
+                "access_key": self.api_key,
             }
         )
 
@@ -73,19 +69,17 @@ class News(commands.Cog):
         if await self.redis_client.exists(redis_key):
             raw_json_string = await self.redis_client.get(redis_key)
             raw_json_dict = json.loads(raw_json_string)
-            article_list = raw_json_dict["articles"]
+            article_list = raw_json_dict["data"]
 
             for idx, article in enumerate(article_list[:9]):
                 em_dict[emoji_tup[idx]] = self.json_to_embed(article)
 
         else:
-            url = f"{self.uri}/everything" if query else f"{self.uri}/top-headlines"
-            print(url, params)
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, params=params) as resp:
-                    api_response = await resp.json()
-
-            print(api_response)
+            api_response = await aw.aio_get_json(
+                self.aio_session,
+                (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines"),
+                params=params,
+            )
             if api_response is None:
                 return await ctx.error(
                     "API error",
