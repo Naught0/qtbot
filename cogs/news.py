@@ -59,6 +59,7 @@ class News(commands.Cog):
                 "languages": "en",
                 "limit": 9,
                 "date": self.date_range(),
+                "sort": "popularity",
                 "access_key": self.api_key,
             }
             if query
@@ -66,6 +67,7 @@ class News(commands.Cog):
                 "languages": "en",
                 "limit": 9,
                 "date": self.date_range(),
+                "sort": "popularity",
                 "access_key": self.api_key,
             }
         )
