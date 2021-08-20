@@ -68,6 +68,8 @@ class News(commands.Cog):
                 em_dict[emoji_tup[idx]] = self.json_to_embed(article)
 
         else:
+            url = (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines")
+            print(url, params, self.headers)
             api_response = await aw.aio_get_json(
                 self.aio_session,
                 (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines"),
