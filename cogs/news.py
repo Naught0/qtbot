@@ -53,14 +53,12 @@ class News(commands.Cog):
                 "keywords": quote(query),
                 "languages": "en",
                 "limit": 9,
-                "sort": "popularity",
                 "access_key": self.api_key,
             }
             if query
             else {
                 "languages": "en",
                 "limit": 9,
-                "sort": "popularity",
                 "access_key": self.api_key,
             }
         )
