@@ -2,6 +2,7 @@ import json
 import asyncio
 import re
 import discord
+import aiohttp
 
 from urllib.parse import quote
 from dateutil.parser import parse
@@ -52,9 +53,20 @@ class News(commands.Cog):
         em_dict = {}
 
         params = (
-            {"q": quote(query), "language": "en", "pageSize": 9, "apiKey": self.api_key}
+            {
+                "q": quote(query),
+                "language": "en",
+                "country": ["us", "gb", "nz", "au"],
+                "pageSize": 9,
+                "apiKey": self.api_key,
+            }
             if query
-            else {"language": "en", "pageSize": 9, "apiKey": self.api_key}
+            else {
+                "language": "en",
+                "country": ["us", "gb", "nz", "au"],
+                "pageSize": 9,
+                "apiKey": self.api_key,
+            }
         )
 
         redis_key = f"news:{query}" if query else "news"
@@ -67,13 +79,13 @@ class News(commands.Cog):
                 em_dict[emoji_tup[idx]] = self.json_to_embed(article)
 
         else:
-            url = (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines")
+            url = f"{self.uri}/everything" if query else f"{self.uri}/top-headlines"
             print(url, params)
-            api_response = await aw.aio_get_json(
-                self.aio_session,
-                (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines"),
-                params=params
-            )
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, params=params) as resp:
+                    api_response = await resp.json()
+
+            print(api_response)
             if api_response is None:
                 return await ctx.error(
                     "API error",
@@ -107,7 +119,7 @@ class News(commands.Cog):
         while True:
             try:
                 reaction, user = await self.bot.wait_for(
-                    "reaction_add", check=check, timeout=60.0
+                    "reaction_add", check=check, timeout=30.0
                 )
             except asyncio.TimeoutError:
                 return await bot_message.clear_reactions()
