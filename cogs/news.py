@@ -2,7 +2,8 @@ import json
 import asyncio
 import re
 import discord
-from datetime import datetime
+
+from urllib.parse import quote
 from dateutil.parser import parse
 
 from utils import aiohttp_wrap as aw
@@ -10,90 +11,11 @@ from discord.ext import commands
 
 
 class News(commands.Cog):
-    SOURCES = (
-        "abc-news",
-        "abc-news-au",
-        "al-jazeera-english",
-        "ars-technica",
-        "associated-press",
-        "australian-financial-review",
-        "axios",
-        "bbc-news",
-        "bbc-sport",
-        "bleacher-report",
-        "bloomberg",
-        "business-insider",
-        "business-insider-uk",
-        "cbc-news",
-        "cbs-news",
-        "cnn",
-        "crypto-coins-news",
-        "engadget",
-        "entertainment-weekly",
-        "espn",
-        "espn-cric-info",
-        "financial-post",
-        "fortune",
-        "four-four-two",
-        "fox-news",
-        "fox-sports",
-        "google-news",
-        "google-news-au",
-        "google-news-ca",
-        "google-news-in",
-        "google-news-uk",
-        "hacker-news",
-        "ign",
-        "independent",
-        "mashable",
-        "medical-news-today",
-        "msnbc",
-        "mtv-news",
-        "mtv-news-uk",
-        "national-geographic",
-        "national-review",
-        "nbc-news",
-        "news24",
-        "new-scientist",
-        "news-com-au",
-        "newsweek",
-        "new-york-magazine",
-        "next-big-future",
-        "nfl-news",
-        "nhl-news",
-        "politico",
-        "polygon",
-        "recode",
-        "reuters",
-        "rte",
-        "talksport",
-        "techcrunch",
-        "techradar",
-        "the-american-conservative",
-        "the-globe-and-mail",
-        "the-hill",
-        "the-hindu",
-        "the-huffington-post",
-        "the-irish-times",
-        "the-jerusalem-post",
-        "the-next-web",
-        "the-sport-bible",
-        "the-times-of-india",
-        "the-verge",
-        "the-wall-street-journal",
-        "the-washington-post",
-        "the-washington-times",
-        "time",
-        "usa-today",
-        "vice-news",
-        "wired",
-    )
-
     def __init__(self, bot):
         self.bot = bot
         self.redis_client = bot.redis_client
         self.aio_session = bot.aio_session
-        self.uri = "https://newsapi.org/v2/top-headlines"
+        self.uri = "https://newsapi.org/v2"
         self.api_key = bot.api_keys["news"]
         self.headers = {"X-Api-Key": self.api_key}
 
@@ -131,9 +53,9 @@ class News(commands.Cog):
         em_dict = {}
 
         params = (
-            {"q": query, "pageSize": 9, "sources": ",".join(self.SOURCES)}
+            {"q": quote(query), "pageSize": 9, "sources": ",".join(self.SOURCES)}
             if query
-            else {"sources": ",".join(self.SOURCES), "pageSize": 9}
+            else {"pageSize": 9}
         )
 
         redis_key = f"news:{query}" if query else "news"
@@ -147,7 +69,7 @@ class News(commands.Cog):
 
         else:
             api_response = await aw.aio_get_json(
-                self.aio_session, self.uri, params=params, headers=self.headers
+                self.aio_session, (f"{self.uri}/everything" if query else f"{self.uri}/top-headlines"), params=params, headers=self.headers
             )
             if api_response is None:
                 return await ctx.error(
