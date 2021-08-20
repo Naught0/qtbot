@@ -53,9 +53,9 @@ class News(commands.Cog):
         em_dict = {}
 
         params = (
-            {"q": quote(query), "pageSize": 9, "sources": ",".join(self.SOURCES)}
+            {"q": quote(query), "language": "en", "pageSize": 9, "sources": ",".join(self.SOURCES)}
             if query
-            else {"pageSize": 9}
+            else {"language": "en", "pageSize": 9}
         )
 
         redis_key = f"news:{query}" if query else "news"
