@@ -47,7 +47,7 @@ class Wiki(commands.Cog):
         article_html = await aw.aio_get_text(
             self.session, article_summary["content_urls"]["desktop"]["page"]
         )
-        soup = BeautifulSoup(article_html)
+        soup = BeautifulSoup(article_html, "lxml")
         article_image = soup.head.find(attrs={"property": "og:image"})
         # Create embed
         em = discord.Embed(
