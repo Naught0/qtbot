@@ -1,6 +1,8 @@
+import io
 import json
 import time
 import discord
+import cairosvg
 
 import dateutil.parser
 from discord.ext import commands
@@ -113,11 +115,15 @@ class Crypto(commands.Cog):
         em.add_field(name="Weekly trend", value=change_7d_str)
 
         # Ticker graph
-        em.set_image(
-            url=f"https://s3.coinmarketcap.com/generated/sparklines/web/7d/usd/{currency_id}.png?{int(time.time())}"
-        )
+        svg = await aw.aio_get_text(self.session, f"https://s3.coinmarketcap.com/generated/sparklines/web/7d/usd/{currency_id}.svg")
+        png_data = cairosvg.svg2png(bytestring=svg.encode(), output_width=164, output_height=48)
+        file = io.BytesIO(png_data)
+        file.seek(0)
+        fn = f"{currency_id}{int(time.time())}.png"
+        image = discord.File(fp=file, filename=fn)
+        em.set_image(url=f"attachment://{fn}")
 
-        await ctx.send(embed=em)
+        await ctx.send(embed=em, file=image)
 
 
 def setup(bot):
