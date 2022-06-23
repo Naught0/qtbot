@@ -1,6 +1,5 @@
 import base64
 import io
-import json
 import aiohttp
 import discord
 
@@ -8,14 +7,19 @@ from time import time
 from urllib.parse import quote_plus
 from typing import List
 
-from PIL import Image, ImageOps
+from PIL import Image
 from discord.ext import commands
 from utils import custom_context
 
 class Dalle(commands.Cog):
     @commands.command(aliases=["ai"])
-    @commands.is_owner()
     async def dalle(self, ctx: custom_context.CustomContext, *, prompt: str) -> None:
+        """Create 9 AI generated images from a prompt sentence or description
+
+        Args:
+            ctx (custom_context.CustomContext)
+            prompt (str)
+        """
         async with ctx.typing():
             resp: aiohttp.ClientResponse = await ctx.bot.aio_session.post("https://backend.craiyon.com/generate", json={"prompt": prompt})
 
@@ -27,10 +31,18 @@ class Dalle(commands.Cog):
             stitched = self.stitch_images(files)
             image = discord.File(stitched, filename=f"{quote_plus(prompt)}_{time()}.png")
 
-        await ctx.send(f"{prompt} {ctx.author.mention}", file=image)
+        await ctx.send(f"{ctx.author.mention}: {prompt}", file=image)
 
     @staticmethod
-    def stitch_images(images_as_bytes: List[bytes]) -> bytes:
+    def stitch_images(images_as_bytes: List[bytes]) -> io.BytesIO:
+        """https://stackoverflow.com/questions/33101935/convert-pil-image-to-byte-array
+
+        Args:
+            images_as_bytes (List[bytes])
+
+        Returns:
+            io.BytesIO
+        """
         images = [Image.open(i) for i in images_as_bytes]
         rows, cols = 3, 3
         w, h = images[0].size
