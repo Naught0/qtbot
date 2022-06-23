@@ -12,7 +12,7 @@ class Dalle(commands.Cog):
     @commands.command(aliases=["ai"])
     async def dalle(self, ctx: custom_context.CustomContext, *, prompt: str) -> None:
         async with ctx.typing():
-            resp: aiohttp.ClientResponse = await ctx.bot.aio_session.post("https://backend.craiyon.com/generate", params={"prompt": prompt})
+            resp: aiohttp.ClientResponse = await ctx.bot.aio_session.post("https://backend.craiyon.com/generate", json={"prompt": prompt})
 
             if resp.status >= 400:
                 return await ctx.error("Too much traffic - try again later", f"```{resp.status}\n{resp.text}```")
