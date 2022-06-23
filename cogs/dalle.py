@@ -17,18 +17,14 @@ class Dalle(commands.Cog):
     @commands.is_owner()
     async def dalle(self, ctx: custom_context.CustomContext, *, prompt: str) -> None:
         async with ctx.typing():
-            # resp: aiohttp.ClientResponse = await ctx.bot.aio_session.post("https://backend.craiyon.com/generate", json={"prompt": prompt})
+            resp: aiohttp.ClientResponse = await ctx.bot.aio_session.post("https://backend.craiyon.com/generate", json={"prompt": prompt})
 
-            # if resp.status >= 400:
-            #     return await ctx.error("Too much traffic - try again later", f"```{resp.status}\n{await resp.text()}```")
-            
-            # data = await resp.json()
-            with open("data/dalle_resp_test.json") as f:
-                data = {"images": json.load(f)}
+            if resp.status >= 400:
+                return await ctx.error("Too much traffic - try again later", f"```{resp.status}\n{await resp.text()}```")
+            data = await resp.json()
 
             files = [io.BytesIO(base64.urlsafe_b64decode(pic)) for pic in data["images"]]
             stitched = self.stitch_images(files)
-
             image = discord.File(stitched, filename=f"{quote_plus(prompt)}_{time()}.png")
 
         await ctx.send(f"{prompt} {ctx.author.mention}", file=image)
