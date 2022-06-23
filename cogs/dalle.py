@@ -1,12 +1,12 @@
 import base64
 import io
-from time import time
-from urllib.parse import urlencode
 import aiohttp
 import discord
+
 from discord.ext import commands
-from utils import aiohttp_wrap as aw
 from utils import custom_context
+from time import time
+from urllib.parse import urlencode
 
 class Dalle(commands.Cog):
     @commands.command(aliases=["ai"])
@@ -15,7 +15,7 @@ class Dalle(commands.Cog):
             resp: aiohttp.ClientResponse = await ctx.bot.aio_session.post("https://backend.craiyon.com/generate", params={"prompt": prompt})
 
             if resp.status >= 400:
-                return await ctx.error("Too much traffic - try again later")
+                return await ctx.error("Too much traffic - try again later", f"```{resp.status}\n{resp.text}```")
             
             data = await resp.json()
 
