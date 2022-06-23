@@ -1,5 +1,6 @@
 import base64
 import io
+import json
 import aiohttp
 import discord
 
@@ -16,12 +17,14 @@ class Dalle(commands.Cog):
     @commands.is_owner()
     async def dalle(self, ctx: custom_context.CustomContext, *, prompt: str) -> None:
         async with ctx.typing():
-            resp: aiohttp.ClientResponse = await ctx.bot.aio_session.post("https://backend.craiyon.com/generate", json={"prompt": prompt})
+            # resp: aiohttp.ClientResponse = await ctx.bot.aio_session.post("https://backend.craiyon.com/generate", json={"prompt": prompt})
 
-            if resp.status >= 400:
-                return await ctx.error("Too much traffic - try again later", f"```{resp.status}\n{await resp.text()}```")
+            # if resp.status >= 400:
+            #     return await ctx.error("Too much traffic - try again later", f"```{resp.status}\n{await resp.text()}```")
             
-            data = await resp.json()
+            # data = await resp.json()
+            with open("data/dalle_resp_test.json") as f:
+                data = {"images": json.load(f)}
 
             files = [io.BytesIO(base64.urlsafe_b64decode(pic)) for pic in data["images"]]
             stitched = self.stitch_images(files)
@@ -32,7 +35,7 @@ class Dalle(commands.Cog):
 
     @staticmethod
     def stitch_images(images_as_bytes: List[bytes]) -> bytes:
-        images = map(Image.open, images_as_bytes)
+        images = [Image.open(i) for i in images_as_bytes]
         rows, cols = 3, 3
         w, h = images[0].size
         grid = Image.new("RGB", size=(cols*w, rows*h))
