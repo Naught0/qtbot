@@ -46,6 +46,7 @@ class Dalle(commands.Cog):
         ret = io.BytesIO() 
         grid.save(ret, "PNG")
 
+        ret.seek(0)
         return ret
 
 def setup(bot):
