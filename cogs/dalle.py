@@ -32,20 +32,18 @@ class Dalle(commands.Cog):
 
     @staticmethod
     def stitch_images(images_as_bytes: List[bytes]) -> bytes:
-        width, height = 256, 256
-        images = [Image.open(i) for i in images_as_bytes]
-        images = [ImageOps.fit(i, (256,256), Image.ANTIALIAS) for i in images]
-        shape = (3,3)
+        images = map(Image.open, images_as_bytes)
+        rows, cols = 3, 3
+        w, h = images[0].size
+        grid = Image.new("RGB", size=(cols*w, rows*h))
 
-        ret = Image.new("RGB", (width * shape[0], height * shape[1]))
-        for row in range(shape[0]):
-            for col in range(shape[1]):
-                offset = width * col, height * row
-                idx = row * shape[1] + col
-                ret.paste(images[idx], offset)
+        for idx, img in enumerate(images):
+            grid.paste(img, box=(idx%cols*w, idx//cols*h))
 
-        ret.seek(0) 
-        return ret.tobytes()
+        ret = io.BytesIO() 
+        grid.save(ret, "PNG")
+        ret.seek(0)
+        return ret.getvalue()
 
 def setup(bot):
     bot.add_cog(Dalle(bot))
