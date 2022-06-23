@@ -21,7 +21,7 @@ class Dalle(commands.Cog):
 
             files = []
             for pic in data["images"]:
-                files.append(discord.File(io.BytesIO(base64.urlsafe_b64decode(pic)), filename=f"{quote_plus(prompt)}_{time.time()}.png"))
+                files.append(discord.File(io.BytesIO(base64.urlsafe_b64decode(pic)), filename=f"{quote_plus(prompt)}_{time()}.png"))
             
             await ctx.send(prompt, file=files[0])
         
