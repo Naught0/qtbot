@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 from utils import custom_context
 from time import time
-from urllib.parse import urlencode
+from urllib.parse import quote_plus
 
 class Dalle(commands.Cog):
     @commands.command(aliases=["ai"])
@@ -21,7 +21,7 @@ class Dalle(commands.Cog):
 
             files = []
             for pic in data["images"]:
-                files.append(discord.File(io.BytesIO(base64.urlsafe_b64decode(pic)), filename=f"{urlencode(prompt)}_{time.time()}.png"))
+                files.append(discord.File(io.BytesIO(base64.urlsafe_b64decode(pic)), filename=f"{quote_plus(prompt)}_{time.time()}.png"))
             
             await ctx.send(prompt, file=files[0])
         
