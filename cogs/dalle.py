@@ -1,14 +1,15 @@
 import base64
 import io
-from typing import List
 import aiohttp
 import discord
+
+from time import time
+from urllib.parse import quote_plus
+from typing import List
 
 from PIL import Image, ImageOps
 from discord.ext import commands
 from utils import custom_context
-from time import time
-from urllib.parse import quote_plus
 
 class Dalle(commands.Cog):
     @commands.command(aliases=["ai"])
@@ -42,7 +43,8 @@ class Dalle(commands.Cog):
                 offset = width * col, height * row
                 idx = row * shape[1] + col
                 ret.paste(images[idx], offset)
-        
+
+        ret.seek(0) 
         return ret.tobytes()
 
 def setup(bot):
