@@ -31,7 +31,10 @@ class Dalle(commands.Cog):
             prompt (str)
         """
         async with ctx.typing():
-            data = await self._get_dalle(ctx, prompt)
+            try:
+                data = await self._get_dalle(ctx, prompt)
+            except aiohttp.ClientError:
+                return await ctx.error("DALLe machine broke - too much traffic")
 
             files = [io.BytesIO(base64.urlsafe_b64decode(pic)) for pic in data["images"]]
             stitched = self.stitch_images(files)
