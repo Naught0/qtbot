@@ -1,6 +1,8 @@
+import asyncio
 import base64
 import io
 import aiohttp
+import backoff
 import discord
 
 from time import time
@@ -12,6 +14,14 @@ from discord.ext import commands
 from utils import custom_context
 
 class Dalle(commands.Cog):
+    @backoff.on_exception(backoff.expo, aiohttp.ClientError, max_tries=3)
+    async def _get_dalle(self, ctx: custom_context.CustomContext, prompt: str):
+        resp: aiohttp.ClientResponse = await ctx.bot.aio_session.post("https://backend.craiyon.com/generate", json={"prompt": prompt})
+        resp.raise_for_status()
+        
+        return await resp.json()
+
+
     @commands.command(aliases=["ai"])
     async def dalle(self, ctx: custom_context.CustomContext, *, prompt: str) -> None:
         """Create 9 AI generated images from a prompt sentence or description
@@ -21,11 +31,7 @@ class Dalle(commands.Cog):
             prompt (str)
         """
         async with ctx.typing():
-            resp: aiohttp.ClientResponse = await ctx.bot.aio_session.post("https://backend.craiyon.com/generate", json={"prompt": prompt})
-
-            if resp.status >= 400:
-                return await ctx.error("Too much traffic - try again later", f"```{resp.status}\n{await resp.text()}```")
-            data = await resp.json()
+            data = await self._get_dalle(ctx, prompt)
 
             files = [io.BytesIO(base64.urlsafe_b64decode(pic)) for pic in data["images"]]
             stitched = self.stitch_images(files)
