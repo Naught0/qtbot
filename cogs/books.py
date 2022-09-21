@@ -73,6 +73,7 @@ class Books(commands.Cog):
             return await ctx.error("Couldn't find a matching book")
 
         embeds = self.make_embeds(resp["items"])
+        await ctx.send(embed=embeds[0])
         await paginate(ctx, embeds)
 
 
