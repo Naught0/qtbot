@@ -60,8 +60,8 @@ class Books(commands.Cog):
             for id in idents:
                 em.add_field(name=id["name"], value=id["value"], inline=True)
             em.add_field(name="Ratings", value=f"{rating} / 5 ({rating_count} ratings)")
-            em.set_thumbnail(thumbnail)
-            em.set_footer(f"{idx + 1} / {len(books)}")
+            em.set_thumbnail(url=thumbnail)
+            em.set_footer(text=f"{idx + 1} / {len(books)}")
 
             ret.append(em)
 
