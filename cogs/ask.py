@@ -13,9 +13,7 @@ from utils import aiohttp_wrap as aw
 class Google(commands.Cog):
     SEARCH_URI = "https://duckduckgo.com/html/"
     IMAGE_URI = "https://bing.com/images/search"
-    IE6_HEADERS = {
-        "user-agent": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)"
-    }
+    IE6_HEADERS = {"user-agent": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)"}
     HEADERS = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/41.0.2228.0 Safari/537.36"
@@ -27,32 +25,20 @@ class Google(commands.Cog):
         self.session = bot.aio_session
         self.redis = bot.redis_client
 
-    @commands.group(
-        invoke_without_command=True, name="google", aliases=["g", "ddg", "ask"]
-    )
+    @commands.group(invoke_without_command=True, name="google", aliases=["g", "ddg", "ask"])
     async def _google(self, ctx, *, query: str = None):
         """Get search results from [REDACTED], now that Google hates me."""
         if query is None or query.strip() == "":
             return await ctx.error("Feel free to search something")
 
-        resp = await aw.aio_get_text(
-            self.session, self.SEARCH_URI, headers=self.HEADERS, params={"q": query}
-        )
+        resp = await aw.aio_get_text(self.session, self.SEARCH_URI, headers=self.HEADERS, params={"q": query})
 
         soup = BeautifulSoup(resp, "lxml")
-        links = [
-            x["href"]
-            for x in soup.find_all("a", {"class": "result__a"})
-            if "y.js" not in x["href"]
-        ]
+        links = [x["href"] for x in soup.find_all("a", {"class": "result__a"}) if "y.js" not in x["href"]]
         if len(links) == 0:
-            return await ctx.error(
-                f"Sorry, couldn't find anything for `{escape_markdown(query)}`"
-            )
+            return await ctx.error(f"Sorry, couldn't find anything for `{escape_markdown(query)}`")
 
-        await ctx.send(
-            f"**Top Result:**\n{links[0]}\n**See Also:**\n1. <{links[1]}>\n2. <{links[2]}>"
-        )
+        await ctx.send(f"**Top Result:**\n{links[0]}\n**See Also:**\n1. <{links[1]}>\n2. <{links[2]}>")
 
     @staticmethod
     def link_to_embed(query: str, link: str) -> discord.Embed:
@@ -66,9 +52,7 @@ class Google(commands.Cog):
         if query is None or query.strip() == "":
             return await ctx.error("Feel free to search for something")
 
-        resp = await aw.aio_get_text(
-            self.session, self.IMAGE_URI, headers=self.IE6_HEADERS, params={"q": query}
-        )
+        resp = await aw.aio_get_text(self.session, self.IMAGE_URI, headers=self.IE6_HEADERS, params={"q": query})
         soup = BeautifulSoup(resp, "lxml")
         embeds = [
             self.link_to_embed(query, x["href"])
@@ -87,9 +71,7 @@ class Google(commands.Cog):
                     "reaction_add",
                     timeout=30.0,
                     check=lambda reaction, user: (
-                        user == ctx.author
-                        and reaction.emoji in self.EMOJIS
-                        and reaction.message.id == msg.id
+                        user == ctx.author and reaction.emoji in self.EMOJIS and reaction.message.id == msg.id
                     ),
                 )
             except asyncio.TimeoutError:

@@ -44,9 +44,7 @@ class LastFM(commands.Cog):
         lfm_user_name = await self.db.fetch_user_info(user_id, "lastfm")
 
         if lfm_user_name is None:
-            return await ctx.error(
-                f"{member.display_name} does not have a LastFM username saved"
-            )
+            return await ctx.error(f"{member.display_name} does not have a LastFM username saved")
 
         redis_key = f"lastfm:{lfm_user_name}"
         if await self.redis_client.exists(redis_key):
@@ -65,9 +63,7 @@ class LastFM(commands.Cog):
         em.title = f"{track.artist['#text']} - {track.name}"
         em.add_field(name="Album", value=track.album["#text"])
         # User's info for NP
-        em.set_author(
-            name=member.display_name, url=track.url, icon_url=member.avatar_url
-        )
+        em.set_author(name=member.display_name, url=track.url, icon_url=member.avatar_url)
         # Album art
         em.set_thumbnail(url=track.image[-1]["#text"])
         # LastFM info & logo
@@ -77,9 +73,7 @@ class LastFM(commands.Cog):
         )
         # Time played
         em.timestamp = (
-            dt.now()
-            if "@attr" in resp["recenttracks"]["track"][0]
-            else dt.utcfromtimestamp(int(track.date["uts"]))
+            dt.now() if "@attr" in resp["recenttracks"]["track"][0] else dt.utcfromtimestamp(int(track.date["uts"]))
         )
 
         await ctx.send(embed=em)

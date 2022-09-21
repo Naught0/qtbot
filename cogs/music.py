@@ -36,15 +36,11 @@ class MusicInfo(commands.Cog):
             "format": "json",
             "api_key": self.TOKEN,
         }
-        search_resp = await aw.aio_get_json(
-            ctx.bot.aio_session, self.URL, params=search_params
-        )
+        search_resp = await aw.aio_get_json(ctx.bot.aio_session, self.URL, params=search_params)
 
         # API didn't respond
         if search_resp is None:
-            return await ctx.error(
-                "There was a problem with the last.fm API, try again later."
-            )
+            return await ctx.error("There was a problem with the last.fm API, try again later.")
 
         # No results
         if len(search_resp["results"]["albummatches"]["album"]) == 0:
@@ -62,9 +58,7 @@ class MusicInfo(commands.Cog):
             "format": "json",
             "api_key": self.TOKEN,
         }
-        info_resp = await aw.aio_get_json(
-            ctx.bot.aio_session, self.URL, params=info_params
-        )
+        info_resp = await aw.aio_get_json(ctx.bot.aio_session, self.URL, params=info_params)
 
         em = discord.Embed(
             title=f"{artist} - {name}",
@@ -77,10 +71,7 @@ class MusicInfo(commands.Cog):
             em.description = self.truncat(info_resp["album"]["wiki"]["summary"])
 
         # Get and number the tracks in a list
-        tracks = [
-            f"{idx + 1}. {x['name']}"
-            for idx, x in enumerate(info_resp["album"]["tracks"]["track"][:15])
-        ]
+        tracks = [f"{idx + 1}. {x['name']}" for idx, x in enumerate(info_resp["album"]["tracks"]["track"][:15])]
         em.add_field(name="Track List", value="\n".join(tracks))
 
         # Attribution or whatever

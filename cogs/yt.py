@@ -19,9 +19,7 @@ class YouTube(commands.Cog):
             return await ctx.send("Go on, search something.")
 
         # Executor for sync function
-        video_list = await self.bot.loop.run_in_executor(
-            None, YouTube.sync_get_youtube_video, query
-        )
+        video_list = await self.bot.loop.run_in_executor(None, YouTube.sync_get_youtube_video, query)
 
         if not video_list:
             return await ctx.say(f"Sorry, couldn't find anything for `{query}`")

@@ -28,9 +28,7 @@ class Weather(commands.Cog):
         """Converts F to C and returns the dict anew"""
         # if (response['sys']['country'] != 'US')
         # Celsius conversion
-        weather_data["main"]["temp"] = int(
-            (weather_data["main"]["temp"] - 32) * (5 / 9)
-        )
+        weather_data["main"]["temp"] = int((weather_data["main"]["temp"] - 32) * (5 / 9))
         # MPH -> M/s
         weather_data["wind"]["speed"] = int(weather_data["wind"]["speed"] * 0.44704)
 
@@ -63,13 +61,9 @@ class Weather(commands.Cog):
 
         # Handle finding other user's weather
         if ctx.message.mentions:
-            location = await self.db.fetch_user_info(
-                ctx.message.mentions[0].id, "zipcode"
-            )
+            location = await self.db.fetch_user_info(ctx.message.mentions[0].id, "zipcode")
             if location is None:
-                return await ctx.error(
-                    f"{ctx.message.mentions[0].display_name} does not have a location saved"
-                )
+                return await ctx.error(f"{ctx.message.mentions[0].display_name} does not have a location saved")
 
         # Check for redis cached response
         redis_key = f"{location}:weather"
@@ -97,9 +91,7 @@ class Weather(commands.Cog):
                 return await ctx.error(f"Sorry, couldn't find weather for {location}")
 
             # Add key to redis after fetching
-            await self.redis_client.set(
-                redis_key, json.dumps(weather_data), ex=self.cache_ttl
-            )
+            await self.redis_client.set(redis_key, json.dumps(weather_data), ex=self.cache_ttl)
 
         # Make SI conversions if needed
         if weather_data["sys"]["country"] == "US":
@@ -150,13 +142,9 @@ class Weather(commands.Cog):
 
         # Handle finding other user's weather
         if ctx.message.mentions:
-            location = await self.db.fetch_user_info(
-                ctx.message.mentions[0].id, "zipcode"
-            )
+            location = await self.db.fetch_user_info(ctx.message.mentions[0].id, "zipcode")
             if location is None:
-                return await ctx.error(
-                    f"{ctx.message.mentions[0].display_name} does not have a location saved"
-                )
+                return await ctx.error(f"{ctx.message.mentions[0].display_name} does not have a location saved")
 
         redis_key = f"{location}:forecast"
         if await self.redis_client.exists(redis_key):
@@ -182,14 +170,10 @@ class Weather(commands.Cog):
                 )
             # Check for valid response
             if forecast_data is None:
-                return await ctx.error(
-                    f"Sorry, couldn't find a forecast for {location}"
-                )
+                return await ctx.error(f"Sorry, couldn't find a forecast for {location}")
 
             # Add key to redis after fetching
-            await self.redis_client.set(
-                redis_key, json.dumps(forecast_data), ex=self.cache_ttl
-            )
+            await self.redis_client.set(redis_key, json.dumps(forecast_data), ex=self.cache_ttl)
 
         if forecast_data["city"]["country"] == "US":
             celsius = False
@@ -220,16 +204,12 @@ class Weather(commands.Cog):
         em.description = tm.conditions
         em.add_field(
             name="Temperature",
-            value=f"{int(round(tm.temp))} \u00B0F"
-            if not celsius
-            else f"{int(round(tm.temp))} \u00B0C",
+            value=f"{int(round(tm.temp))} \u00B0F" if not celsius else f"{int(round(tm.temp))} \u00B0C",
         )
         em.add_field(name="Humidity", value=f"{int(round(tm.humid))}%")
         em.add_field(
             name="Wind",
-            value=f"{int(round(tm.wind))} MPH"
-            if not celsius
-            else f"{int(round(tm.wind))} M/s",
+            value=f"{int(round(tm.wind))} MPH" if not celsius else f"{int(round(tm.wind))} M/s",
         )
         em.set_thumbnail(url=self.icon_url.format(tm.icon))
 

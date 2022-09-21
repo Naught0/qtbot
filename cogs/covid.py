@@ -20,23 +20,15 @@ class Covid(commands.Cog):
 
         if state is None:
             location = "the US"
-            data = (
-                await aw.aio_get_json(
-                    ctx.bot.aio_session, f"{self.URL}/us/current.json"
-                )
-            )[0]
+            data = (await aw.aio_get_json(ctx.bot.aio_session, f"{self.URL}/us/current.json"))[0]
         else:
             location = state.upper()
-            data = await aw.aio_get_json(
-                ctx.bot.aio_session, f"{self.URL}/states/{state.lower()}/current.json"
-            )
+            data = await aw.aio_get_json(ctx.bot.aio_session, f"{self.URL}/states/{state.lower()}/current.json")
 
         if "error" in data:
             if data["error"]:
                 await ctx.message.add_reaction("❌")
-                return await ctx.send(
-                    "Something went wrong with the covid API :(", delete_after=10
-                )
+                return await ctx.send("Something went wrong with the covid API :(", delete_after=10)
 
         em = discord.Embed()
         em.color = self.COLOR
@@ -45,9 +37,7 @@ class Covid(commands.Cog):
             icon_url="https://i.imgur.com/9ka5fCC.png",
             url=f"https://google.com/search?q={quote_plus('covid cases in ' + location)}",
         )
-        em.timestamp = isoparse(
-            data["lastModified"] if "lastModified" in data else data["dateModified"]
-        )
+        em.timestamp = isoparse(data["lastModified"] if "lastModified" in data else data["dateModified"])
 
         em.add_field(name="📈 New cases today", value=f"{data['positiveIncrease']:,}")
         em.add_field(name="☠️ Deaths today", value=f"{data['deathIncrease']:,}")

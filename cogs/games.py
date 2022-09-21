@@ -28,9 +28,7 @@ class Game(commands.Cog):
             "fields": "name,url,summary,first_release_date,total_rating,cover",
         }
 
-        resp = (
-            await aw.aio_get_json(self.session, url, headers=headers, params=params)
-        )[0]
+        resp = (await aw.aio_get_json(self.session, url, headers=headers, params=params))[0]
 
         # Create embed
         em = discord.Embed(
@@ -43,9 +41,7 @@ class Game(commands.Cog):
         em.set_thumbnail(url=resp["cover"]["url"])
         em.add_field(
             name="Rating",
-            value=f"{resp['total_rating']:.2f}/100"
-            if "total_rating" in resp
-            else "n/a",
+            value=f"{resp['total_rating']:.2f}/100" if "total_rating" in resp else "n/a",
         )
         em.set_footer(text="First released")
 

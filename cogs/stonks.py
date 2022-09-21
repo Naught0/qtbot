@@ -22,13 +22,8 @@ class Stonks(commands.Cog):
         """Get current information on a stonk"""
         html = await aio_get_text(self.session, self.URL, params={"symb": symbol})
         soup = BeautifulSoup(html, "lxml")
-        if (
-            soup.select_one("caption.shaded")
-            and "unable to find" in soup.select_one("caption.shaded").text
-        ):
-            return await ctx.error(
-                f"Could not find security, fund, or index matching: `{escape_markdown(symbol)}`"
-            )
+        if soup.select_one("caption.shaded") and "unable to find" in soup.select_one("caption.shaded").text:
+            return await ctx.error(f"Could not find security, fund, or index matching: `{escape_markdown(symbol)}`")
 
         em = discord.Embed(
             title=f"{soup.select_one('.header .fleft:nth-child(2)').text} - {soup.select_one('.header .fleft').text.strip()}"

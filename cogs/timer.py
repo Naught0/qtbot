@@ -18,9 +18,7 @@ class Timer(commands.Cog):
             await asyncio.sleep(sleep)
             await ctx.send(f":timer: {ctx.author.mention} Time is up!")
         else:
-            return await ctx.send(
-                "This is a test command. Please enter a time in seconds not exceeding 7200."
-            )
+            return await ctx.send("This is a test command. Please enter a time in seconds not exceeding 7200.")
 
 
 def setup(bot):

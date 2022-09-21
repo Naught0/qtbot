@@ -52,10 +52,7 @@ class UserFacts(commands.Cog):
 
         fact_owner = fact["member_id"]
 
-        return (
-            ctx.message.channel.permissions_for(ctx.author).administrator
-            or fact_owner == ctx.author.id
-        )
+        return ctx.message.channel.permissions_for(ctx.author).administrator or fact_owner == ctx.author.id
 
     async def total_facts(self, ctx):
         """Check whether a server has any facts"""
@@ -110,9 +107,7 @@ class UserFacts(commands.Cog):
         except asyncpg.UniqueViolationError:
             return await ctx.error("Sorry, that fact already exists.")
 
-        fact_id = await self.pg_con.fetchval(
-            """SELECT id FROM user_facts WHERE contents = $1""", contents
-        )
+        fact_id = await self.pg_con.fetchval("""SELECT id FROM user_facts WHERE contents = $1""", contents)
         await ctx.success(f"Added that fact for ya! (#{fact_id})")
 
     @ufact.command(name="delete", aliases=["remove", "del", "rm"])

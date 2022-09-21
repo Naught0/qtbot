@@ -25,9 +25,7 @@ class DownDetect(commands.Cog):
 
         # Recent result not cached
         else:
-            request_html = await aw.aio_get_text(
-                self.aio_session, self.uri.format(check_url)
-            )
+            request_html = await aw.aio_get_text(self.aio_session, self.uri.format(check_url))
 
             # Get soupy
             soup = BeautifulSoup(request_html, "html.parser")

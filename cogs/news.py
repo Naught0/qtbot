@@ -114,17 +114,11 @@ class News(commands.Cog):
             await bot_message.add_reaction(emoji)
 
         def check(reaction, user):
-            return (
-                user == ctx.author
-                and reaction.emoji in emoji_tup
-                and reaction.message.id == bot_message.id
-            )
+            return user == ctx.author and reaction.emoji in emoji_tup and reaction.message.id == bot_message.id
 
         while True:
             try:
-                reaction, user = await self.bot.wait_for(
-                    "reaction_add", check=check, timeout=30.0
-                )
+                reaction, user = await self.bot.wait_for("reaction_add", check=check, timeout=30.0)
             except asyncio.TimeoutError:
                 return await bot_message.clear_reactions()
 

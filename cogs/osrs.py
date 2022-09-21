@@ -21,9 +21,7 @@ class OSRS(commands.Cog):
         # self.api_uri = 'https://api.rsbuddy.com/grandExchange?a=guidePrice&i={}'
         self.prices_uri = "https://storage.googleapis.com/osb-exchange/summary.json"
 
-        self.player_uri = (
-            "http://services.runescape.com/m=hiscore_oldschool/index_lite.ws?player={}"
-        )
+        self.player_uri = "http://services.runescape.com/m=hiscore_oldschool/index_lite.ws?player={}"
         self.player_click_uri = "http://services.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1={}"
         self.skills = [
             "Overall",
@@ -118,9 +116,7 @@ class OSRS(commands.Cog):
     async def get_user_info(self, username: str) -> Union[dict, None]:
         """Helper method to see whether a user exists, if so, retrieves the data and formats it in a dict
         returns None otherwise"""
-        user_info = await aw.aio_get_text(
-            self.aio_session, self.player_uri.format(quote_plus(username))
-        )
+        user_info = await aw.aio_get_text(self.aio_session, self.player_uri.format(quote_plus(username)))
         if user_info is None:
             return None
 
@@ -131,9 +127,7 @@ class OSRS(commands.Cog):
         # -1's denote no rank or xp
         return dict(zip(self.skills, user_info.split()))
 
-    @commands.group(
-        name="osrs", aliases=["hiscores", "hiscore", "rs"], invoke_without_command=True
-    )
+    @commands.group(name="osrs", aliases=["hiscores", "hiscore", "rs"], invoke_without_command=True)
     async def _osrs(self, ctx, *, username: str = None):
         """Get information about your OSRS stats"""
         image = None
@@ -158,9 +152,7 @@ class OSRS(commands.Cog):
         )
         # See get_user_info for why things are wonky and split like this
         overall = user_info["Overall"].split(",")
-        em.add_field(
-            name="Combat Level", value=self.calc_combat(user_info), inline=False
-        )
+        em.add_field(name="Combat Level", value=self.calc_combat(user_info), inline=False)
         em.add_field(name="Total Level", value=f"{int(overall[1]):,}")
         em.add_field(name="Overall Rank", value=f"{int(overall[0]):,}")
 
@@ -314,29 +306,17 @@ class OSRS(commands.Cog):
             item_prices = await aw.aio_get_json(self.aio_session, self.prices_uri)
 
             if not item_prices:
-                return await ctx.error(
-                    "The RSBuddy API is dead yet again. Try again in a bit."
-                )
+                return await ctx.error("The RSBuddy API is dead yet again. Try again in a bit.")
 
-            await self.redis_client.set(
-                "osrs_prices", json.dumps(item_prices), ex=(5 * 60)
-            )
+            await self.redis_client.set("osrs_prices", json.dumps(item_prices), ex=(5 * 60))
 
         # Create pretty embed
         em = discord.Embed(title=item.capitalize(), color=self.color)
         em.url = f"https://rsbuddy.com/exchange?id={item_id}"
-        em.set_thumbnail(
-            url=f"https://services.runescape.com/m=itemdb_oldschool/obj_big.gif?id={item_id}"
-        )
-        em.add_field(
-            name="Buying Price", value=f'{item_prices[item_id]["buy_average"]:,}gp'
-        )
-        em.add_field(
-            name="Selling Price", value=f'{item_prices[item_id]["sell_average"]:,}gp'
-        )
-        em.add_field(
-            name="Buying Quantity", value=f'{item_prices[item_id]["buy_quantity"]:,}/hr'
-        )
+        em.set_thumbnail(url=f"https://services.runescape.com/m=itemdb_oldschool/obj_big.gif?id={item_id}")
+        em.add_field(name="Buying Price", value=f'{item_prices[item_id]["buy_average"]:,}gp')
+        em.add_field(name="Selling Price", value=f'{item_prices[item_id]["sell_average"]:,}gp')
+        em.add_field(name="Buying Quantity", value=f'{item_prices[item_id]["buy_quantity"]:,}/hr')
         em.add_field(
             name="Selling Quantity",
             value=f'{item_prices[item_id]["sell_quantity"]:,}/hr',

@@ -50,18 +50,14 @@ class Moderator(commands.Cog):
             await ctx.send(f"Member `{member.user}` unbanned.\n" f"Reason: `{reason}`.")
 
         else:
-            await ctx.send(
-                "Sorry, I couldn't find that user. Maybe they're not banned :thinking:"
-            )
+            await ctx.send("Sorry, I couldn't find that user. Maybe they're not banned :thinking:")
 
     @commands.command(aliases=["purge"])
     @commands.has_permissions(manage_messages=True)
     async def clean(self, ctx, num_msg: int):
         """Remove bot messages from the last X messages"""
         if num_msg > 100:
-            return await ctx.send(
-                "Sorry, number of messages to be deleted must not exceed 100."
-            )
+            return await ctx.send("Sorry, number of messages to be deleted must not exceed 100.")
 
         # Check so that only bot msgs are removed
         def check(message):

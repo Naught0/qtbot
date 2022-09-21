@@ -1,9 +1,7 @@
 import aiohttp
 
 
-async def aio_get_text(
-    session: aiohttp.ClientSession, url: str, headers: dict = None, params: dict = None
-):
+async def aio_get_text(session: aiohttp.ClientSession, url: str, headers: dict = None, params: dict = None):
     async with session.get(url, headers=headers, params=params) as r:
         if r.status == 200:
             return await r.text()

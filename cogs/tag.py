@@ -32,10 +32,7 @@ class Tag(commands.Cog):
         if not tag_owner:
             return None
 
-        return (
-            ctx.message.channel.permissions_for(ctx.author).administrator
-            or tag_owner == ctx.author.id
-        )
+        return ctx.message.channel.permissions_for(ctx.author).administrator or tag_owner == ctx.author.id
 
     @commands.group(invoke_without_command=True)
     async def tag(self, ctx, *, tag_name: str):
@@ -52,9 +49,7 @@ class Tag(commands.Cog):
             await self.pg_con.execute(query, ctx.guild.id, tag_name)
 
         else:
-            return await ctx.error(
-                f"Sorry, I couldn't find a tag matching `{tag_name}`."
-            )
+            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
 
     @tag.command(aliases=["add"])
     async def create(self, ctx, tag_name, *, contents):
@@ -86,9 +81,7 @@ class Tag(commands.Cog):
         _can_delete = await self.can_delete_tag(ctx, tag_name)
 
         if _can_delete is None:
-            return await ctx.error(
-                f"Sorry, I couldn't find a tag matching `{tag_name}`."
-            )
+            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
 
         elif _can_delete:
             query = "DELETE FROM tags WHERE tag_name = lower($1) AND server_id = $2"
@@ -96,9 +89,7 @@ class Tag(commands.Cog):
             await ctx.success(f"Tag `{tag_name}` deleted.")
 
         else:
-            await ctx.error(
-                f"Sorry, you do not have the necessary permissions to delete this tag."
-            )
+            await ctx.error(f"Sorry, you do not have the necessary permissions to delete this tag.")
 
     @tag.command(aliases=["ed"])
     async def edit(self, ctx, tag_name, *, contents):
@@ -109,9 +100,7 @@ class Tag(commands.Cog):
 
         # Check whether tag exists
         if not tag_record:
-            return await ctx.error(
-                f"Sorry, I couldn't find a tag matching `{tag_name}`."
-            )
+            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
 
         # Check owner
         if tag_record["owner_id"] == ctx.author.id:
@@ -133,18 +122,14 @@ class Tag(commands.Cog):
 
         # Check whether tag exists
         if not tag_record:
-            return await ctx.error(
-                f"Sorry, I couldn't find a tag matching `{tag_name}`."
-            )
+            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
 
         # Create the embed
         em = discord.Embed(title=tag_record["tag_name"], color=discord.Color.blue())
         em.timestamp = tag_record["created_at"]
         em.set_footer(text="Created at")
 
-        user = self.bot.get_user(tag_record["owner_id"]) or (
-            await self.bot.get_user_info(tag_record["owner_id"])
-        )
+        user = self.bot.get_user(tag_record["owner_id"]) or (await self.bot.get_user_info(tag_record["owner_id"]))
         em.set_author(name=str(user), icon_url=user.avatar_url)
 
         em.add_field(name="Tag Owner:", value=f"<@{tag_record['owner_id']}>")
@@ -190,12 +175,8 @@ class Tag(commands.Cog):
         em = discord.Embed(title="Tag Statistics", color=discord.Color.blue())
         em.set_author(name=f"{ctx.guild.name}", icon_url=ctx.guild.icon_url)
 
-        tt = await self.pg_con.fetchval(
-            f"""SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}"""
-        )
-        ttu = await self.pg_con.fetchval(
-            f"""SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}"""
-        )
+        tt = await self.pg_con.fetchval(f"""SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}""")
+        ttu = await self.pg_con.fetchval(f"""SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}""")
         em.description = f"Total Tags: {tt}\nTotal Tag Uses: {ttu}"
 
         get_top_tags = """SELECT tag_name, total_uses
@@ -208,9 +189,7 @@ class Tag(commands.Cog):
         tu_build_list = []
 
         for idx, record in enumerate(total_use_record_list):
-            tu_build_list.append(
-                f'{self.emoji_map[idx]} {record["tag_name"]} ({record["total_uses"]} uses)'
-            )
+            tu_build_list.append(f'{self.emoji_map[idx]} {record["tag_name"]} ({record["total_uses"]} uses)')
 
         em.add_field(name="Most Used Tags", value="\n".join(tu_build_list))
 
@@ -224,9 +203,7 @@ class Tag(commands.Cog):
         tt_build_list = []
 
         for idx, record in enumerate(top_tagger_record_list):
-            tt_build_list.append(
-                f'{self.emoji_map[idx]} <@{record["owner_id"]}> ({record["count"]} tags created)'
-            )
+            tt_build_list.append(f'{self.emoji_map[idx]} <@{record["owner_id"]}> ({record["count"]} tags created)')
 
         em.add_field(name="Top Taggers", value="\n".join(tt_build_list))
 

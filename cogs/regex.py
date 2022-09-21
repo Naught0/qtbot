@@ -54,9 +54,7 @@ def format_match(match: Optional[re.Match]) -> Iterable[str]:
             group_is_missing = (start, end) == (-1, -1)
             if not group_is_missing:
                 # TODO: display zero-width groups (how?)
-                group_carets.append(
-                    f"+ {group_index:>2}: " + " " * start + match.string[start:end]
-                )
+                group_carets.append(f"+ {group_index:>2}: " + " " * start + match.string[start:end])
 
         return ["      " + match.string, *group_carets]
 
@@ -64,9 +62,7 @@ def format_match(match: Optional[re.Match]) -> Iterable[str]:
 def match_and_format(pattern: regex.Regex, test: str) -> str:
     """Attempt to match a regex with a test string and return a formatted result."""
     try:
-        match_lines = "\n".join(
-            format_match(pattern.search(test, timeout=REGEX_TIMEOUT))
-        )
+        match_lines = "\n".join(format_match(pattern.search(test, timeout=REGEX_TIMEOUT)))
         return f"\n```diff\n{match_lines}\n```"
     except TimeoutError:
         return ":x: Searching with this regular expression took too much time"
@@ -96,10 +92,7 @@ class ConvertRegex(Converter):
             return regex.compile(supposed_regex)
         except (regex.error, re.error) as e:
             error_lines = "\n".join(format_error(e))
-            return (
-                ":x: Syntax error in a regular expression: \n"
-                f"```diff\n{error_lines}\n```"
-            )
+            return ":x: Syntax error in a regular expression: \n" f"```diff\n{error_lines}\n```"
 
 
 Regex = ConvertRegex(supports_extended_features=False)
@@ -123,9 +116,7 @@ class RegularExpressions(Cog):
         await ctx.send(match_and_format(pattern, string))
 
     @regexp_group.command(name="search+", aliases=("find+", "s+"))
-    async def match_plus_command(
-        self, ctx: Context, pattern: ExtendedRegex, *, string: str
-    ) -> None:
+    async def match_plus_command(self, ctx: Context, pattern: ExtendedRegex, *, string: str) -> None:
         """
         Look for the first match of a pattern in a string.
 

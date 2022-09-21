@@ -15,9 +15,7 @@ class Eval(commands.Cog):
     @commands.is_owner()
     async def shell_access(self, ctx, *, cmd):
         """Lets me access the VPS command line via the bot"""
-        process = await asyncio.create_subprocess_shell(
-            cmd, stdout=asyncio.subprocess.PIPE
-        )
+        process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE)
         stdout, stderr = await process.communicate()
         try:
             if stdout:
@@ -61,11 +59,7 @@ class Eval(commands.Cog):
         if not res:
             return await ctx.error(f"Sorry, `{query}` did not return anything.")
 
-        await ctx.send(
-            embed=discord.Embed(
-                title=query, description=f"```sql\n{res}```", color=self.orange
-            )
-        )
+        await ctx.send(embed=discord.Embed(title=query, description=f"```sql\n{res}```", color=self.orange))
 
     @sql_execute.command(name="fetch")
     @commands.is_owner()

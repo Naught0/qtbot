@@ -129,9 +129,7 @@ class Comics(commands.Cog):
         else:
             footer = f"Matched with {id_tup[0]} hit(s)"
         em.set_footer(text=footer)
-        em.timestamp = datetime(
-            int(comic["year"]), int(comic["month"]), int(comic["day"])
-        )
+        em.timestamp = datetime(int(comic["year"]), int(comic["month"]), int(comic["day"]))
 
         return em
 
@@ -167,9 +165,7 @@ class Comics(commands.Cog):
             return await ctx.error("Comics already up-to-date boss!")
 
         # Gather comics to update and download them
-        comics_to_update = list(
-            range(most_recent_in_file + 1, current_comic["num"] + 1)
-        )
+        comics_to_update = list(range(most_recent_in_file + 1, current_comic["num"] + 1))
         url = "http://xkcd.com/{}/info.0.json"
         for num_comic in comics_to_update:
             async with self.session.get(url.format(num_comic)) as r:

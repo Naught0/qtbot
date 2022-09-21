@@ -15,7 +15,5 @@ class PGDB:
         await self.pg_con.execute(execute, member_id, col_value)
 
     async def remove_user_info(self, member_id: int, column: str):
-        execute = (
-            f"""UPDATE user_info SET {column} = null WHERE member_id = {member_id};"""
-        )
+        execute = f"""UPDATE user_info SET {column} = null WHERE member_id = {member_id};"""
         await self.pg_con.execute(execute)

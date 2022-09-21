@@ -28,9 +28,7 @@ class Quote(commands.Cog):
         except discord.NotFound:
             return await ctx.error("Message doesn't exist")
         except discord.Forbidden:
-            return await ctx.error(
-                "You do not have the permissions to request this message"
-            )
+            return await ctx.error("You do not have the permissions to request this message")
         except discord.HTTPException:
             return await ctx.error("Couldn't retrieve the message")
 
@@ -71,9 +69,7 @@ class Quote(commands.Cog):
         except discord.NotFound:
             return await ctx.error("Message doesn't exist")
         except discord.Forbidden:
-            return await ctx.error(
-                "You do not have the permissions to request this message"
-            )
+            return await ctx.error("You do not have the permissions to request this message")
         except discord.HTTPException:
             return await ctx.error("Couldn't retrieve the message")
 

@@ -37,15 +37,11 @@ class FindMeme(commands.Cog):
                     link_list.append(self.base_uri.format(tr.h2.a["href"]))
 
             if not link_list:
-                return await ctx.send(
-                    f"Sorry I wasn't able to find anything for `{search}`."
-                )
+                return await ctx.send(f"Sorry I wasn't able to find anything for `{search}`.")
             else:
                 link = link_list[0]
                 # 1 day cache time as these pages are pretty much static
-                await self.redis_client.set(
-                    f"memecache:{f_search}", f"{link}", ex=86400
-                )
+                await self.redis_client.set(f"memecache:{f_search}", f"{link}", ex=86400)
 
         await ctx.send(f"{link}")
 

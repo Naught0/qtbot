@@ -39,9 +39,7 @@ class Generic(commands.Cog):
         options = [x.strip() for x in to_decide.split(",")]
         choice = random.choice(options)
 
-        await ctx.send(
-            embed=discord.Embed(color=discord.Color.blurple(), description=choice)
-        )
+        await ctx.send(embed=discord.Embed(color=discord.Color.blurple(), description=choice))
 
     @commands.command(name="await", hidden=True)
     async def _await(self, ctx: commands.Context):
@@ -170,21 +168,15 @@ class Generic(commands.Cog):
 
     @commands.command()
     async def resame(self, ctx):
-        await ctx.send(
-            ":white_check_mark: same\n:white_check_mark: re:same\n:green_square: unsame"
-        )
+        await ctx.send(":white_check_mark: same\n:white_check_mark: re:same\n:green_square: unsame")
 
     @commands.command()
     async def slap(self, ctx: commands.Context, *, target=None):
         """Teach someone a lesson"""
         if target is None:
-            return await ctx.send(
-                f"{ctx.author.name} thrusts his hands wildly about in the air."
-            )
+            return await ctx.send(f"{ctx.author.name} thrusts his hands wildly about in the air.")
 
-        await ctx.send(
-            f"{ctx.author.name} slaps {target} around a bit with a large trout."
-        )
+        await ctx.send(f"{ctx.author.name} slaps {target} around a bit with a large trout.")
 
     @commands.command()
     async def report(self, ctx):
@@ -220,9 +212,7 @@ class Generic(commands.Cog):
         current_time = datetime.now()
         em = discord.Embed(title=":clock1: Qtbot Uptime", color=self.blue)
         em.add_field(name="Initialized", value=self.bot.start_time_str, inline=False)
-        em.add_field(
-            name="Uptime", value=str(current_time - self.bot.start_time).split(".")[0]
-        )
+        em.add_field(name="Uptime", value=str(current_time - self.bot.start_time).split(".")[0])
 
         await ctx.send(embed=em)
 

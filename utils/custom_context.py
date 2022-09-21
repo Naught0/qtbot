@@ -7,7 +7,7 @@ class CustomContext(commands.Context):
         em = discord.Embed(
             title=f":no_entry_sign: {title}",
             color=discord.Color.dark_red(),
-            description=description or '',
+            description=description or "",
         )
 
         await self.send(embed=em)
@@ -16,7 +16,7 @@ class CustomContext(commands.Context):
         em = discord.Embed(
             title=f":white_check_mark: {title}",
             color=discord.Color.dark_green(),
-            description=description or '',
+            description=description or "",
         )
 
         await self.send(embed=em)

@@ -27,8 +27,7 @@ class Crypto(commands.Cog):
             self._mappings = json.load(f)
 
         self.cmc_map = {
-            frozenset([entry["name"].lower(), entry["symbol"].lower()]): entry["id"]
-            for entry in self._mappings["data"]
+            frozenset([entry["name"].lower(), entry["symbol"].lower()]): entry["id"] for entry in self._mappings["data"]
         }
 
     @commands.command(name="crypto", aliases=["cry", "btc"])
@@ -90,32 +89,28 @@ class Crypto(commands.Cog):
         # Hourly trend
         change_1h = crypto_info["quote"]["USD"]["percent_change_1h"]
         change_1h_str = (
-            f":arrow_up: {change_1h:.2f}%"
-            if "-" not in str(change_1h)
-            else f":arrow_down: {change_1h:.2f}%"
+            f":arrow_up: {change_1h:.2f}%" if "-" not in str(change_1h) else f":arrow_down: {change_1h:.2f}%"
         )
         em.add_field(name="Hourly trend", value=change_1h_str)
 
         # Daily trend
         change_24h = crypto_info["quote"]["USD"]["percent_change_24h"]
         change_24h_str = (
-            f":arrow_up: {change_24h:.2f}%"
-            if "-" not in str(change_24h)
-            else f":arrow_down: {change_24h:.2f}%"
+            f":arrow_up: {change_24h:.2f}%" if "-" not in str(change_24h) else f":arrow_down: {change_24h:.2f}%"
         )
         em.add_field(name="Daily trend", value=change_24h_str)
 
         # Weekly trend
         change_7d = crypto_info["quote"]["USD"]["percent_change_7d"]
         change_7d_str = (
-            f":arrow_up: {change_7d:.2f}%"
-            if "-" not in str(change_7d)
-            else f":arrow_down: {change_7d:.2f}%"
+            f":arrow_up: {change_7d:.2f}%" if "-" not in str(change_7d) else f":arrow_down: {change_7d:.2f}%"
         )
         em.add_field(name="Weekly trend", value=change_7d_str)
 
         # Ticker graph
-        svg = await aw.aio_get_text(self.session, f"https://s3.coinmarketcap.com/generated/sparklines/web/7d/usd/{currency_id}.svg")
+        svg = await aw.aio_get_text(
+            self.session, f"https://s3.coinmarketcap.com/generated/sparklines/web/7d/usd/{currency_id}.svg"
+        )
         png_data = cairosvg.svg2png(bytestring=svg.encode(), output_width=164, output_height=48)
         file = io.BytesIO(png_data)
         file.seek(0)

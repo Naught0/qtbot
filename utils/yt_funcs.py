@@ -48,11 +48,7 @@ def get_video_info(query: str, title_append="", num_results=1, thumb_quality=0) 
 
     if call_result["pageInfo"]["totalResults"] < num_results:
         num_results = call_result["pageInfo"]["totalResults"]
-        print(
-            "[NOTIFY] Total Youtube results less than desired input. Found {} video(s).".format(
-                num_results
-            )
-        )
+        print("[NOTIFY] Total Youtube results less than desired input. Found {} video(s).".format(num_results))
 
     # Store gathered information in a dict
     result_dict = {}
@@ -73,9 +69,7 @@ def get_video_info(query: str, title_append="", num_results=1, thumb_quality=0) 
             "title": call_result["items"][x]["snippet"]["title"] + title_append,
             "description": call_result["items"][x]["snippet"]["description"],
             "video_url": _get_watch_url(call_result["items"][x]["id"]["videoId"]),
-            "thumb_url": call_result["items"][x]["snippet"]["thumbnails"][
-                thumb_quality_list[thumb_quality]
-            ]["url"],
+            "thumb_url": call_result["items"][x]["snippet"]["thumbnails"][thumb_quality_list[thumb_quality]]["url"],
         }
 
     return result_dict

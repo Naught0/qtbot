@@ -104,32 +104,19 @@ class League(commands.Cog):
 
         # Stores results if not found in cache for 6hrs (API only updates twice a day anyway)
         else:
-            res = await aw.aio_get_json(
-                self.session, uri.format(champ_id, self.champion_gg_api_key)
-            )
+            res = await aw.aio_get_json(self.session, uri.format(champ_id, self.champion_gg_api_key))
 
             # New champs have no data
             if not res:
-                return await ctx.send(
-                    "Sorry, no data for `{}`, yet.".format(fancy_champ_name)
-                )
+                return await ctx.send("Sorry, no data for `{}`, yet.".format(fancy_champ_name))
 
-            await self.redis_client.set(
-                f"champ_info:{champ_id}", json.dumps(res), ex=60 * 60 * 6
-            )
+            await self.redis_client.set(f"champ_info:{champ_id}", json.dumps(res), ex=60 * 60 * 6)
 
         # Decide whether we actually need pagination here
         if len(res) > 1:
-            em_list = [
-                self._make_champ_embed(
-                    x, riot_champ_name, fancy_champ_name, champ_title
-                )
-                for x in res
-            ]
+            em_list = [self._make_champ_embed(x, riot_champ_name, fancy_champ_name, champ_title) for x in res]
         else:
-            em = self._make_champ_embed(
-                res[0], riot_champ_name, fancy_champ_name, champ_title
-            )
+            em = self._make_champ_embed(res[0], riot_champ_name, fancy_champ_name, champ_title)
             return await ctx.send(embed=em)
 
         # This creates a dict mapping of the emojis to the list of champ info "pages"
@@ -143,18 +130,12 @@ class League(commands.Cog):
 
         # Make sure only author reactions are counted on the correct message
         def check(reaction, user):
-            return (
-                user == ctx.author
-                and reaction.emoji in em_dict
-                and reaction.message.id == bot_msg.id
-            )
+            return user == ctx.author and reaction.emoji in em_dict and reaction.message.id == bot_msg.id
 
         # Pagination loop
         while True:
             try:
-                reaction, user = await ctx.bot.wait_for(
-                    "reaction_add", check=check, timeout=30.0
-                )
+                reaction, user = await ctx.bot.wait_for("reaction_add", check=check, timeout=30.0)
             except asyncio.TimeoutError:
                 return await bot_msg.clear_reactions()
 
@@ -213,14 +194,10 @@ class League(commands.Cog):
 
             # No data found -- don't bother storing it
             if elo_data is None or "error" in elo_data:
-                return await ctx.send(
-                    f"Sorry, I can't find `{summoner}`\nResponse:```{elo_data}```"
-                )
+                return await ctx.send(f"Sorry, I can't find `{summoner}`\nResponse:```{elo_data}```")
 
             # Store in redis cache
-            await self.redis_client.set(
-                f"elo:{f_summoner}", json.dumps(elo_data), ex=2 * 60 * 60
-            )
+            await self.redis_client.set(f"elo:{f_summoner}", json.dumps(elo_data), ex=2 * 60 * 60)
 
         # Replace 'None' with 0 for error margin because "+/- None" looks bad
         for kind in elo_data:
@@ -275,23 +252,15 @@ class League(commands.Cog):
 
         else:
             # Initial request for the newest patch notes
-            patch_main_html = await aw.aio_get_text(
-                self.session, self.patch_url, headers=self.browser_headers
-            )
+            patch_main_html = await aw.aio_get_text(self.session, self.patch_url, headers=self.browser_headers)
             soup = BeautifulSoup(patch_main_html, "lxml")
-            newest_patch_url = (
-                f'https://na.leagueoflegends.com{soup.find("h4").a["href"]}'
-            )
+            newest_patch_url = f'https://na.leagueoflegends.com{soup.find("h4").a["href"]}'
             image_url = f"https://na.leagueoflegends.com{soup.find('img', attrs={'typeof': 'foaf:Image'})['src']}"
 
             # Scrape the actual patch notes page
-            patch_page_html = await aw.aio_get_text(
-                self.session, newest_patch_url, headers=self.browser_headers
-            )
+            patch_page_html = await aw.aio_get_text(self.session, newest_patch_url, headers=self.browser_headers)
             soup = BeautifulSoup(patch_page_html, "lxml")
-            patch_summary = textwrap.shorten(
-                soup.find("blockquote").text, width=1000, placeholder="..."
-            )
+            patch_summary = textwrap.shorten(soup.find("blockquote").text, width=1000, placeholder="...")
 
             # Create embed
             em = discord.Embed(color=discord.Color.green(), description=patch_summary)

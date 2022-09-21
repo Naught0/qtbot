@@ -1,4 +1,5 @@
-import json
+from functools import reduce
+from typing import Any
 from nltk.metrics import edit_distance as ed
 
 
@@ -36,3 +37,19 @@ def key_with_min_value(d):
     v = list(d.values())
     k = list(d.keys())
     return k[v.index(min(v))]
+
+
+def dig(d: dict, *keys, default=None) -> Any:
+    """Dig for a value in a dictionary with an optionally configurable fallback value
+
+    Args:
+        d (dict)
+        default (Any, optional): The value to return if the key is not found. Defaults to None.
+
+    Returns:
+        Any
+    """
+    try:
+        return reduce(lambda x: dict.get(x, default), keys, d)
+    except:
+        return default
