@@ -16,7 +16,7 @@ class QTBot(commands.Bot):
     def __init__(self, config_file, *args, **kwargs):
         self.config_file = config_file
         self.description = "qtbot is a big qt written in python3 and love."
-        self.do_not_load = ("league", "covid", "poll", "music", "timer", "ris", "timer")
+        self.do_not_load = ("league", "covid", "poll", "music", "timer", "ris")
 
         with open(self.config_file) as f:
             self.api_keys = json.load(f)
@@ -59,9 +59,7 @@ class QTBot(commands.Bot):
     async def create_db_pool(self):
         with open(self.config_file) as f:
             self.pg_pw = json.load(f)["postgres"]
-        self.pg_con = await asyncpg.create_pool(
-            user="james", password=self.pg_pw, database="discord_testing"
-        )
+        self.pg_con = await asyncpg.create_pool(user="james", password=self.pg_pw, database="discord_testing")
 
     async def on_message(self, message):
         ctx = await self.get_context(message, cls=CustomContext)
