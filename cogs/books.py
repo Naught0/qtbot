@@ -1,81 +1,80 @@
+from datetime import datetime
 import re
 
 import discord
+import aiohttp
 
-from typing import Dict
+from typing import Dict, List
 from urllib.parse import quote_plus
 from bs4 import BeautifulSoup as bs
 from discord.ext import commands
 from utils import aiohttp_wrap as aw
+from utils.paginate import paginate
+from utils.dict_manip import dig
 
 
 class Books(commands.Cog):
-    URL = "https://openlibrary.org"
+    URL = "https://www.googleapis.com/books/v1"
 
     def __init__(self, bot, *args, **kwargs):
         self.color = 0xB38E86
         self.bot = bot
-        self.session = bot.aio_session
+        self.session: aiohttp.ClientSession = bot.aio_session
 
-    def get_first_result(self, soup: bs) -> Dict:
-        res = soup.select_one("li.searchResultItem")
-        return {
-            "image_url": res.select_one("span.bookcover img")["src"],
-            "title": res.select_one("h3.booktitle a").text.title().strip(),
-            "book_url": res.select_one("h3.booktitle a")["href"],
-            "author": res.select_one("span.bookauthor a").text.strip(),
-        }
+    def make_embeds(self, books: List[dict]) -> discord.Embed:
+        ret = []
+        for idx, book in enumerate(books):
+            volume_info = book.get("volumeInfo")
+            if volume_info is None:
+                return None
 
-    def get_book_info(self, soup: bs) -> Dict:
-        isbn = soup.select_one('dd[itemprop="isbn"]')
-        ret = {
-            "description": soup.select_one(
-                "div.book-description-content p"
-            ).text.strip(),
-            "published": soup.select_one("p.first-published-date").text.strip(),
-        }
-        if isbn != None:
-            ret["isbn"] = isbn.text.strip()
+            categories = ", ".join(volume_info.get("categories"))
+            description = volume_info.get("description")
+            authors = volume_info.get("authors")
+            date = volume_info.get("publishedDate")
+            year = datetime.fromisoformat(date).year if date else "Unknown"
+            thumbnail = dig(
+                volume_info,
+                "imageLinks",
+                "thumbnail",
+                default="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/282/blue-book_1f4d8.png",
+            )
+            page_count = volume_info.get("pageCount")
+            idents = [
+                {"name": x["type"], "value": f"`{x['identifier']}`"}
+                for x in book["volumeInfo"].get("industryIdentifiers", [])[:3]
+            ]
+            rating = volume_info.get("averageRating", "???")
+            rating_count = volume_info.get("ratingsCount", 0)
+
+            em = discord.Embed(
+                description=description,
+                title=volume_info["title"][:256],
+                color=self.color,
+                url=volume_info["canonicalVolumeLink"],
+            )
+            em.add_field(name="Author" if len(authors) == 1 else "Authors", value=", ".join(authors))
+            em.add_field(name="Published year", value=year, inline=True)
+            em.add_field(name="Categories", value=categories, inline=True)
+            em.add_field(name="Page count", value=page_count)
+            for id in idents:
+                em.add_field(name=id["name"], value=id["value"], inline=True)
+            em.add_field(name="Ratings", value=f"{rating} / 5 ({rating_count} ratings)")
+            em.set_thumbnail(thumbnail)
+            em.set_footer(f"{idx + 1} / {len(books)}")
+
+            ret.append(em)
 
         return ret
 
-    def to_embed(self, book_info) -> discord.Embed:
-        year = re.search(r"(in )(\d+)", book_info["published"]).group(2)
-        em = discord.Embed()
-        em.color = self.color
-        em.title = f"{book_info['title']} by {book_info['author']} ({year})"
-        em.url = f"{self.URL}{book_info['book_url']}"
-        em.description = book_info["description"]
-        if "isbn" in book_info:
-            em.add_field(name="ISBN", value=book_info["isbn"])
-        em.set_thumbnail(url=f"https:{book_info['image_url']}")
-
-        return em
-
     @commands.command(name="book", aliases=["books"])
     async def _book(self, ctx: commands.Context, *, search: str):
-        await ctx.trigger_typing()
-        if len(search.split("by")) > 1:
-            title, author = search.split("by")
-        else:
-            title = search
-            author = None
+        resp = await aw.aio_get_json(f"{self.URL}/volumes", params={"q": search, "maxResults": 5})
+        if resp is None:
+            return await ctx.error("Couldn't find a matching book")
 
-        resp = await aw.aio_get_text(
-            self.session,
-            f"{self.URL}/search?title={quote_plus(title)}&author={author if author else ''}",
-        )
-        soup = bs(resp, features="lxml")
-
-        if soup.select_one("span.red"):
-            return await ctx.error(f"{title.title()} not found")
-
-        book_info = self.get_first_result(soup)
-        resp = await aw.aio_get_text(self.session, f"{self.URL}{book_info['book_url']}")
-        soup = bs(resp, features="lxml")
-        book_info.update(**self.get_book_info(soup))
-
-        await ctx.send(embed=self.to_embed(book_info))
+        embeds = self.make_embeds(resp["items"])
+        await paginate(ctx, embeds)
 
 
 def setup(bot):
