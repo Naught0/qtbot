@@ -31,7 +31,6 @@ class Books(commands.Cog):
             description = volume_info.get("description")
             authors = volume_info.get("authors")
             date = volume_info.get("publishedDate")
-            year = datetime.fromisoformat(date).year if date else "Unknown"
             thumbnail = dig(
                 volume_info,
                 "imageLinks",
@@ -53,7 +52,7 @@ class Books(commands.Cog):
                 url=volume_info["canonicalVolumeLink"],
             )
             em.add_field(name="Author" if len(authors) == 1 else "Authors", value=", ".join(authors))
-            em.add_field(name="Published year", value=year, inline=True)
+            em.add_field(name="Published date", value=date, inline=True)
             em.add_field(name="Categories", value=categories, inline=True)
             em.add_field(name="Page count", value=page_count)
             for id in idents:
