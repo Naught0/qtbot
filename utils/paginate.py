@@ -10,7 +10,7 @@ async def paginate(ctx: Context, embeds: List[discord.Embed], timeout=30.0) -> N
     current_index = 0
     while True:
         try:
-            (reaction, _): Tuple[discord.Reaction]= await ctx.bot.wait_for(
+            reaction, _ = await ctx.bot.wait_for(
                 "reaction_add",
                 timeout=timeout,
                 check=lambda reaction, user: (
