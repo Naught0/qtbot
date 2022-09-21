@@ -1,4 +1,5 @@
 from datetime import datetime
+from pprint import pprint
 import re
 
 import discord
@@ -24,9 +25,7 @@ class Books(commands.Cog):
     def make_embeds(self, books: List[dict]) -> discord.Embed:
         ret = []
         for idx, book in enumerate(books):
-            volume_info = book.get("volumeInfo")
-            if volume_info is None:
-                return None
+            volume_info = book["volumeInfo"]
 
             categories = ", ".join(volume_info.get("categories"))
             description = volume_info.get("description")
@@ -70,6 +69,7 @@ class Books(commands.Cog):
     @commands.command(name="book", aliases=["books"])
     async def _book(self, ctx: commands.Context, *, search: str):
         resp = await aw.aio_get_json(self.session, f"{self.URL}/volumes", params={"q": search, "maxResults": 5})
+        pprint([x["volumeInfo"] for x in resp])
         if resp is None:
             return await ctx.error("Couldn't find a matching book")
 
