@@ -51,14 +51,17 @@ class Books(commands.Cog):
                 color=self.color,
                 url=volume_info["canonicalVolumeLink"],
             )
-            em.add_field(name="Author" if len(authors) == 1 else "Authors", value=", ".join(authors))
-            em.add_field(name="Published date", value=date, inline=True)
+            if authors:
+                em.add_field(name="Author" if len(authors) == 1 else "Authors", value=", ".join(authors))
+            if date:
+                em.add_field(name="Published date", value=date, inline=True)
             if categories:
                 em.add_field(name="Categories", value=categories, inline=True)
             em.add_field(name="Page count", value=page_count)
             for id in idents:
                 em.add_field(name=id["name"], value=id["value"], inline=True)
-            em.add_field(name="Ratings", value=f"{rating} / 5 ({rating_count} ratings)")
+            if rating and rating_count:
+                em.add_field(name="Ratings", value=f"{rating} / 5 ({rating_count} ratings)")
             em.set_thumbnail(url=thumbnail)
             em.set_footer(text=f"{idx + 1} / {len(books)}")
 
