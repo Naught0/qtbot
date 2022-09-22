@@ -69,13 +69,12 @@ class Books(commands.Cog):
     @commands.command(name="book", aliases=["books"])
     async def _book(self, ctx: commands.Context, *, search: str):
         resp = await aw.aio_get_json(self.session, f"{self.URL}/volumes", params={"q": search, "maxResults": 5})
-        pprint(resp)
         if resp is None:
             return await ctx.error("Couldn't find a matching book")
 
         embeds = self.make_embeds(resp["items"])
-        await ctx.send(embed=embeds[0])
-        await paginate(ctx, embeds)
+        msg = await ctx.send(embed=embeds[0])
+        await paginate(ctx, msg, embeds)
 
 
 def setup(bot):

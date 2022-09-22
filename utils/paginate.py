@@ -7,8 +7,7 @@ from discord.ext.commands import Context
 EMOJI_MAP = {"back": "⬅️", "forward": "➡️"}
 
 
-async def paginate(ctx: Context, embeds: List[discord.Embed], timeout=30.0) -> None:
-    msg = ctx.message
+async def paginate(ctx: Context, msg: discord.Message, embeds: List[discord.Embed], timeout=30.0) -> None:
     emojis = EMOJI_MAP.values()
     for emoji in emojis:
         await msg.add_reaction(emoji)
