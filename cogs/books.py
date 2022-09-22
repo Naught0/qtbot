@@ -12,6 +12,7 @@ from discord.ext import commands
 from utils import aiohttp_wrap as aw
 from utils.paginate import paginate
 from utils.dict_manip import dig
+from utils.text import truncate
 
 
 class Books(commands.Cog):
@@ -46,7 +47,7 @@ class Books(commands.Cog):
             rating_count = volume_info.get("ratingsCount", 0)
 
             em = discord.Embed(
-                description=description,
+                description=truncate(description, 1_000),
                 title=volume_info["title"][:256],
                 color=self.color,
                 url=volume_info["canonicalVolumeLink"],
