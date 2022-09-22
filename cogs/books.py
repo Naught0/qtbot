@@ -12,7 +12,7 @@ from discord.ext import commands
 from utils import aiohttp_wrap as aw
 from utils.paginate import paginate
 from utils.dict_manip import dig
-from utils.text import truncate
+from utils.text import truncate_word
 
 
 class Books(commands.Cog):
@@ -52,7 +52,7 @@ class Books(commands.Cog):
                 url=volume_info["canonicalVolumeLink"],
             )
             if description:
-                em.description = truncate(description, 1_000)
+                em.description = truncate_word(description, 50)
             if authors:
                 em.add_field(name="Author" if len(authors) == 1 else "Authors", value=", ".join(authors))
             if date:
