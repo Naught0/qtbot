@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import Any
+from typing import Any, Hashable
 from nltk.metrics import edit_distance as ed
 
 
@@ -40,7 +40,8 @@ def key_with_min_value(d):
 
 
 def dig(d: dict, *keys, default=None) -> Any:
-    """Dig for a value in a dictionary with an optionally configurable fallback value
+    """Dig for a value in a dictionary with an optionally configurable fallback value.
+    Works similarly to ruby's `Hash#dig` method
 
     Args:
         d (dict)
@@ -49,7 +50,14 @@ def dig(d: dict, *keys, default=None) -> Any:
     Returns:
         Any
     """
+
+    def func(accum: dict, k: Hashable) -> Any:
+        if not isinstance(accum, dict):
+            raise TypeError
+        return accum.get(k, default)
+
     try:
-        return reduce(lambda x: dict.get(x, default), keys, d)
+        return reduce(func, keys, d)
+    # Ooo!! Ahh!! Bare except!
     except:
         return default
