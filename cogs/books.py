@@ -47,11 +47,12 @@ class Books(commands.Cog):
             rating_count = volume_info.get("ratingsCount", 0)
 
             em = discord.Embed(
-                description=truncate(description, 1_000),
                 title=volume_info["title"][:256],
                 color=self.color,
                 url=volume_info["canonicalVolumeLink"],
             )
+            if description:
+                em.description = truncate(description, 1_000)
             if authors:
                 em.add_field(name="Author" if len(authors) == 1 else "Authors", value=", ".join(authors))
             if date:
