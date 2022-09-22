@@ -27,7 +27,7 @@ class Books(commands.Cog):
         for idx, book in enumerate(books):
             volume_info = book["volumeInfo"]
 
-            categories = ", ".join(volume_info.get("categories"))
+            categories = ", ".join(volume_info.get("categories", []))
             description = volume_info.get("description")
             authors = volume_info.get("authors")
             date = volume_info.get("publishedDate")
@@ -53,7 +53,8 @@ class Books(commands.Cog):
             )
             em.add_field(name="Author" if len(authors) == 1 else "Authors", value=", ".join(authors))
             em.add_field(name="Published date", value=date, inline=True)
-            em.add_field(name="Categories", value=categories, inline=True)
+            if categories:
+                em.add_field(name="Categories", value=categories, inline=True)
             em.add_field(name="Page count", value=page_count)
             for id in idents:
                 em.add_field(name=id["name"], value=id["value"], inline=True)
