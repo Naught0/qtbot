@@ -15,6 +15,7 @@ def truncate(s: str, length: int) -> str:
     else:
         return s
 
+
 def truncate_word(s: str, length: int) -> str:
     """Truncates & ellipsizes a string based on word count
 
