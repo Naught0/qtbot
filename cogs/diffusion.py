@@ -26,7 +26,7 @@ class Diffusion(commands.Cog):
         "input": {
             "width": 256,
             "height": 256,
-            "num_outputs": 4,
+            "num_outputs": 2,
         },
     }
     URL = "https://api.replicate.com/v1/predictions"
@@ -112,7 +112,7 @@ class Diffusion(commands.Cog):
                 )
 
             images_b = [io.BytesIO(await (await self.bot.aio_session.get(url)).read()) for url in images]
-            file = File(stitch_images(images_b, rows_cols=2), filename=f"{quote(prompt)}.png")
+            file = File(stitch_images(images_b, rows_cols=len(images_b)), filename=f"{quote(prompt)}.png")
 
         return await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
 
