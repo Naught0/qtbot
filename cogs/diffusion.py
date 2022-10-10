@@ -3,7 +3,6 @@ import json
 import backoff
 
 from typing import Any, Literal
-from discord import Embed
 from discord.ext import commands
 from aiohttp import ClientResponseError
 from bot import QTBot
@@ -64,7 +63,7 @@ class Diffusion(commands.Cog):
         while True:
             resp = await self.req("GET", f"/{id}")
             if total_checks >= 10:
-                raise asyncio.TimeoutError("Couldn't get a result after 20 seconds. Aborting.")
+                raise DiffusionError("Couldn't get a result after 20 seconds. Aborting.")
             if resp["error"]:
                 raise DiffusionError(resp["error"])
             if resp["completed_at"]:
