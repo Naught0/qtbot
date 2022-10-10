@@ -1,11 +1,7 @@
-from datetime import datetime
-from pprint import pprint
-import re
-
 import discord
 import aiohttp
 
-from typing import Dict, List
+from typing import List
 from urllib.parse import quote_plus
 from bs4 import BeautifulSoup as bs
 from discord.ext import commands
