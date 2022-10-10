@@ -71,7 +71,7 @@ class Diffusion(commands.Cog):
                 return resp["output"][0]
 
             total_checks += 1
-            asyncio.sleep(2)
+            await asyncio.sleep(2)
 
     @commands.command(aliases=["diffuse", "sd"])
     async def diffusion(self, ctx: CustomContext, *, prompt: str) -> None:
