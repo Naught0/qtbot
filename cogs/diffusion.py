@@ -16,6 +16,7 @@ class DiffusionError(Exception):
 
 class Diffusion(commands.Cog):
     INPUT = {
+        "version": "a9758cbfbd5f3c2094457d996681af52552901775aa2d6dd0b17fd15df959bef",
         "input": {
             "width": 512,
             "height": 512,
@@ -23,9 +24,9 @@ class Diffusion(commands.Cog):
             "guidance_scale": 7.5,
             "prompt_strength": 0.8,
             "num_inference_steps": 50,
-        }
+        },
     }
-    URL = "https://replicate.com/api/models/stability-ai/stable-diffusion/versions/a9758cbfbd5f3c2094457d996681af52552901775aa2d6dd0b17fd15df959bef/predictions"
+    URL = "https://api.replicate.com/v1/predictions"
     HEADERS = {"Content-Type": "application/json"}
 
     def __init__(self, bot: QTBot):
