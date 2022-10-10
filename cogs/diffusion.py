@@ -93,7 +93,7 @@ class Diffusion(commands.Cog):
         except ClientResponseError as e:
             return await ctx.error("API Error", f"Received status code `{e.status}`\n{e.message}")
 
-        image_data = await (await self.req("GET", image_url)).read()
+        image_data = await (await self.bot.aio_session.get(image_url)).read()
         with io.BytesIO(image_data) as f:
             return await ctx.send(f"{ctx.author.mention}: {prompt}", file=File(f, f"{quote(prompt)}.png"))
 
