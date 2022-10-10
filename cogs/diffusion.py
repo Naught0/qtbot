@@ -79,21 +79,23 @@ class Diffusion(commands.Cog):
 
     @commands.command(aliases=["diffuse", "sd"])
     async def diffusion(self, ctx: CustomContext, *, prompt: str) -> None:
-        try:
-            job_id = await self.start_job(prompt)
-        except DiffusionError as e:
-            return await ctx.error("API Error", str(e))
-        except ClientResponseError as e:
-            return await ctx.error("API Error", f"Received status code `{e.status}`\n{e.message}")
+        async with ctx.typing():
+            try:
+                job_id = await self.start_job(prompt)
+            except DiffusionError as e:
+                return await ctx.error("API Error", str(e))
+            except ClientResponseError as e:
+                return await ctx.error("API Error", f"Received status code `{e.status}`\n{e.message}")
 
-        try:
-            image_url = await self.check_progress(job_id)
-        except DiffusionError as e:
-            return await ctx.error("API Error", str(e))
-        except ClientResponseError as e:
-            return await ctx.error("API Error", f"Received status code `{e.status}`\n{e.message}")
+            try:
+                image_url = await self.check_progress(job_id)
+            except DiffusionError as e:
+                return await ctx.error("API Error", str(e))
+            except ClientResponseError as e:
+                return await ctx.error("API Error", f"Received status code `{e.status}`\n{e.message}")
 
-        image_data = await (await self.bot.aio_session.get(image_url)).read()
+            image_data = await (await self.bot.aio_session.get(image_url)).read()
+
         with io.BytesIO(image_data) as f:
             return await ctx.send(f"{ctx.author.mention}: {prompt}", file=File(f, f"{quote(prompt)}.png"))
 
