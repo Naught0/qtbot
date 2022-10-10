@@ -77,3 +77,7 @@ class Diffusion(commands.Cog):
             return await ctx.error("API Error", f"Received status code {e.status}\n{e.message}")
 
         return await ctx.send(f"{ctx.author.mention}: {prompt}\n{image_url}")
+
+
+def setup(bot):
+    bot.add_cog(Diffusion(bot))
