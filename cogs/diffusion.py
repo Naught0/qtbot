@@ -27,6 +27,10 @@ class Diffusion(commands.Cog):
             "width": 256,
             "height": 256,
             "num_outputs": 1,
+            "num_outputs": "1",
+            "guidance_scale": 7.5,
+            "prompt_strength": 0.8,
+            "num_inference_steps": 50,
         },
     }
     URL = "https://api.replicate.com/v1/predictions"
