@@ -3,13 +3,14 @@ import io
 import json
 import backoff
 
-from typing import Literal
+from typing import Literal, List
 from urllib.parse import quote
 from discord import File
 from discord.ext import commands
 from aiohttp import ClientResponseError, ClientResponse
 from bot import QTBot
 from utils.custom_context import CustomContext
+from utils.images import stitch_images
 
 
 class DiffusionError(Exception):
@@ -22,7 +23,7 @@ class Diffusion(commands.Cog):
         "input": {
             "width": 512,
             "height": 512,
-            "num_outputs": "1",
+            "num_outputs": 4,
             "guidance_scale": 7.5,
             "prompt_strength": 0.8,
             "num_inference_steps": 50,
@@ -62,17 +63,17 @@ class Diffusion(commands.Cog):
 
         return resp["id"]
 
-    async def check_progress(self, id: str) -> str:
+    async def check_progress(self, id: str) -> List[str]:
         total_checks = 0
         while True:
             resp = await self.req("GET", f"/{id}")
             resp = await resp.json()
-            if total_checks >= 10:
-                raise DiffusionError("Couldn't get a result after 20 seconds. Aborting.")
+            if total_checks >= 15:
+                raise DiffusionError("Couldn't get a result after 30 seconds. Aborting.")
             if resp["error"]:
                 raise DiffusionError(resp["error"])
             if resp["completed_at"]:
-                return resp["output"][0]
+                return resp["output"]
 
             total_checks += 1
             await asyncio.sleep(2)
@@ -85,19 +86,23 @@ class Diffusion(commands.Cog):
             except DiffusionError as e:
                 return await ctx.error("API Error", str(e))
             except ClientResponseError as e:
-                return await ctx.error("API Error", f"Received status code `{e.status}`\n{e.message}")
+                return await ctx.error(
+                    "API Error", f"{ctx.author.mention} Received status code `{e.status}`\n{e.message}"
+                )
 
             try:
-                image_url = await self.check_progress(job_id)
+                images = await self.check_progress(job_id)
             except DiffusionError as e:
                 return await ctx.error("API Error", str(e))
             except ClientResponseError as e:
-                return await ctx.error("API Error", f"Received status code `{e.status}`\n{e.message}")
+                return await ctx.error(
+                    "API Error", f"{ctx.author.mention} Received status code `{e.status}`\n{e.message}"
+                )
 
-            image_data = await (await self.bot.aio_session.get(image_url)).read()
+            images_b = [io.BytesIO(await (await self.bot.aio_session.get(url)).read()) for url in images]
+            file = File(stitch_images(images_b, rows_cols=2), filename=f"{quote(prompt)}.png")
 
-        with io.BytesIO(image_data) as f:
-            return await ctx.send(f"{ctx.author.mention}: {prompt}", file=File(f, f"{quote(prompt)}.png"))
+        return await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
 
 
 def setup(bot):
