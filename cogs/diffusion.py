@@ -5,7 +5,7 @@ import backoff
 
 from typing import Literal, List
 from itertools import cycle
-from urllib.parse import quote
+from urllib.parse import quote_plus
 
 from discord import File
 from discord.ext import commands
@@ -112,9 +112,9 @@ class Diffusion(commands.Cog):
                 )
 
             image = await (await self.bot.aio_session.get(images[0])).read()
-            file = File(image, filename=f"{quote(prompt)}.png")
+            file = File(io.BytesIO(image), filename=f"{quote_plus(prompt)}.png")
 
-        return await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
+            return await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
 
 
 def setup(bot):
