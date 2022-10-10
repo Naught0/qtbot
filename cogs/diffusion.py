@@ -26,7 +26,7 @@ class Diffusion(commands.Cog):
         "input": {
             "width": 256,
             "height": 256,
-            "num_outputs": 2,
+            "num_outputs": 1,
         },
     }
     URL = "https://api.replicate.com/v1/predictions"
