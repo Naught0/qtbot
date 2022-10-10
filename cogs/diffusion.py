@@ -13,7 +13,6 @@ from aiohttp import ClientResponseError, ClientResponse
 
 from bot import QTBot
 from utils.custom_context import CustomContext
-from utils.images import stitch_images
 
 
 class DiffusionError(Exception):
