@@ -99,7 +99,7 @@ class Diffusion(commands.Cog):
             try:
                 job_id = await self.start_job(prompt)
             except DiffusionError as e:
-                return await ctx.error("API Error", str(e))
+                return await ctx.error("API Error", f"{ctx.author.mention} {e}")
             except ClientResponseError as e:
                 return await ctx.error(
                     "API Error", f"{ctx.author.mention} Received status code `{e.status}`\n{e.message}"
