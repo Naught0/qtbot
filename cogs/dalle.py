@@ -6,11 +6,10 @@ import discord
 
 from time import time
 from urllib.parse import quote_plus
-from typing import List
 
-from PIL import Image
 from discord.ext import commands
 from utils import custom_context
+from utils.images import stitch_images
 
 
 class Dalle(commands.Cog):
@@ -38,34 +37,10 @@ class Dalle(commands.Cog):
                 return await ctx.error("DALLe machine broke - too much traffic")
 
             files = [io.BytesIO(base64.urlsafe_b64decode(pic)) for pic in data["images"]]
-            stitched = self.stitch_images(files)
+            stitched = stitch_images(files, rows_cols=3)
             image = discord.File(stitched, filename=f"{quote_plus(prompt)}_{time()}.png")
 
         await ctx.send(f"{ctx.author.mention}: {prompt}", file=image)
-
-    @staticmethod
-    def stitch_images(images_as_bytes: List[bytes]) -> io.BytesIO:
-        """https://stackoverflow.com/questions/33101935/convert-pil-image-to-byte-array
-
-        Args:
-            images_as_bytes (List[bytes])
-
-        Returns:
-            io.BytesIO
-        """
-        images = [Image.open(i) for i in images_as_bytes]
-        rows, cols = 3, 3
-        w, h = images[0].size
-        grid = Image.new("RGB", size=(cols * w, rows * h))
-
-        for idx, img in enumerate(images):
-            grid.paste(img, box=(idx % cols * w, idx // cols * h))
-
-        ret = io.BytesIO()
-        grid.save(ret, "PNG")
-
-        ret.seek(0)
-        return ret
 
 
 def setup(bot):
