@@ -1,4 +1,5 @@
 import asyncio
+import json
 import backoff
 
 from typing import Any, Literal
@@ -25,15 +26,26 @@ class Diffusion(commands.Cog):
         }
     }
     URL = "https://replicate.com/api/models/stability-ai/stable-diffusion/versions/a9758cbfbd5f3c2094457d996681af52552901775aa2d6dd0b17fd15df959bef/predictions"
+    HEADERS = {"Content-Type": "application/json"}
 
     def __init__(self, bot: QTBot):
+        with open("data/apikeys.json") as f:
+            self.api_key = json.load(f)["stable_diffusion"]
+        self.HEADERS.update({"Authorization": f"Token {self.api_key}"})
         self.bot = bot
 
     @backoff.on_exception(backoff.expo, ClientResponseError, max_tries=3)
     async def req(
-        self, verb: Literal["GET", "POST"], url: str = "", params: dict = None, headers: dict = None, data: dict = None
+        self,
+        verb: Literal["GET", "POST"],
+        url: str = "",
+        params: dict = {},
+        headers: dict = {},
+        data: dict = None,
     ) -> Any:
-        resp = await self.bot.aio_session.request(verb, f"{self.URL}{url}", params=params, headers=headers, json=data)
+        resp = await self.bot.aio_session.request(
+            verb, f"{self.URL}{url}", params=params, headers={**headers, **self.HEADERS}, json=data
+        )
         resp.raise_for_status()
 
         return await resp.json()
@@ -67,14 +79,14 @@ class Diffusion(commands.Cog):
         except DiffusionError as e:
             return await ctx.error("API Error", str(e))
         except ClientResponseError as e:
-            return await ctx.error("API Error", f"Received status code {e.status}\n{e.message}")
+            return await ctx.error("API Error", f"Received status code `{e.status}`\n{e.message}")
 
         try:
             image_url = await self.check_progress(job_id)
         except DiffusionError as e:
             return await ctx.error("API Error", str(e))
         except ClientResponseError as e:
-            return await ctx.error("API Error", f"Received status code {e.status}\n{e.message}")
+            return await ctx.error("API Error", f"Received status code `{e.status}`\n{e.message}")
 
         return await ctx.send(f"{ctx.author.mention}: {prompt}\n{image_url}")
 
