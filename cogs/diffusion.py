@@ -57,7 +57,7 @@ class Diffusion(commands.Cog):
         if resp["error"]:
             raise DiffusionError(resp["error"])
 
-        return resp["uuid"]
+        return resp["id"]
 
     async def check_progress(self, id: str) -> str:
         total_checks = 0
