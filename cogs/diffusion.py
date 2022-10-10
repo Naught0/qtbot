@@ -62,7 +62,7 @@ class Diffusion(commands.Cog):
     async def check_progress(self, id: str) -> str:
         total_checks = 0
         while True:
-            resp = (await self.req("GET", f"/{id}"))["prediction"]
+            resp = await self.req("GET", f"/{id}")
             if total_checks >= 10:
                 raise asyncio.TimeoutError("Couldn't get a result after 20 seconds. Aborting.")
             if resp["error"]:
