@@ -111,8 +111,8 @@ class Diffusion(commands.Cog):
                     "API Error", f"{ctx.author.mention} Received status code `{e.status}`\n{e.message}"
                 )
 
-            images_b = [io.BytesIO(await (await self.bot.aio_session.get(url)).read()) for url in images]
-            file = File(stitch_images(images_b, rows_cols=len(images_b)), filename=f"{quote(prompt)}.png")
+            image = await (await self.bot.aio_session.get(images[0])).read()
+            file = File(image, filename=f"{quote(prompt)}.png")
 
         return await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
 
