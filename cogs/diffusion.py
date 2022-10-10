@@ -1,10 +1,13 @@
 import asyncio
+import io
 import json
 import backoff
 
-from typing import Any, Literal
+from typing import Literal
+from urllib.parse import quote
+from discord import File
 from discord.ext import commands
-from aiohttp import ClientResponseError
+from aiohttp import ClientResponseError, ClientResponse
 from bot import QTBot
 from utils.custom_context import CustomContext
 
@@ -42,17 +45,18 @@ class Diffusion(commands.Cog):
         params: dict = {},
         headers: dict = {},
         data: dict = None,
-    ) -> Any:
+    ) -> ClientResponse:
         resp = await self.bot.aio_session.request(
             verb, f"{self.URL}{url}", params=params, headers={**headers, **self.HEADERS}, json=data
         )
         resp.raise_for_status()
 
-        return await resp.json()
+        return resp
 
     async def start_job(self, prompt: str) -> str:
         payload = {**self.INPUT, "input": {"prompt": prompt}}
         resp = await self.req("POST", data=payload)
+        resp = await resp.json()
         if resp["error"]:
             raise DiffusionError(resp["error"])
 
@@ -62,6 +66,7 @@ class Diffusion(commands.Cog):
         total_checks = 0
         while True:
             resp = await self.req("GET", f"/{id}")
+            resp = await resp.json()
             if total_checks >= 10:
                 raise DiffusionError("Couldn't get a result after 20 seconds. Aborting.")
             if resp["error"]:
@@ -88,7 +93,9 @@ class Diffusion(commands.Cog):
         except ClientResponseError as e:
             return await ctx.error("API Error", f"Received status code `{e.status}`\n{e.message}")
 
-        return await ctx.send(f"{ctx.author.mention}: {prompt}\n{image_url}")
+        image_data = await (await self.req("GET", image_url)).read()
+        with io.BytesIO(image_data) as f:
+            return await ctx.send(f"{ctx.author.mention}: {prompt}", file=File(f, f"{quote(prompt)}.png"))
 
 
 def setup(bot):
