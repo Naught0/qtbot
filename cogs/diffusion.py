@@ -4,10 +4,13 @@ import json
 import backoff
 
 from typing import Literal, List
+from itertools import cycle
 from urllib.parse import quote
+
 from discord import File
 from discord.ext import commands
 from aiohttp import ClientResponseError, ClientResponse
+
 from bot import QTBot
 from utils.custom_context import CustomContext
 from utils.images import stitch_images
@@ -21,8 +24,8 @@ class Diffusion(commands.Cog):
     INPUT = {
         "version": "a9758cbfbd5f3c2094457d996681af52552901775aa2d6dd0b17fd15df959bef",
         "input": {
-            "width": 512,
-            "height": 512,
+            "width": 256,
+            "height": 256,
             "num_outputs": 4,
             "guidance_scale": 7.5,
             "prompt_strength": 0.8,
@@ -34,11 +37,12 @@ class Diffusion(commands.Cog):
 
     def __init__(self, bot: QTBot):
         with open("data/apikeys.json") as f:
-            self.api_key = json.load(f)["stable_diffusion"]
-        self.HEADERS.update({"Authorization": f"Token {self.api_key}"})
+            self.api_keys = cycle(json.load(f)["stable_diffusion"])
+
+        self.HEADERS["Authorization"] = f"Token {next(self.api_keys)}"
         self.bot = bot
 
-    @backoff.on_exception(backoff.expo, ClientResponseError, max_tries=3)
+    @backoff.on_exception(backoff.expo, ClientResponseError, max_tries=3, giveup=lambda x: x.status == 402)
     async def req(
         self,
         verb: Literal["GET", "POST"],
@@ -47,9 +51,20 @@ class Diffusion(commands.Cog):
         headers: dict = {},
         data: dict = None,
     ) -> ClientResponse:
-        resp = await self.bot.aio_session.request(
-            verb, f"{self.URL}{url}", params=params, headers={**headers, **self.HEADERS}, json=data
-        )
+        attempt_count = 0
+        while True:
+            if attempt_count > 4:
+                break
+            attempt_count += 1
+            resp = await self.bot.aio_session.request(
+                verb, f"{self.URL}{url}", params=params, headers={**headers, **self.HEADERS}, json=data
+            )
+            if resp.status == 402:
+                self.HEADERS["Authorization"] = f"Token {next(self.api_keys)}"
+                continue
+
+            break
+
         resp.raise_for_status()
 
         return resp
