@@ -70,7 +70,7 @@ class Diffusion(commands.Cog):
         return resp
 
     async def start_job(self, prompt: str) -> str:
-        payload = {**self.INPUT, "input": {"prompt": prompt}}
+        payload = {**self.INPUT, "input": {**self.INPUT["input"], "prompt": prompt}}
         resp = await self.req("POST", data=payload)
         resp = await resp.json()
         if resp["error"]:
