@@ -39,9 +39,9 @@ class Diffusion(commands.Cog):
         with open("data/apikeys.json") as f:
             self.api_keys = cycle(json.load(f)["stable_diffusion"])
 
+        self.bot = bot
         self.bot.diffusion_api_key = next(self.api_keys)
         self.HEADERS["Authorization"] = f"Token {self.bot.diffusion_api_key}"
-        self.bot = bot
 
     @backoff.on_exception(backoff.expo, ClientResponseError, max_tries=3, giveup=lambda x: x.status == 402)
     async def req(
