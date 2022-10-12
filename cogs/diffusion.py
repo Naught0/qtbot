@@ -83,10 +83,11 @@ class Diffusion(commands.Cog):
     async def check_progress(self, id: str) -> List[str]:
         total_checks = 0
         while True:
-            resp = await self.req("GET", f"/{id}")
+            resp = await self.req("GET", url=f"/{id}")
             resp = await resp.json()
-            if total_checks >= 30:
-                raise DiffusionError("Couldn't get a result after 60 seconds. Aborting.")
+            if total_checks >= 45:
+                await self.req("POST", url=f"/{id}/cancel", data={})
+                raise DiffusionError("Couldn't get a result after 90 seconds. Aborting.")
             if resp["error"]:
                 raise DiffusionError(resp["error"])
             if resp["completed_at"]:
