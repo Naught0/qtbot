@@ -39,7 +39,8 @@ class Diffusion(commands.Cog):
         with open("data/apikeys.json") as f:
             self.api_keys = cycle(json.load(f)["stable_diffusion"])
 
-        self.HEADERS["Authorization"] = f"Token {next(self.api_keys)}"
+        self.bot.diffusion_api_key = next(self.api_keys)
+        self.HEADERS["Authorization"] = f"Token {self.bot.diffusion_api_key}"
         self.bot = bot
 
     @backoff.on_exception(backoff.expo, ClientResponseError, max_tries=3, giveup=lambda x: x.status == 402)
@@ -60,7 +61,8 @@ class Diffusion(commands.Cog):
                 verb, f"{self.URL}{url}", params=params, headers={**headers, **self.HEADERS}, json=data
             )
             if resp.status == 402:
-                self.HEADERS["Authorization"] = f"Token {next(self.api_keys)}"
+                self.bot.diffusion_api_key = next(self.api_keys)
+                self.HEADERS["Authorization"] = f"Token {self.bot.diffusion_api_key}"
                 continue
 
             break
@@ -83,8 +85,8 @@ class Diffusion(commands.Cog):
         while True:
             resp = await self.req("GET", f"/{id}")
             resp = await resp.json()
-            if total_checks >= 15:
-                raise DiffusionError("Couldn't get a result after 30 seconds. Aborting.")
+            if total_checks >= 30:
+                raise DiffusionError("Couldn't get a result after 60 seconds. Aborting.")
             if resp["error"]:
                 raise DiffusionError(resp["error"])
             if resp["completed_at"]:
@@ -108,7 +110,7 @@ class Diffusion(commands.Cog):
             try:
                 images = await self.check_progress(job_id)
             except DiffusionError as e:
-                return await ctx.error("API Error", str(e))
+                return await ctx.error("API Error", f"{ctx.author.mention} {e}")
             except ClientResponseError as e:
                 return await ctx.error(
                     "API Error", f"{ctx.author.mention} Received status code `{e.status}`\n{e.message}"
