@@ -61,7 +61,6 @@ class Diffusion(commands.Cog):
                 verb, f"{self.URL}{url}", params=params, headers={**headers, **self.HEADERS}, json=data
             )
             if resp.status == 402:
-                print(f"Switching keys from {self.bot.diffusion_api_key}")
                 self.bot.diffusion_api_key = next(self.api_keys)
                 self.HEADERS["Authorization"] = f"Token {self.bot.diffusion_api_key}"
                 continue
