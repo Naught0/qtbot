@@ -75,7 +75,7 @@ class Diffusion(commands.Cog):
         payload = {**self.INPUT, "input": {**self.INPUT["input"], "prompt": prompt}}
         resp = await self.req("POST", data=payload)
         resp = await resp.json()
-        if resp["error"]:
+        if resp.get("error"):
             raise DiffusionError(resp["error"])
 
         return resp["id"]
@@ -88,7 +88,7 @@ class Diffusion(commands.Cog):
             if total_checks >= 45:
                 await self.req("POST", url=f"/{id}/cancel", data={})
                 raise DiffusionError("Couldn't get a result after 90 seconds. Aborting.")
-            if resp["error"]:
+            if resp.get("error"):
                 raise DiffusionError(resp["error"])
             if resp["completed_at"]:
                 return resp["output"]
