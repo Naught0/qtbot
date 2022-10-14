@@ -62,6 +62,7 @@ class Diffusion(commands.Cog):
             )
             if resp.status == 402:
                 self.bot.diffusion_api_key = next(self.api_keys)
+                print(f"Key exhausted, using: ", self.bot.diffusion_api_key)
                 self.HEADERS["Authorization"] = f"Token {self.bot.diffusion_api_key}"
                 continue
 
