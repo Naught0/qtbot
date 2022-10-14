@@ -37,10 +37,11 @@ class Diffusion(commands.Cog):
 
     def __init__(self, bot: QTBot):
         with open("data/apikeys.json") as f:
-            self.api_keys = cycle(json.load(f)["stable_diffusion"])
+            self.api_keys = json.load(f)["stable_diffusion"]
 
         self.bot = bot
-        self.bot.diffusion_api_key = next(self.api_keys)
+        self.api_key_rotation = cycle(self.api_keys)
+        self.bot.diffusion_api_key = next(self.api_key_rotation)
         self.HEADERS["Authorization"] = f"Token {self.bot.diffusion_api_key}"
 
     @backoff.on_exception(backoff.expo, ClientResponseError, max_tries=3, giveup=lambda x: x.status == 402)
@@ -54,14 +55,14 @@ class Diffusion(commands.Cog):
     ) -> ClientResponse:
         attempt_count = 0
         while True:
-            if attempt_count > 4:
+            if attempt_count > (len(self.api_keys) - 1):
                 break
             attempt_count += 1
             resp = await self.bot.aio_session.request(
                 verb, f"{self.URL}{url}", params=params, headers={**headers, **self.HEADERS}, json=data
             )
             if resp.status == 402:
-                self.bot.diffusion_api_key = next(self.api_keys)
+                self.bot.diffusion_api_key = next(self.api_key_rotation)
                 print(f"Key exhausted, using: ", self.bot.diffusion_api_key)
                 self.HEADERS["Authorization"] = f"Token {self.bot.diffusion_api_key}"
                 continue
