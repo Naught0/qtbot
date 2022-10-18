@@ -95,14 +95,14 @@ class Diffusion(commands.Cog):
             return await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
 
     async def start_happy_job(self, text: str, unique_id: int) -> None:
-        await self.req("POST", service="happy", data={"text": text, "userId": unique_id})
+        await self.req("POST", service="happy", data={"text": text, "userID": unique_id})
 
     async def get_happy_output(self, id: int) -> str:
         checks = 0
         while True:
             if checks >= 45:
                 raise DiffusionError("Couldn't get result after 90 seconds. Aborting.")
-            resp = await self.req("GET", params={"userId": id}, service="happy")
+            resp = await self.req("GET", params={"userID": id}, service="happy")
             data = await resp.json(content_type=None)
             if data["done"]:
                 return data["url"]
