@@ -20,29 +20,11 @@ class DiffusionError(Exception):
 
 
 class Diffusion(commands.Cog):
-    INPUT = {
-        "version": "a9758cbfbd5f3c2094457d996681af52552901775aa2d6dd0b17fd15df959bef",
-        "input": {
-            "width": 512,
-            "height": 512,
-            "num_outputs": 1,
-            "num_outputs": "1",
-            "guidance_scale": 7.5,
-            "prompt_strength": 0.8,
-            "num_inference_steps": 50,
-        },
-    }
-    URL = "https://api.replicate.com/v1/predictions"
+    URL = "https://inpainter.vercel.app/api/predictions"
     HEADERS = {"Content-Type": "application/json"}
 
     def __init__(self, bot: QTBot):
-        with open("data/apikeys.json") as f:
-            self.api_keys = json.load(f)["stable_diffusion"]
-
         self.bot = bot
-        self.api_key_rotation = cycle(self.api_keys)
-        self.bot.diffusion_api_key = next(self.api_key_rotation)
-        self.HEADERS["Authorization"] = f"Token {self.bot.diffusion_api_key}"
 
     @backoff.on_exception(backoff.expo, ClientResponseError, max_tries=3, giveup=lambda x: x.status == 402)
     async def req(
@@ -53,28 +35,16 @@ class Diffusion(commands.Cog):
         headers: dict = {},
         data: dict = None,
     ) -> ClientResponse:
-        attempt_count = 0
-        while True:
-            if attempt_count > (len(self.api_keys) - 1):
-                break
-            attempt_count += 1
-            resp = await self.bot.aio_session.request(
-                verb, f"{self.URL}{url}", params=params, headers={**headers, **self.HEADERS}, json=data
-            )
-            if resp.status == 402:
-                self.bot.diffusion_api_key = next(self.api_key_rotation)
-                print(f"Key exhausted, using: ", self.bot.diffusion_api_key)
-                self.HEADERS["Authorization"] = f"Token {self.bot.diffusion_api_key}"
-                continue
-
-            break
+        resp = await self.bot.aio_session.request(
+            verb, f"{self.URL}{url}", params=params, headers={**headers, **self.HEADERS}, json=data
+        )
 
         resp.raise_for_status()
 
         return resp
 
     async def start_job(self, prompt: str) -> str:
-        payload = {**self.INPUT, "input": {**self.INPUT["input"], "prompt": prompt}}
+        payload = {"input": {"prompt": prompt}}
         resp = await self.req("POST", data=payload)
         resp = await resp.json()
         if resp.get("error"):
