@@ -22,6 +22,15 @@ class DiffusionError(Exception):
 class Diffusion(commands.Cog):
     URL = "https://inpainter.vercel.app/api/predictions"
     HEADERS = {"Content-Type": "application/json"}
+    INPUT = {
+        "width": 512,
+        "height": 512,
+        "num_outputs": 1,
+        "num_outputs": "1",
+        "guidance_scale": 7.5,
+        "prompt_strength": 0.8,
+        "num_inference_steps": 50,
+    }
 
     def __init__(self, bot: QTBot):
         self.bot = bot
@@ -44,7 +53,7 @@ class Diffusion(commands.Cog):
         return resp
 
     async def start_job(self, prompt: str) -> str:
-        payload = {"input": {"prompt": prompt}}
+        payload = {"input": {**self.INPUT, "prompt": prompt}}
         resp = await self.req("POST", data=payload)
         resp = await resp.json(content_type=None)
         if resp.get("error"):
