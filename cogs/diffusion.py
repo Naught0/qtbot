@@ -1,5 +1,6 @@
 import asyncio
 import io
+from random import randint
 import backoff
 
 from uuid import uuid4
@@ -93,10 +94,10 @@ class Diffusion(commands.Cog):
             file = await self.image_to_file(images[0], prompt)
             return await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
 
-    async def start_happy_job(self, text: str, unique_id: str) -> None:
+    async def start_happy_job(self, text: str, unique_id: int) -> None:
         await self.req("POST", service="happy", data={"text": text, "userId": unique_id})
 
-    async def get_happy_output(self, id: str) -> str:
+    async def get_happy_output(self, id: int) -> str:
         checks = 0
         while True:
             if checks >= 45:
@@ -114,7 +115,7 @@ class Diffusion(commands.Cog):
         is_nsfw: bool = ctx.channel.is_nsfw()
         async with ctx.typing():
             try:
-                user_id = str(uuid4())
+                user_id = randint(0, 10**16)
                 await self.start_happy_job(prompt, user_id)
                 url = await self.get_happy_output(user_id)
             except DiffusionError as e:
