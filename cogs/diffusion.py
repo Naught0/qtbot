@@ -46,7 +46,7 @@ class Diffusion(commands.Cog):
     async def start_job(self, prompt: str) -> str:
         payload = {"input": {"prompt": prompt}}
         resp = await self.req("POST", data=payload)
-        resp = await resp.json()
+        resp = await resp.json(content_type=None)
         if resp.get("error"):
             raise DiffusionError(resp["error"])
 
@@ -56,7 +56,7 @@ class Diffusion(commands.Cog):
         total_checks = 0
         while True:
             resp = await self.req("GET", url=f"/{id}")
-            resp = await resp.json()
+            resp = await resp.json(content_type=None)
             if total_checks >= 45:
                 await self.req("POST", url=f"/{id}/cancel", data={})
                 raise DiffusionError("Couldn't get a result after 90 seconds. Aborting.")
