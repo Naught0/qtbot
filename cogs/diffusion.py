@@ -1,11 +1,10 @@
 import asyncio
 import io
-import json
 import backoff
 
-from typing import Literal, List, Union
-from urllib.parse import quote_plus
 from uuid import uuid4
+from typing import Literal, List
+from urllib.parse import quote_plus
 
 from discord import File
 from discord.ext import commands
@@ -78,22 +77,6 @@ class Diffusion(commands.Cog):
             checks += 1
             await asyncio.sleep(2)
 
-    async def start_happy_job(self, text: str, unique_id: Union[str, int]) -> None:
-        await self.req("POST", service="happy", data={"text": text, "userId": unique_id})
-
-    async def get_happy_output(self, id: Union[str, int]) -> str:
-        checks = 0
-        while True:
-            if checks >= 45:
-                raise DiffusionError("Couldn't get result after 90 seconds. Aborting.")
-            resp = await self.req("GET", url=f"/{id}", service="happy")
-            data = await resp.json(content_type=None)
-            if data["done"]:
-                return data["url"]
-
-            checks += 1
-            await asyncio.sleep(2)
-
     @commands.command(aliases=["diffuse", "sd"])
     async def diffusion(self, ctx: CustomContext, *, prompt: str) -> None:
         async with ctx.typing():
@@ -109,6 +92,22 @@ class Diffusion(commands.Cog):
 
             file = await self.image_to_file(images[0], prompt)
             return await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
+
+    async def start_happy_job(self, text: str, unique_id: str) -> None:
+        await self.req("POST", service="happy", data={"text": text, "userId": unique_id})
+
+    async def get_happy_output(self, id: str) -> str:
+        checks = 0
+        while True:
+            if checks >= 45:
+                raise DiffusionError("Couldn't get result after 90 seconds. Aborting.")
+            resp = await self.req("GET", params={"userId": id}, service="happy")
+            data = await resp.json(content_type=None)
+            if data["done"]:
+                return data["url"]
+
+            checks += 1
+            await asyncio.sleep(2)
 
     @commands.command(aliases=["nsd", "nsfwsd"])
     async def nsfw_diffusion(self, ctx: CustomContext, *, prompt: str) -> None:
