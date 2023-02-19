@@ -1,8 +1,9 @@
-from collections import namedtuple
 import re
-
 import asyncpg
 import discord
+
+from collections import namedtuple
+
 from discord.ext import commands
 
 from utils.custom_context import CustomContext
