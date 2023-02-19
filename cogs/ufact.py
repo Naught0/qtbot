@@ -1,8 +1,12 @@
 import re
-
 import asyncpg
 import discord
+
+from collections import namedtuple
+
 from discord.ext import commands
+
+from utils.custom_context import CustomContext
 
 
 class UserFacts(commands.Cog):
@@ -52,7 +56,10 @@ class UserFacts(commands.Cog):
 
         fact_owner = fact["member_id"]
 
-        return ctx.message.channel.permissions_for(ctx.author).administrator or fact_owner == ctx.author.id
+        return (
+            ctx.message.channel.permissions_for(ctx.author).administrator
+            or fact_owner == ctx.author.id
+        )
 
     async def total_facts(self, ctx):
         """Check whether a server has any facts"""
@@ -62,7 +69,7 @@ class UserFacts(commands.Cog):
         return await self.pg_con.fetchval(query, ctx.guild.id)
 
     @commands.group(invoke_without_command=True)
-    async def ufact(self, ctx, fact_id: int = None):
+    async def ufact(self, ctx: CustomContext, fact_id: int = None):
         """Get a random user-created fact from your server"""
         # Check to see whether any facts have been created
         if await self.total_facts(ctx) < 1:
@@ -80,7 +87,19 @@ class UserFacts(commands.Cog):
         if not fact:
             return await ctx.error(f"Couldn't find fact #{fact_id}")
 
-        user = await ctx.guild.fetch_member(fact["member_id"])
+        try:
+            user = await ctx.guild.fetch_member(fact["member_id"])
+        except discord.errors.NotFound:
+            user = namedtuple(
+                "User",
+                (
+                    "display_name",
+                    "avatar_url",
+                ),
+            )(
+                "Unknown",
+                "https://ia803204.us.archive.org/4/items/discordprofilepictures/discordblue.png",
+            )
         contents = fact["contents"]
 
         em = discord.Embed(
@@ -107,7 +126,9 @@ class UserFacts(commands.Cog):
         except asyncpg.UniqueViolationError:
             return await ctx.error("Sorry, that fact already exists.")
 
-        fact_id = await self.pg_con.fetchval("""SELECT id FROM user_facts WHERE contents = $1""", contents)
+        fact_id = await self.pg_con.fetchval(
+            """SELECT id FROM user_facts WHERE contents = $1""", contents
+        )
         await ctx.success(f"Added that fact for ya! (#{fact_id})")
 
     @ufact.command(name="delete", aliases=["remove", "del", "rm"])
