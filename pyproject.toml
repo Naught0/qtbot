@@ -20,7 +20,7 @@ tmdbsimple = "2.6.6"
 wolframalpha = "4.0.0"
 python-dateutil = "^2.8.1"
 discord = "^1.0.1"
-CairoSVG = "^2.5.2"
+CairoSVG = "^2.7.0"
 backoff = "^2.1.2"
 
 [tool.poetry.dev-dependencies]
