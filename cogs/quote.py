@@ -28,13 +28,15 @@ class Quote(commands.Cog):
         except discord.NotFound:
             return await ctx.error("Message doesn't exist")
         except discord.Forbidden:
-            return await ctx.error("You do not have the permissions to request this message")
+            return await ctx.error(
+                "You do not have the permissions to request this message"
+            )
         except discord.HTTPException:
             return await ctx.error("Couldn't retrieve the message")
 
         emb = discord.Embed(colour=self.color, description=message.content)
         emb.set_author(
-            name=f"{message.author.display_name}#{message.author.discriminator}",
+            name=message.author.display_name,
             icon_url=message.author.avatar_url,
         )
 
@@ -69,13 +71,15 @@ class Quote(commands.Cog):
         except discord.NotFound:
             return await ctx.error("Message doesn't exist")
         except discord.Forbidden:
-            return await ctx.error("You do not have the permissions to request this message")
+            return await ctx.error(
+                "You do not have the permissions to request this message"
+            )
         except discord.HTTPException:
             return await ctx.error("Couldn't retrieve the message")
 
         emb = discord.Embed(colour=self.color, description=fake_text)
         emb.set_author(
-            name=f"{message.author.display_name}#{message.author.discriminator}",
+            name=message.author.display_name,
             icon_url=message.author.avatar_url,
         )
 
