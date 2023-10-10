@@ -33,12 +33,16 @@ class MyTMDb(commands.Cog):
             Dict: API response
         """
         params = {"api_key": self.API_KEY, "query": quote_plus(query)}
-        tmdb_resp = await get_json(self.session, f"{self.URL}/search/{type}", params=params)
+        tmdb_resp = await get_json(
+            self.session, f"{self.URL}/search/{type}", params=params
+        )
         # Short circuit if we don't find anything from the tmdb api
         if not tmdb_resp["results"]:
             return None
 
-        rt_resp = await get_text(self.session, self.RT_URL, params={"search": quote_plus(query)})
+        rt_resp = await get_text(
+            self.session, self.RT_URL, params={"search": quote_plus(query)}
+        )
 
         tmdb_result = tmdb_resp["results"][0]
         soup = BeautifulSoup(rt_resp, "lxml")
@@ -56,7 +60,10 @@ class MyTMDb(commands.Cog):
             # next() grabs the first result so as not to receive another array
             rt_match = next(
                 filter(
-                    lambda r: r["name"] == (tmdb_result["title"] if type == "movie" else tmdb_result["name"])
+                    lambda r: r["name"]
+                    == (
+                        tmdb_result["title"] if type == "movie" else tmdb_result["name"]
+                    )
                     or (
                         int(r["releaseYear"]) == parse(tmdb_result["release_date"]).year
                         if "releaseYear" in r
@@ -83,6 +90,7 @@ class MyTMDb(commands.Cog):
         # Create embed
         em = discord.Embed(color=discord.Color.greyple())
         em.title = f'{result["name"] if type == "show" else result["title"]} ({parse(result["first_air_date"]).year if type == "show" else parse(result["release_date"]).year})'
+        em.url = f"https://themoviedb.org/movie/{result['id']}"
         em.description = (
             f'{result["overview"]}\n\n[Rotten Tomatoes]({result["rotten_tomatoes"]["url"]})'
             if result["rotten_tomatoes"]
