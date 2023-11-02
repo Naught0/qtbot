@@ -146,7 +146,7 @@ class Tag(commands.Cog):
 
         execute = """SELECT tag_name 
                      FROM tags
-                     WHERE server_id = $1 AND tag_name % $2
+                     WHERE server_id = $1 AND (tag_name % $2 OR tag_contents % $2)
                      ORDER BY similarity(tag_name, $2) DESC
                      LIMIT 10;"""
 
