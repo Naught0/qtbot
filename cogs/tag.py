@@ -147,6 +147,7 @@ class Tag(commands.Cog):
         execute = """SELECT tag_name 
                      FROM tags
                      WHERE server_id = $1 AND (tag_name LIKE $2 OR tag_contents LIKE $2)
+                     ORDER BY similarity(tag_name, $2) DESC, similarity(tag_contents, $2) DESC
                      LIMIT 10;"""
 
         search_results = await self.bot.pg_con.fetch(execute, ctx.guild.id, f"%{query}%")
