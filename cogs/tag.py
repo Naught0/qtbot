@@ -146,10 +146,10 @@ class Tag(commands.Cog):
 
         execute = """SELECT tag_name 
                      FROM tags
-                     WHERE server_id = $1 AND (tag_name LIKE %$2% OR tag_contents LIKE %$2%)
+                     WHERE server_id = $1 AND (tag_name LIKE $2 OR tag_contents LIKE $2)
                      LIMIT 10;"""
 
-        search_results = await self.bot.pg_con.fetch(execute, ctx.guild.id, query)
+        search_results = await self.bot.pg_con.fetch(execute, ctx.guild.id, f"%{query}%")
 
         # Do an embed for fun
         em = discord.Embed(title=":mag: Tag Search Results", color=discord.Color.blue())
