@@ -28,9 +28,7 @@ class Diffusion(commands.Cog):
     def __init__(self, bot: QTBot):
         self.bot = bot
 
-    async def image_to_file(
-        self, url: str, prompt: str, spoiler: bool = False
-    ) -> File:
+    async def image_to_file(self, url: str, prompt: str, spoiler: bool = False) -> File:
         image = await (await self.bot.aio_session.get(url)).read()
         return File(
             io.BytesIO(image),
@@ -87,7 +85,7 @@ class Diffusion(commands.Cog):
 
             if resp.get("error"):
                 raise DiffusionError(resp["error"])
-            if resp["completed_at"]:
+            if resp.get("completed_at"):
                 return resp["output"]
 
             checks += 1
