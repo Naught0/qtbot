@@ -8,11 +8,15 @@ services:
     working_dir: /qtbot
     env_file:
       - .env
+    networks:
+      - qtbot
   redis:
     image: redis
     restart: always
     ports:
       - "6739:6739"
+    networks:
+      - qtbot
 networks:
   qtbot:
     name: qtbot-network
