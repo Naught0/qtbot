@@ -1,3 +1,4 @@
+import os
 import json
 import traceback
 from datetime import datetime
@@ -37,7 +38,9 @@ class QTBot(commands.Bot):
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
         # self.rune_client = lolrune.AioRuneClient()
-        self.redis_client = aredis.StrictRedis(host="localhost", decode_responses=True)
+        self.redis_client = aredis.StrictRedis(
+            host=os.getenv("REDIS_HOST"), decode_responses=True
+        )
         self.startup_extensions = [x.stem for x in Path("cogs").glob("*.py")]
         self.loop.run_until_complete(self.create_db_pool())
         self.loop.run_until_complete(self.load_all_prefixes())
@@ -57,9 +60,7 @@ class QTBot(commands.Bot):
             return "qt."
 
     async def create_db_pool(self):
-        with open(self.config_file) as f:
-            self.pg_pw = json.load(f)["postgres"]
-        self.pg_con = await asyncpg.create_pool(user="james", password=self.pg_pw, database="discord_testing")
+        self.pg_con = await asyncpg.create_pool(os.getenv("DATABASE_URL"))
 
     async def on_message(self, message):
         ctx = await self.get_context(message, cls=CustomContext)
