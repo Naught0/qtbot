@@ -15,4 +15,5 @@ services:
       - "6739:6739"
 networks:
   qtbot:
+    name: qtbot-network
     driver: bridge
