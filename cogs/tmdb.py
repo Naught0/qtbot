@@ -3,7 +3,7 @@ import json
 
 from json.decoder import JSONDecodeError
 from urllib import parse
-from typing import Dict
+from typing import Dict, Literal
 from dateutil.parser import parse
 from urllib.parse import quote_plus
 
@@ -79,18 +79,18 @@ class MyTMDb(commands.Cog):
         return {**tmdb_result, "rotten_tomatoes": rt_match}
 
     @staticmethod
-    def _to_embed(result, type):
+    def _to_embed(result, movie_or_show: Literal["movie", "show"]):
         # Get qtbot rating
         rating = float(result["vote_average"])
         if rating > 7.0:
-            rec = f"This is a qtbot™ recommended {type}."
+            rec = f"This is a qtbot™ recommended {movie_or_show}."
         else:
-            rec = f"This is not a qtbot™ recommmended {type}."
+            rec = f"This is not a qtbot™ recommmended {movie_or_show}."
 
         # Create embed
         em = discord.Embed(color=discord.Color.greyple())
-        em.title = f'{result["name"] if type == "show" else result["title"]} ({parse(result["first_air_date"]).year if type == "show" else parse(result["release_date"]).year})'
-        em.url = f"https://themoviedb.org/movie/{result['id']}"
+        em.title = f'{result["name"] if movie_or_show == "show" else result["title"]} ({parse(result["first_air_date"]).year if movie_or_show == "show" else parse(result["release_date"]).year})'
+        em.url = f"https://themoviedb.org/{movie_or_show}/{result['id']}"
         em.description = (
             f'{result["overview"]}\n\n[Rotten Tomatoes]({result["rotten_tomatoes"]["url"]})'
             if result["rotten_tomatoes"]
