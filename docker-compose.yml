@@ -10,8 +10,8 @@ services:
       - .env
     networks:
       - qtbot
-  volumes:
-    - .:/qtbot
+    volumes:
+      - .:/qtbot
   redis:
     image: redis
     restart: always
