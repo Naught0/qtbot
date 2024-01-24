@@ -90,7 +90,7 @@ class MyTMDb(commands.Cog):
         # Create embed
         em = discord.Embed(color=discord.Color.greyple())
         em.title = f'{result["name"] if movie_or_show == "show" else result["title"]} ({parse(result["first_air_date"]).year if movie_or_show == "show" else parse(result["release_date"]).year})'
-        em.url = f"https://themoviedb.org/{movie_or_show}/{result['id']}"
+        em.url = f"https://themoviedb.org/{'tv' if movie_or_show == 'show' else movie_or_show}/{result['id']}"
         em.description = (
             f'{result["overview"]}\n\n[Rotten Tomatoes]({result["rotten_tomatoes"]["url"]})'
             if result["rotten_tomatoes"]
