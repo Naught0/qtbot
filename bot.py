@@ -6,7 +6,6 @@ from pathlib import Path
 
 import aiohttp
 import aredis
-from aredis.client import asyncio
 import asyncpg
 import discord
 from discord.ext import commands
@@ -37,14 +36,14 @@ class QTBot(commands.Bot):
             **kwargs,
         )
 
-        self.aio_session = aiohttp.ClientSession()
+        self.aio_session = aiohttp.ClientSession(loop=self.loop)
         # self.rune_client = lolrune.AioRuneClient()
         self.redis_client = aredis.StrictRedis(
             host=os.getenv("REDIS_HOST"), decode_responses=True
         )
         self.startup_extensions = [x.stem for x in Path("cogs").glob("*.py")]
-        asyncio.run(self.create_db_pool())
-        asyncio.run(self.load_all_prefixes())
+        self.loop.run_until_complete(self.create_db_pool())
+        self.loop.run_until_complete(self.load_all_prefixes())
 
     def run(self):
         super().run(self.token)
