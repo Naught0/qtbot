@@ -64,10 +64,10 @@ class QTBot(commands.Bot):
                 else:
                     print(f"Loaded Extension: {extension}")
 
-            print(f"Client logged in at {self.start_time_str}")
-            print(self.user.name)
-            print(self.user.id)
-            print("----------")
+        print(f"Client logged in at {self.start_time_str}")
+        print(self.user.name)
+        print(self.user.id)
+        print("----------")
 
     async def load_all_prefixes(self):
         pres = await self.pg_con.fetch("SELECT * from custom_prefix")
