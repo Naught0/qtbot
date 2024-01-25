@@ -24,6 +24,7 @@ class QTBot(commands.Bot):
         self.token = self.api_keys["discord"]
         intents = discord.Intents.default()
         intents.members = True
+        intents.message_content = True
 
         super().__init__(
             command_prefix=self.get_prefix,
