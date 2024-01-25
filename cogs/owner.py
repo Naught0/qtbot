@@ -4,7 +4,7 @@ from discord.ext import commands
 
 class Owner(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: commands.Bot = bot
 
     # async def on_member_join(self, ctx):
     #     await ctx.send('Welcome to the server! For a complete list of commands, type `.help`.')
@@ -14,7 +14,7 @@ class Owner(commands.Cog):
     async def load(self, ctx, extension_name: str):
         """Loads an extension"""
         try:
-            self.bot.load_extension(extension_name)
+            await self.bot.load_extension(extension_name)
         except (AttributeError, ImportError) as e:
             return await ctx.send(f"```py\n{type(e).__name__}: {str(e)}\n```")
 
@@ -24,14 +24,14 @@ class Owner(commands.Cog):
     @commands.is_owner()
     async def unload(self, ctx, extension_name: str):
         """Unloads an extension."""
-        self.bot.unload_extension(extension_name)
+        await self.bot.unload_extension(extension_name)
         await ctx.success(f"Cog `{extension_name}` has been unloaded.")
 
     @commands.command(aliases=["r"], hidden=True)
     @commands.is_owner()
     async def reload(self, ctx, extension_name: str):
         """Reloads an extension"""
-        self.bot.reload_extension(extension_name)
+        await self.bot.reload_extension(extension_name)
         await ctx.success(f"Cog `{extension_name}` has been reloaded.")
 
     @commands.command(name="reload_all", aliases=["ra"], hidden=True)
@@ -46,7 +46,7 @@ class Owner(commands.Cog):
 
         # Reloads all cogs
         for extension in ext_list:
-            self.bot.reload_extension(extension)
+            await self.bot.reload_extension(extension)
         await ctx.success(f"Reloaded `{len(self.bot.startup_extensions)}` extensions.")
 
 
