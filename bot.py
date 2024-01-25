@@ -49,6 +49,25 @@ class QTBot(commands.Bot):
         await self.create_db_pool()
         await self.load_all_prefixes()
 
+        if not hasattr(self, "start_time"):
+            self.start_time = datetime.now()
+            self.start_time_str = self.start_time.strftime("%B %d %H:%M:%S")
+
+        for extension in self.startup_extensions:
+            if extension not in self.do_not_load:
+                try:
+                    await self.load_extension(f"cogs.{extension}")
+                except Exception:
+                    print(f"Failed Extension: {extension}")
+                    traceback.print_exc()
+                else:
+                    print(f"Loaded Extension: {extension}")
+
+            print(f"Client logged in at {self.start_time_str}")
+            print(self.user.name)
+            print(self.user.id)
+            print("----------")
+
     async def load_all_prefixes(self):
         pres = await self.pg_con.fetch("SELECT * from custom_prefix")
         # Load custom prefixes into a dict
@@ -66,23 +85,3 @@ class QTBot(commands.Bot):
     async def on_message(self, message):
         ctx = await self.get_context(message, cls=CustomContext)
         await self.invoke(ctx)
-
-    async def on_ready(self):
-        if not hasattr(self, "start_time"):
-            self.start_time = datetime.now()
-            self.start_time_str = self.start_time.strftime("%B %d %H:%M:%S")
-
-        for extension in self.startup_extensions:
-            if extension not in self.do_not_load:
-                try:
-                    self.load_extension(f"cogs.{extension}")
-                except:
-                    print(f"Failed Extension: {extension}")
-                    traceback.print_exc()
-                else:
-                    print(f"Loaded Extension: {extension}")
-
-        print(f"Client logged in at {self.start_time_str}")
-        print(self.user.name)
-        print(self.user.id)
-        print("----------")
