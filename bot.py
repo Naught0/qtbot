@@ -35,17 +35,19 @@ class QTBot(commands.Bot):
             **kwargs,
         )
 
-        self.aio_session = aiohttp.ClientSession(loop=self.loop)
+        self.aio_session = aiohttp.ClientSession()
         # self.rune_client = lolrune.AioRuneClient()
         self.redis_client = redis.Redis(
             host=os.getenv("REDIS_HOST"), decode_responses=True
         )
         self.startup_extensions = [x.stem for x in Path("cogs").glob("*.py")]
-        self.loop.run_until_complete(self.create_db_pool())
-        self.loop.run_until_complete(self.load_all_prefixes())
 
     def run(self):
         super().run(self.token)
+
+    async def setup_hook(self):
+        await self.create_db_pool()
+        await self.load_all_prefixes()
 
     async def load_all_prefixes(self):
         pres = await self.pg_con.fetch("SELECT * from custom_prefix")
