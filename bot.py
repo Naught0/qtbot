@@ -1,15 +1,14 @@
-import os
 import json
+import os
 import traceback
 from datetime import datetime
 from pathlib import Path
 
 import aiohttp
-import aredis
 import asyncpg
 import discord
+import redis.asyncio as redis
 from discord.ext import commands
-
 from utils.custom_context import CustomContext
 
 
@@ -38,7 +37,7 @@ class QTBot(commands.Bot):
 
         self.aio_session = aiohttp.ClientSession(loop=self.loop)
         # self.rune_client = lolrune.AioRuneClient()
-        self.redis_client = aredis.StrictRedis(
+        self.redis_client = redis.Redis(
             host=os.getenv("REDIS_HOST"), decode_responses=True
         )
         self.startup_extensions = [x.stem for x in Path("cogs").glob("*.py")]
