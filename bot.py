@@ -36,7 +36,6 @@ class QTBot(commands.Bot):
             **kwargs,
         )
 
-        self.aio_session = aiohttp.ClientSession()
         # self.rune_client = lolrune.AioRuneClient()
         self.redis_client = redis.Redis(
             host=os.getenv("REDIS_HOST"), decode_responses=True
@@ -49,6 +48,7 @@ class QTBot(commands.Bot):
     async def setup_hook(self):
         await self.create_db_pool()
         await self.load_all_prefixes()
+        self.aio_session = aiohttp.ClientSession()
 
         if not hasattr(self, "start_time"):
             self.start_time = datetime.now()
