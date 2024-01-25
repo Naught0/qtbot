@@ -63,7 +63,7 @@ class LastFM(commands.Cog):
         em.title = f"{track.artist['#text']} - {track.name}"
         em.add_field(name="Album", value=track.album["#text"])
         # User's info for NP
-        em.set_author(name=member.display_name, url=track.url, icon_url=member.avatar_url)
+        em.set_author(name=member.display_name, url=track.url, icon_url=member.display_avatar.url)
         # Album art
         em.set_thumbnail(url=track.image[-1]["#text"])
         # LastFM info & logo

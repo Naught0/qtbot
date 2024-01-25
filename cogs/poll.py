@@ -37,7 +37,7 @@ class Poll(commands.Cog):
 
         # Do a heckin good embed
         em = discord.Embed(title=poll_name, color=discord.Color.teal())
-        em.set_author(name=f"Poll created by {ctx.author}", icon_url=ctx.author.avatar_url)
+        em.set_author(name=f"Poll created by {ctx.author}", icon_url=ctx.author.display_avatar.url)
         em.set_footer(text="Poll created at")
         em.timestamp = datetime.now()
 

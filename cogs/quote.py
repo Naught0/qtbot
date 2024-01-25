@@ -37,7 +37,7 @@ class Quote(commands.Cog):
         emb = discord.Embed(colour=self.color, description=message.content)
         emb.set_author(
             name=message.author.display_name,
-            icon_url=message.author.avatar_url,
+            icon_url=message.author.display_avatar.url,
         )
 
         # DMChannel doesn't have a name attr, not doing any fancy ternary op, its already messy
@@ -80,7 +80,7 @@ class Quote(commands.Cog):
         emb = discord.Embed(colour=self.color, description=fake_text)
         emb.set_author(
             name=message.author.display_name,
-            icon_url=message.author.avatar_url,
+            icon_url=message.author.display_avatar.url,
         )
 
         # DMChannel doesn't have a name attr, not doing any fancy ternary op, its already messy

@@ -72,7 +72,7 @@ class Generic(commands.Cog):
         em = discord.Embed(color=discord.Color.blurple())
         em.set_author(
             name=f"{ctx.author.display_name} rolled {num}d{sides}",
-            icon_url=ctx.author.avatar_url,
+            icon_url=ctx.author.display_avatar.url,
         )
         em.add_field(name=":game_die: Rolls", value=", ".join([str(x) for x in rolls]))
         em.add_field(name=":game_die: Total", value=str(sum(rolls)), inline=False)

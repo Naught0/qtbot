@@ -107,7 +107,7 @@ class UserFacts(commands.Cog):
             description=contents,
             timestamp=fact["created"],
         )
-        em.set_footer(text=f"Created by {user.display_name}", icon_url=user.avatar_url)
+        em.set_footer(text=f"Created by {user.display_name}", icon_url=user.display_avatar.url)
 
         await ctx.send(embed=em)
 

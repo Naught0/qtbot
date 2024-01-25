@@ -130,7 +130,7 @@ class Tag(commands.Cog):
         em.set_footer(text="Created at")
 
         user = self.bot.get_user(tag_record["owner_id"]) or (await self.bot.get_user_info(tag_record["owner_id"]))
-        em.set_author(name=str(user), icon_url=user.avatar_url)
+        em.set_author(name=str(user), icon_url=user.display_avatar.url)
 
         em.add_field(name="Tag Owner:", value=f"<@{tag_record['owner_id']}>")
         em.add_field(name="Uses:", value=tag_record["total_uses"])
