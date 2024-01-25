@@ -83,5 +83,5 @@ class Dictionary(commands.Cog):
         await ctx.send(embed=em)
 
 
-def setup(bot):
-    bot.add_cog(Dictionary(bot))
+async def setup(bot):
+    await bot.add_cog(Dictionary(bot))

@@ -49,5 +49,5 @@ class RNG(commands.Cog):
         await ctx.send(f"That really {random.choice(word1)} my {random.choice(word2)}!")
 
 
-def setup(bot):
-    bot.add_cog(RNG(bot))
+async def setup(bot):
+    await bot.add_cog(RNG(bot))

@@ -85,5 +85,5 @@ class Poll(commands.Cog):
         )
 
 
-def setup(bot):
-    bot.add_cog(Poll(bot))
+async def setup(bot):
+    await bot.add_cog(Poll(bot))

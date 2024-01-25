@@ -109,5 +109,5 @@ class Diffusion(commands.Cog):
             return await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
 
 
-def setup(bot):
-    bot.add_cog(Diffusion(bot))
+async def setup(bot):
+    await bot.add_cog(Diffusion(bot))

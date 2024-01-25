@@ -121,5 +121,5 @@ class Crypto(commands.Cog):
         await ctx.send(embed=em, file=image)
 
 
-def setup(bot):
-    bot.add_cog(Crypto(bot))
+async def setup(bot):
+    await bot.add_cog(Crypto(bot))

@@ -46,5 +46,5 @@ class Calculator(commands.Cog):
             await ctx.error(f"Sorry, I couldn't calculate `{query}`.")
 
 
-def setup(bot):
-    bot.add_cog(Calculator(bot))
+async def setup(bot):
+    await bot.add_cog(Calculator(bot))

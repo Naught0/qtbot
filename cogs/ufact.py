@@ -149,5 +149,5 @@ class UserFacts(commands.Cog):
         await ctx.success(f"Deleted fact #{did}")
 
 
-def setup(bot):
-    bot.add_cog(UserFacts(bot))
+async def setup(bot):
+    await bot.add_cog(UserFacts(bot))

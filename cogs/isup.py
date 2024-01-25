@@ -42,5 +42,5 @@ class DownDetect(commands.Cog):
                 await self.redis_client.set(f"isup:{check_url}", True, ex=300)
 
 
-def setup(bot):
-    bot.add_cog(DownDetect(bot))
+async def setup(bot):
+    await bot.add_cog(DownDetect(bot))

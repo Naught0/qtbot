@@ -48,5 +48,5 @@ class Game(commands.Cog):
         await ctx.send(embed=em)
 
 
-def setup(bot):
-    bot.add_cog(Game(bot))
+async def setup(bot):
+    await bot.add_cog(Game(bot))

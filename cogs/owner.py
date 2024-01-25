@@ -50,5 +50,5 @@ class Owner(commands.Cog):
         await ctx.success(f"Reloaded `{len(self.bot.startup_extensions)}` extensions.")
 
 
-def setup(bot):
-    bot.add_cog(Owner(bot))
+async def setup(bot):
+    await bot.add_cog(Owner(bot))

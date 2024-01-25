@@ -43,5 +43,5 @@ class Dalle(commands.Cog):
         await ctx.send(f"{ctx.author.mention}: {prompt}", file=image)
 
 
-def setup(bot):
-    bot.add_cog(Dalle(bot))
+async def setup(bot):
+    await bot.add_cog(Dalle(bot))

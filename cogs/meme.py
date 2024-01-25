@@ -46,5 +46,5 @@ class FindMeme(commands.Cog):
         await ctx.send(f"{link}")
 
 
-def setup(bot):
-    bot.add_cog(FindMeme(bot))
+async def setup(bot):
+    await bot.add_cog(FindMeme(bot))

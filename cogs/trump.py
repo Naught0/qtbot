@@ -57,5 +57,5 @@ class Trump(commands.Cog):
         await ctx.send(embed=em)
 
 
-def setup(bot):
-    bot.add_cog(Trump(bot))
+async def setup(bot):
+    await bot.add_cog(Trump(bot))

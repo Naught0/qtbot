@@ -45,5 +45,5 @@ class GM(commands.Cog):
         await ctx.send(f"{g} {e}")
 
 
-def setup(bot):
-    bot.add_cog(GM(bot))
+async def setup(bot):
+    await bot.add_cog(GM(bot))

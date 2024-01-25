@@ -189,5 +189,5 @@ class Comics(commands.Cog):
         await ctx.success(f"Updated {len(comics_to_update)} comic(s)!")
 
 
-def setup(bot):
-    bot.add_cog(Comics(bot))
+async def setup(bot):
+    await bot.add_cog(Comics(bot))

@@ -82,5 +82,5 @@ class Google(commands.Cog):
                 await msg.remove_reaction(reaction.emoji, ctx.author)
 
 
-def setup(bot):
-    bot.add_cog(Google(bot))
+async def setup(bot):
+    await bot.add_cog(Google(bot))

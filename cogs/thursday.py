@@ -18,5 +18,5 @@ class Thursday(commands.Cog):
         return await ctx.send(msg)
 
 
-def setup(bot):
-    bot.add_cog(Thursday(bot))
+async def setup(bot):
+    await bot.add_cog(Thursday(bot))

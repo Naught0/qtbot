@@ -21,5 +21,5 @@ class Timer(commands.Cog):
             return await ctx.send("This is a test command. Please enter a time in seconds not exceeding 7200.")
 
 
-def setup(bot):
-    bot.add_cog(Timer(bot))
+async def setup(bot):
+    await bot.add_cog(Timer(bot))

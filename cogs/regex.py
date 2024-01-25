@@ -126,6 +126,6 @@ class RegularExpressions(Cog):
         await ctx.send(match_and_format(pattern, string))
 
 
-def setup(bot: commands.Bot) -> None:
+async def setup(bot: commands.Bot) -> None:
     """Load the RegularExpressions cog."""
-    bot.add_cog(RegularExpressions(bot))
+    await bot.add_cog(RegularExpressions(bot))

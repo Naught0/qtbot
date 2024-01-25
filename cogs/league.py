@@ -330,5 +330,5 @@ class League(commands.Cog):
     #         await bot_message.remove_reaction(reaction.emoji, ctx.author)
 
 
-def setup(bot):
-    bot.add_cog(League(bot))
+async def setup(bot):
+    await bot.add_cog(League(bot))

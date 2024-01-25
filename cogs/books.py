@@ -78,5 +78,5 @@ class Books(commands.Cog):
         await paginate(ctx, msg, embeds)
 
 
-def setup(bot):
-    bot.add_cog(Books(bot))
+async def setup(bot):
+    await bot.add_cog(Books(bot))

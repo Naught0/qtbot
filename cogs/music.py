@@ -80,5 +80,5 @@ class MusicInfo(commands.Cog):
         await ctx.send(embed=em)
 
 
-def setup(bot):
-    bot.add_cog(MusicInfo(bot))
+async def setup(bot):
+    await bot.add_cog(MusicInfo(bot))
