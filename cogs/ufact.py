@@ -87,11 +87,11 @@ class UserFacts(commands.Cog):
         if not fact:
             return await ctx.error(f"Couldn't find fact #{fact_id}")
 
-        try:
-            user = ctx.guild.get_member(fact["member_id"])
+        user = ctx.guild.get_member(fact["member_id"])
+        if user is not None:
             user_name = user.display_name
             pic = user.display_avatar.url
-        except discord.errors.NotFound:
+        else:
             user_name = "Unknown"
             pic = "https://ia803204.us.archive.org/4/items/discordprofilepictures/discordblue.png"
 
