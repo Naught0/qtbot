@@ -89,25 +89,19 @@ class UserFacts(commands.Cog):
 
         try:
             user = await ctx.guild.fetch_member(fact["member_id"])
+            user_name = user.display_name
+            pic = user.display_avatar.url
+            print(f"Found member {user}")
         except discord.errors.NotFound:
-            user = namedtuple(
-                "User",
-                (
-                    "display_name",
-                    "avatar_url",
-                ),
-            )(
-                "Unknown",
-                "https://ia803204.us.archive.org/4/items/discordprofilepictures/discordblue.png",
-            )
-        contents = fact["contents"]
+            user_name = "Unknown"
+            pic = "https://ia803204.us.archive.org/4/items/discordprofilepictures/discordblue.png"
 
         em = discord.Embed(
             title=f':bookmark: Fact #{fact["id"]}',
-            description=contents,
+            description=fact["contents"],
             timestamp=fact["created"],
         )
-        em.set_footer(text=f"Created by {user.display_name}", icon_url=user.display_avatar.url)
+        em.set_footer(text=f"Created by {user_name}", icon_url=pic)
 
         await ctx.send(embed=em)
 
