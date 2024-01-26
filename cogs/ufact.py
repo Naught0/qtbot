@@ -88,7 +88,7 @@ class UserFacts(commands.Cog):
             return await ctx.error(f"Couldn't find fact #{fact_id}")
 
         try:
-            user = await ctx.guild.get_member(fact["member_id"])
+            user = ctx.guild.get_member(fact["member_id"])
             user_name = user.display_name
             pic = user.display_avatar.url
         except discord.errors.NotFound:
