@@ -80,7 +80,7 @@ class QTBot(commands.Bot):
         # Load custom prefixes into a dict
         self.pre_dict = {r["guild_id"]: r["prefix"] for r in pres}
 
-    async def get_prefix(self, message):
+    async def get_prefix(self, message: discord.Message):
         try:
             return ("qt.", self.pre_dict[message.guild.id])
         except (KeyError, AttributeError):
