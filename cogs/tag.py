@@ -192,7 +192,7 @@ class Tag(commands.Cog):
 
         for idx, record in enumerate(top_taggers):
             top_taggers_counts.append(
-                f"{self.emoji_map[idx]} <@{record.owner_id}> ({record.count} tags created)"
+                f"{self.emoji_map[idx]} <@{record[0]}> ({record[1]} tags created)"
             )
 
         em.add_field(name="Top Taggers", value="\n".join(top_taggers_counts))
