@@ -182,7 +182,7 @@ class Tag(commands.Cog):
 
         em.description = f"Total Tags: {total_tags}\nTotal Tag Uses: {total_tag_uses}"
 
-        top_tags = sorted(all_tags, key=lambda t: t.total_uses)[:4]
+        top_tags = sorted(all_tags, key=lambda t: t.total_uses, reverse=True)[:4]
         tag_use_counts = []
 
         for idx, record in enumerate(top_tags):
