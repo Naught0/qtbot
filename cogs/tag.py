@@ -12,7 +12,6 @@ from utils.custom_context import CustomContext
 class Tag(commands.Cog):
     def __init__(self, bot: QTBot):
         self.bot = bot
-        self.pg_con = bot.pg_con
         self.emoji_map = [
             "1\U000020e3",
             "2\U000020e3",
