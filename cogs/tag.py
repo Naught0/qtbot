@@ -6,6 +6,7 @@ from bot import QTBot
 from discord.ext import commands
 from discord.utils import escape_markdown
 from prisma.models import Tag as TagModel
+from utils.custom_context import CustomContext
 
 
 class Tag(commands.Cog):
@@ -50,7 +51,7 @@ class Tag(commands.Cog):
             )
 
     @tag.command(aliases=["add"])
-    async def create(self, ctx, tag_name, *, contents):
+    async def create(self, ctx: CustomContext, tag_name, *, contents):
         """Create a new tag for later retrieval"""
         if len(tag_name) < 2:
             return await ctx.error("Tag name should be at least 3 characters")
@@ -68,7 +69,7 @@ class Tag(commands.Cog):
         except prisma.errors.UniqueViolationError:
             return await ctx.error(
                 f"Sorry, tag `{tag_name}` already exists. ",
-                contents="If you own it, feel free to `qt.tag edit` it.",
+                description="If you own it, feel free to `qt.tag edit` it.",
             )
 
     @tag.command(aliases=["del", "delet"])
