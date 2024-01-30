@@ -84,7 +84,7 @@ class Moderator(commands.Cog):
             em = discord.Embed(color=discord.Color.blurple())
             em.set_author(
                 name=f"{'Bot prefix' if len(prefixes) == 1 else 'Bot Prefixes'} for {ctx.guild.name}",
-                icon_url=ctx.guild.icon_url,
+                icon_url=ctx.guild.icon.url,
             )
             em.set_footer(text="Use qt.pre <New_Prefix> to set a new prefix")
 

@@ -167,7 +167,7 @@ class Tag(commands.Cog):
     async def stats(self, ctx: commands.Context):
         """Get stats about the tags for your guild"""
         em = discord.Embed(title="Tag Statistics", color=discord.Color.blue())
-        em.set_author(name=f"{ctx.guild.name}", icon_url=ctx.guild.icon_url)
+        em.set_author(name=f"{ctx.guild.name}", icon_url=ctx.guild.icon.url)
 
         all_tags = await self.bot.prisma.tag.find_many(
             where={"server_id": ctx.guild.id}
