@@ -7,18 +7,13 @@ from discord.ext import commands
 from discord.utils import escape_markdown
 from prisma.models import Tag as TagModel
 from utils.custom_context import CustomContext
+from utils.paginate import generate_number_emoji_range
 
 
 class Tag(commands.Cog):
     def __init__(self, bot: QTBot):
         self.bot = bot
-        self.emoji_map = [
-            "1\U000020e3",
-            "2\U000020e3",
-            "3\U000020e3",
-            "4\U000020e3",
-            "5\U000020e3",
-        ]
+        self.number_reactions = generate_number_emoji_range(1, 5)
 
     async def get_tag(self, server_id: int, tag_name: str):
         """Returns tag value or None"""
@@ -157,7 +152,9 @@ class Tag(commands.Cog):
             ]
 
         for idx, record in enumerate(search_results):
-            description_strings.append(f"{self.emoji_map[idx]} {record.tag_name}")
+            description_strings.append(
+                f"{self.number_reactions[idx]} {record.tag_name}"
+            )
 
         em.description = "\n".join(description_strings)
 
@@ -185,7 +182,7 @@ class Tag(commands.Cog):
 
         for idx, record in enumerate(top_tags):
             tag_use_counts.append(
-                f"{self.emoji_map[idx]} {record.tag_name} ({record.total_uses} uses)"
+                f"{self.number_reactions[idx]} {record.tag_name} ({record.total_uses} uses)"
             )
 
         em.add_field(name="Most Used Tags", value="\n".join(tag_use_counts))
@@ -195,7 +192,7 @@ class Tag(commands.Cog):
 
         for idx, record in enumerate(top_taggers):
             top_taggers_counts.append(
-                f"{self.emoji_map[idx]} <@{record[0]}> ({record[1]} tags created)"
+                f"{self.number_reactions[idx]} <@{record[0]}> ({record[1]} tags created)"
             )
 
         em.add_field(name="Top Taggers", value="\n".join(top_taggers_counts))
