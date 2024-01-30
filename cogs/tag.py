@@ -51,7 +51,7 @@ class Tag(commands.Cog):
                 f"Sorry, I couldn't find a tag matching `{tag_name}`."
             )
 
-    @tag.command(aliases=["add"])
+    @tag.command(aliases=["add", "new"])
     async def create(self, ctx: CustomContext, tag_name, *, contents):
         """Create a new tag for later retrieval"""
         if len(tag_name) < 2:
@@ -89,7 +89,7 @@ class Tag(commands.Cog):
         await self.bot.prisma.tag.delete(where={"id": tag.id})
         await ctx.success(f"Tag `{escape_markdown(tag_name)}` deleted.")
 
-    @tag.command(aliases=["ed"])
+    @tag.command(aliases=["ed", "update", "upd"])
     async def edit(self, ctx, tag_name: str, *, contents: str):
         """Edit a tag which you created"""
         tag = await self.get_tag(ctx.guild.id, tag_name)
@@ -131,37 +131,36 @@ class Tag(commands.Cog):
 
         await ctx.send(embed=em)
 
-    @tag.command()
+    @tag.command(aliases=["s", "ss"])
     async def search(self, ctx, *, query: str):
         """Search for some matching tags"""
-
         if len(query) < 3:
             return await ctx.error("Query must be at least 3 characters")
 
-        execute = """SELECT *
+        query = """SELECT *
                      FROM tags
                      WHERE server_id = $1 AND (tag_name LIKE $2 OR tag_contents LIKE $2)
                      ORDER BY similarity(tag_name, $2) DESC, similarity(tag_contents, $2) DESC
                      LIMIT 10;"""
-
         search_results = await self.bot.prisma.query_raw(
-            execute, ctx.guild.id, f"%{query}%", model=TagModel
+            query, ctx.guild.id, f"%{query}%", model=TagModel
         )
 
-        # Do an embed for fun
         em = discord.Embed(title=":mag: Tag Search Results", color=discord.Color.blue())
 
         if len(search_results) == 1:
-            des_list = ["I found 1 similar tag:"]
+            description_strings = ["I found 1 similar tag:"]
         elif len(search_results) > 1:
-            des_list = [f"I found {len(search_results)} similar tags:"]
+            description_strings = [f"I found {len(search_results)} similar tags:"]
         else:
-            des_list = [f":warning: I could not find any matching tags for `{query}`."]
+            description_strings = [
+                f":warning: I could not find any matching tags for `{query}`."
+            ]
 
         for idx, record in enumerate(search_results):
-            des_list.append(f"{self.emoji_map[idx]} {record.tag_name}")
+            description_strings.append(f"{self.emoji_map[idx]} {record.tag_name}")
 
-        em.description = "\n".join(des_list)
+        em.description = "\n".join(description_strings)
 
         await ctx.send(embed=em)
 
