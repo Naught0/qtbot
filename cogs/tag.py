@@ -72,7 +72,7 @@ class Tag(commands.Cog):
                 description="If you own it, feel free to `qt.tag edit` it.",
             )
 
-    @tag.command(aliases=["del", "delet"])
+    @tag.command(aliases=["del", "d"])
     async def delete(self, ctx, *, tag_name):
         """Delete a tag you created (or if you're an admin)"""
         tag = await self.bot.prisma.tag.find_first(
