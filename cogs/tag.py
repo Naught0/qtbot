@@ -38,7 +38,7 @@ class Tag(commands.Cog):
 
             await self.bot.prisma.tag.update(
                 where={"id": tag.id},
-                data={"total_uses": tag.total_uses + 1 if tag.total_uses else 1},
+                data={"total_uses": {"increment": 1}},
             )
         else:
             return await ctx.error(
