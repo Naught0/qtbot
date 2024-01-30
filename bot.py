@@ -9,10 +9,13 @@ import asyncpg
 import discord
 import redis.asyncio as redis
 from discord.ext import commands
+from prisma import Prisma
 from utils.custom_context import CustomContext
 
 
 class QTBot(commands.Bot):
+    prisma: Prisma
+
     def __init__(self, config_file, *args, **kwargs):
         self.config_file = config_file
         self.description = "qtbot is a big qt written in python3 and love."
@@ -48,6 +51,9 @@ class QTBot(commands.Bot):
     async def setup_hook(self):
         await self.create_db_pool()
         await self.load_all_prefixes()
+        db = Prisma()
+        await db.connect()
+        self.prisma = db
         self.aio_session = aiohttp.ClientSession()
 
         if not hasattr(self, "start_time"):

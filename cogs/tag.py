@@ -1,11 +1,16 @@
+from collections import Counter
+
 import discord
-import asyncpg
-from datetime import datetime
+import prisma
+from bot import QTBot
 from discord.ext import commands
+from discord.utils import escape_markdown
+from prisma.models import Tag as TagModel
+from utils.custom_context import CustomContext
 
 
 class Tag(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: QTBot):
         self.bot = bot
         self.pg_con = bot.pg_con
         self.emoji_map = [
@@ -18,194 +23,183 @@ class Tag(commands.Cog):
 
     async def get_tag(self, server_id: int, tag_name: str):
         """Returns tag value or None"""
-        query = """ SELECT server_id, owner_id, tag_name, tag_contents, created_at, total_uses 
-                    FROM tags WHERE server_id = $1 
-                    AND tag_name = $2; """
+        return await self.bot.prisma.tag.find_first(
+            where={"server_id": server_id, "tag_name": tag_name}
+        )
 
-        return await self.pg_con.fetchrow(query, server_id, tag_name)
-
-    async def can_delete_tag(self, ctx, tag_name):
+    async def can_delete_tag(self, ctx: commands.Context, tag: TagModel) -> bool | None:
         """Check whether a user is admin or owns the tag"""
-        tag_record = await self.get_tag(ctx.guild.id, tag_name)
-        tag_owner = tag_record["owner_id"]
-
-        if not tag_owner:
-            return None
-
-        return ctx.message.channel.permissions_for(ctx.author).administrator or tag_owner == ctx.author.id
+        return (
+            ctx.message.channel.permissions_for(ctx.author).administrator
+            or tag.owner_id == ctx.author.id
+        )
 
     @commands.group(invoke_without_command=True)
     async def tag(self, ctx, *, tag_name: str):
         """Add a tag to the database for later retrieval"""
-        tag_record = await self.get_tag(ctx.guild.id, tag_name)
+        tag = await self.get_tag(ctx.guild.id, tag_name)
 
-        if tag_record:
-            await ctx.send(tag_record["tag_contents"])
+        if tag:
+            await ctx.send(tag.tag_contents)
 
-            # Update usage count
-            query = """UPDATE tags SET total_uses = total_uses + 1 
-                        WHERE server_id = $1
-                        AND tag_name = lower($2)"""
-            await self.pg_con.execute(query, ctx.guild.id, tag_name)
-
-        else:
-            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
-
-    @tag.command(aliases=["add"])
-    async def create(self, ctx, tag_name, *, contents):
-        """Create a new tag for later retrieval"""
-        if len(tag_name) < 3:
-            return await ctx.error("Tag name should be longer than 3 characters")
-
-        query = """ INSERT INTO tags (server_id, owner_id, tag_name, tag_contents, created_at, total_uses)
-                    VALUES ($1, $2, lower($3), $4, now(), $5) """
-        try:
-            await self.pg_con.execute(
-                query,
-                ctx.guild.id,
-                ctx.author.id,
-                tag_name,
-                contents.replace("@", ""),
-                0,
+            await self.bot.prisma.tag.update(
+                where={"id": tag.id},
+                data={"total_uses": tag.total_uses + 1 if tag.total_uses else 1},
             )
-            await ctx.success(f"`{tag_name}` created.")
-        except asyncpg.UniqueViolationError:
+        else:
+            return await ctx.error(
+                f"Sorry, I couldn't find a tag matching `{tag_name}`."
+            )
+
+    @tag.command(aliases=["add", "new"])
+    async def create(self, ctx: CustomContext, tag_name, *, contents):
+        """Create a new tag for later retrieval"""
+        if len(tag_name) < 2:
+            return await ctx.error("Tag name should be at least 3 characters")
+
+        try:
+            await self.bot.prisma.tag.create(
+                data={
+                    "total_uses": 0,
+                    "tag_name": tag_name,
+                    "tag_contents": contents,
+                    "owner_id": ctx.author.id,
+                    "server_id": ctx.guild.id,
+                }
+            )
+        except prisma.errors.UniqueViolationError:
             return await ctx.error(
                 f"Sorry, tag `{tag_name}` already exists. ",
-                contents=f"If you own it, feel free to `qt.tag edit` it.",
+                description="If you own it, feel free to `qt.tag edit` it.",
             )
 
-    @tag.command(aliases=["del", "delet"])
+    @tag.command(aliases=["del", "d"])
     async def delete(self, ctx, *, tag_name):
         """Delete a tag you created (or if you're an admin)"""
-        _can_delete = await self.can_delete_tag(ctx, tag_name)
+        tag = await self.bot.prisma.tag.find_first(
+            where={"tag_name": tag_name, "server_id": ctx.guild.id}
+        )
+        if tag is None:
+            return await ctx.error(f"No tags matching `{escape_markdown(tag_name)}`.")
 
-        if _can_delete is None:
-            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
+        can_delete = await self.can_delete_tag(ctx, tag)
+        if not can_delete:
+            return await ctx.error("You don't have permission to delete this tag.")
 
-        elif _can_delete:
-            query = "DELETE FROM tags WHERE tag_name = lower($1) AND server_id = $2"
-            await self.pg_con.execute(query, tag_name, ctx.guild.id)
-            await ctx.success(f"Tag `{tag_name}` deleted.")
+        await self.bot.prisma.tag.delete(where={"id": tag.id})
+        await ctx.success(f"Tag `{escape_markdown(tag_name)}` deleted.")
 
-        else:
-            await ctx.error(f"Sorry, you do not have the necessary permissions to delete this tag.")
-
-    @tag.command(aliases=["ed"])
-    async def edit(self, ctx, tag_name, *, contents):
+    @tag.command(aliases=["ed", "update", "upd"])
+    async def edit(self, ctx, tag_name: str, *, contents: str):
         """Edit a tag which you created"""
+        tag = await self.get_tag(ctx.guild.id, tag_name)
 
-        # Get the record
-        tag_record = await self.get_tag(ctx.guild.id, tag_name)
-
-        # Check whether tag exists
-        if not tag_record:
-            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
+        if tag is None:
+            return await ctx.error(
+                f"Sorry, I couldn't find a tag matching `{escape_markdown(tag_name)}`."
+            )
 
         # Check owner
-        if tag_record["owner_id"] == ctx.author.id:
-            query = """ UPDATE tags SET tag_contents = $1
-                        WHERE tag_name = $2
-                        AND server_id = $3 """
-            await self.pg_con.execute(query, contents, tag_name, ctx.guild.id)
-            await ctx.success(f"Successfully edited tag `{tag_name}`.")
-
+        if tag.owner_id == ctx.author.id:
+            await self.bot.prisma.tag.update(
+                where={"id": tag.id}, data={"tag_contents": contents}
+            )
+            await ctx.success(f"Successfully edited tag `{escape_markdown(tag_name)}`.")
         else:
-            await ctx.error(f"You don't have the permissions to delete this tag.")
+            await ctx.error("You don't have permission to delete this tag.")
 
     @tag.command()
     async def info(self, ctx, *, tag_name):
         """Retrieve information about a tag"""
+        tag = await self.get_tag(ctx.guild.id, tag_name)
+        if not tag:
+            return await ctx.error(
+                f"Sorry, I couldn't find a tag matching `{escape_markdown(tag_name)}`."
+            )
 
-        # Get the record
-        tag_record = await self.get_tag(ctx.guild.id, tag_name)
-
-        # Check whether tag exists
-        if not tag_record:
-            return await ctx.error(f"Sorry, I couldn't find a tag matching `{tag_name}`.")
-
-        # Create the embed
-        em = discord.Embed(title=tag_record["tag_name"], color=discord.Color.blue())
-        em.timestamp = tag_record["created_at"]
+        em = discord.Embed(title=tag.tag_name, color=discord.Color.blue())
+        em.timestamp = tag.created_at
         em.set_footer(text="Created at")
 
-        user = self.bot.get_user(tag_record["owner_id"]) or (await self.bot.get_user_info(tag_record["owner_id"]))
+        user = self.bot.get_user(tag.owner_id) or (
+            await self.bot.fetch_user(tag.owner_id)
+        )
         em.set_author(name=str(user), icon_url=user.display_avatar.url)
 
-        em.add_field(name="Tag Owner:", value=f"<@{tag_record['owner_id']}>")
-        em.add_field(name="Uses:", value=tag_record["total_uses"])
+        em.add_field(name="Tag Owner:", value=f"<@{tag.owner_id}>")
+        em.add_field(name="Uses:", value=tag.total_uses)
 
         await ctx.send(embed=em)
 
-    @tag.command()
+    @tag.command(aliases=["s", "ss"])
     async def search(self, ctx, *, query: str):
         """Search for some matching tags"""
-
         if len(query) < 3:
-            return await ctx.error("Sorry, you'll have to be more specific.")
+            return await ctx.error("Query must be at least 3 characters")
 
-        execute = """SELECT tag_name 
+        query = """SELECT *
                      FROM tags
                      WHERE server_id = $1 AND (tag_name LIKE $2 OR tag_contents LIKE $2)
                      ORDER BY similarity(tag_name, $2) DESC, similarity(tag_contents, $2) DESC
                      LIMIT 10;"""
+        search_results = await self.bot.prisma.query_raw(
+            query, ctx.guild.id, f"%{query}%", model=TagModel
+        )
 
-        search_results = await self.bot.pg_con.fetch(execute, ctx.guild.id, f"%{query}%")
-
-        # Do an embed for fun
         em = discord.Embed(title=":mag: Tag Search Results", color=discord.Color.blue())
 
         if len(search_results) == 1:
-            des_list = ["I found 1 similar tag:"]
+            description_strings = ["I found 1 similar tag:"]
         elif len(search_results) > 1:
-            des_list = [f"I found {len(search_results)} similar tags:"]
+            description_strings = [f"I found {len(search_results)} similar tags:"]
         else:
-            des_list = [f":warning: I could not find any matching tags for `{query}`."]
+            description_strings = [
+                f":warning: I could not find any matching tags for `{query}`."
+            ]
 
         for idx, record in enumerate(search_results):
-            des_list.append(f'{self.emoji_map[idx]} {record["tag_name"]}')
+            description_strings.append(f"{self.emoji_map[idx]} {record.tag_name}")
 
-        em.description = "\n".join(des_list)
+        em.description = "\n".join(description_strings)
 
         await ctx.send(embed=em)
 
     @tag.command(aliases=["stat"])
-    async def stats(self, ctx):
+    async def stats(self, ctx: commands.Context):
         """Get stats about the tags for your guild"""
         em = discord.Embed(title="Tag Statistics", color=discord.Color.blue())
-        em.set_author(name=f"{ctx.guild.name}", icon_url=ctx.guild.icon_url)
+        em.set_author(
+            name=f"{ctx.guild.name}",
+            icon_url=ctx.guild.icon.url if ctx.guild.icon else None,
+        )
 
-        tt = await self.pg_con.fetchval(f"""SELECT COUNT(tag_name) FROM tags WHERE server_id = {ctx.guild.id}""")
-        ttu = await self.pg_con.fetchval(f"""SELECT SUM(total_uses) FROM tags WHERE server_id = {ctx.guild.id}""")
-        em.description = f"Total Tags: {tt}\nTotal Tag Uses: {ttu}"
+        all_tags = await self.bot.prisma.tag.find_many(
+            where={"server_id": ctx.guild.id}
+        )
+        total_tags = len(all_tags)
+        total_tag_uses = sum(t.total_uses for t in all_tags)
 
-        get_top_tags = """SELECT tag_name, total_uses
-                            FROM tags 
-                            WHERE server_id = $1
-                            ORDER BY total_uses DESC
-                            LIMIT 5;"""
+        em.description = f"Total Tags: {total_tags}\nTotal Tag Uses: {total_tag_uses}"
 
-        total_use_record_list = await self.pg_con.fetch(get_top_tags, ctx.guild.id)
-        tu_build_list = []
+        top_tags = sorted(all_tags, key=lambda t: t.total_uses, reverse=True)[:4]
+        tag_use_counts = []
 
-        for idx, record in enumerate(total_use_record_list):
-            tu_build_list.append(f'{self.emoji_map[idx]} {record["tag_name"]} ({record["total_uses"]} uses)')
+        for idx, record in enumerate(top_tags):
+            tag_use_counts.append(
+                f"{self.emoji_map[idx]} {record.tag_name} ({record.total_uses} uses)"
+            )
 
-        em.add_field(name="Most Used Tags", value="\n".join(tu_build_list))
+        em.add_field(name="Most Used Tags", value="\n".join(tag_use_counts))
 
-        get_top_taggers = """SELECT COUNT(owner_id), owner_id
-                                FROM tags
-                                WHERE server_id = $1
-                                GROUP BY owner_id
-                                ORDER BY 1 DESC
-                                LIMIT 5;"""
-        top_tagger_record_list = await self.pg_con.fetch(get_top_taggers, ctx.guild.id)
-        tt_build_list = []
+        top_taggers = Counter(t.owner_id for t in all_tags).most_common(5)
+        top_taggers_counts = []
 
-        for idx, record in enumerate(top_tagger_record_list):
-            tt_build_list.append(f'{self.emoji_map[idx]} <@{record["owner_id"]}> ({record["count"]} tags created)')
+        for idx, record in enumerate(top_taggers):
+            top_taggers_counts.append(
+                f"{self.emoji_map[idx]} <@{record[0]}> ({record[1]} tags created)"
+            )
 
-        em.add_field(name="Top Taggers", value="\n".join(tt_build_list))
+        em.add_field(name="Top Taggers", value="\n".join(top_taggers_counts))
 
         await ctx.send(embed=em)
 
