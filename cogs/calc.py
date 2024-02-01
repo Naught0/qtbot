@@ -1,7 +1,9 @@
+import json
+
 import discord
 import wolframalpha
-import json
 from discord.ext import commands
+from utils.custom_context import CustomContext
 
 
 class Calculator(commands.Cog):
@@ -24,16 +26,17 @@ class Calculator(commands.Cog):
             return None
 
     @commands.command(name="calc", aliases=["cal", "c"])
-    async def calculate(self, ctx, *, query):
+    async def calculate(self, ctx: CustomContext, *, query):
         """Calculate like, anything."""
 
         if not query:
             return await ctx.error("Please enter something for me to calculate!")
 
         # Send typing b/c this can take some time
-        await ctx.trigger_typing()
-
-        result = await self.bot.loop.run_in_executor(None, Calculator.sync_calc, query)
+        async with ctx.typing():
+            result = await self.bot.loop.run_in_executor(
+                None, Calculator.sync_calc, query
+            )
 
         if result is not None:
             em = discord.Embed(
