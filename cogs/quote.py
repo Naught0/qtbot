@@ -9,13 +9,13 @@ class Quote(commands.Cog):
         self.color = discord.Color.gold()
 
     @commands.group(invoke_without_command=True)
-    async def quote(self, ctx: CustomContext, message_id: int = None):
+    async def quote(self, ctx: CustomContext, message_id: int | None = None):
         """Quote a message by using its ID"""
         if message_id is None:
             return await ctx.error("You must supply a message ID")
 
         try:
-            message = ctx.fetch_message(message_id)
+            message = await ctx.fetch_message(message_id)
         except discord.NotFound:
             return await ctx.error("Message doesn't exist")
         except discord.Forbidden:
