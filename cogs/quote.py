@@ -1,6 +1,6 @@
 import discord
-
 from discord.ext import commands
+from utils.custom_context import CustomContext
 
 
 class Quote(commands.Cog):
@@ -9,22 +9,13 @@ class Quote(commands.Cog):
         self.color = discord.Color.gold()
 
     @commands.group(invoke_without_command=True)
-    async def quote(self, ctx, message_id: int = None):
+    async def quote(self, ctx: CustomContext, message_id: int = None):
         """Quote a message by using its ID"""
-
-        # Check for message_id, if it wasn't passed, return
         if message_id is None:
-            return await ctx.error("Provide a message id please")
+            return await ctx.error("You must supply a message ID")
 
-        # Just for the sake of good UX, im giving each error its own except block and message
         try:
-            # Credit to Spy for this, its quite clever
-            obj = discord.Object(id=message_id + 1)
-            async for mess in ctx.channel.history(limit=1, before=obj):
-                if mess.id == message_id:
-                    message = mess
-                else:
-                    return await ctx.error("Message doesn't exist")
+            message = ctx.fetch_message(message_id)
         except discord.NotFound:
             return await ctx.error("Message doesn't exist")
         except discord.Forbidden:
@@ -38,6 +29,7 @@ class Quote(commands.Cog):
         emb.set_author(
             name=message.author.display_name,
             icon_url=message.author.display_avatar.url,
+            url=f"https://discord.com/channels/{ctx.guild.id}/{ctx.channel.id}/{message.id}",
         )
 
         # DMChannel doesn't have a name attr, not doing any fancy ternary op, its already messy
