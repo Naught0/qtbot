@@ -24,7 +24,7 @@ backoff = "^2.1.2"
 redis = "^5.0.1"
 
 [tool.poetry.dev-dependencies]
-black = "^22.10.0"
+black = "^24.3.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
