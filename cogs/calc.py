@@ -33,10 +33,14 @@ class Calculator(commands.Cog):
             return await ctx.error("Please enter something for me to calculate!")
 
         # Send typing b/c this can take some time
+        result = None
         async with ctx.typing():
-            result = await self.bot.loop.run_in_executor(
-                None, Calculator.sync_calc, query
-            )
+            try:
+                result = await self.bot.loop.run_in_executor(
+                    None, Calculator.sync_calc, query
+                )
+            except Exception:
+                pass
 
         if result is not None:
             em = discord.Embed(
