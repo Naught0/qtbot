@@ -10,6 +10,7 @@ class Calculator(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @staticmethod
     def sync_calc(query):
         """Non async wolfrmaalpha lib function"""
         with open("data/apikeys.json") as f:
@@ -21,7 +22,10 @@ class Calculator(commands.Cog):
         result = client.query(query)
 
         if hasattr(result, "results"):
-            return next(result.results).text
+            try:
+                return next(result.results).text
+            except StopIteration:
+                return None
         else:
             return None
 
