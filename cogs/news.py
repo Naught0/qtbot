@@ -78,7 +78,13 @@ class News(commands.Cog):
             )
 
         em_dict = {}
-        params = {"category": "general", "lang": "en", "country": "us", "max": 9}
+        params = {
+            "category": "general",
+            "lang": "en",
+            "country": "us",
+            "max": 9,
+            "apikey": self.api_key,
+        }
 
         redis_key = f"news:{query}" if query else "news"
         if await self.redis_client.exists(redis_key):
