@@ -2,6 +2,7 @@ import asyncio
 import json
 import re
 from typing import TypedDict
+import aiohttp
 
 import discord
 from dateutil.parser import parse
@@ -30,11 +31,15 @@ def remove_summary_char_count(summary: str) -> str:
     return re.sub(pat, "", summary).strip()
 
 
-def get_favicon_url(url: str) -> str:
-    return f"https://www.google.com/s2/favicons?domain=${url}"
+async def get_favicon_url(session: aiohttp.ClientSession, url: str) -> str:
+    favicon_uri = f"https://www.google.com/s2/favicons?domain=${url}"
+    async with session.get(favicon_uri) as r:
+        return str(r.url)
 
 
-def article_to_embed(article: Article) -> discord.Embed:
+async def article_to_embed(
+    session: aiohttp.ClientSession, article: Article
+) -> discord.Embed:
     em = discord.Embed()
     em.title = article["title"]
     em.description = article["description"]
@@ -45,7 +50,7 @@ def article_to_embed(article: Article) -> discord.Embed:
 
     em.set_footer(
         text=article["source"]["name"],
-        icon_url=get_favicon_url(article["source"]["url"]),
+        icon_url=await get_favicon_url(session, article["source"]["url"]),
     )
     em.timestamp = parse(article["publishedAt"])
 
@@ -89,12 +94,7 @@ class News(commands.Cog):
         redis_key = f"news:{query}" if query else "news"
         if await self.redis_client.exists(redis_key):
             raw_json_string = await self.redis_client.get(redis_key)
-            raw_json_dict = json.loads(raw_json_string)
-            article_list = raw_json_dict["articles"]
-
-            for idx, article in enumerate(article_list[:9]):
-                em_dict[emoji_tup[idx]] = article_to_embed(article)
-
+            article_list = json.loads(raw_json_string)["articles"]
         else:
             api_response = await aw.aio_get_json(
                 self.aio_session,
@@ -113,11 +113,12 @@ class News(commands.Cog):
                     "No articles found",
                     description=f"Couldn't find any news on `{query}`",
                 )
-
             await self.redis_client.set(redis_key, json.dumps(api_response), ex=10 * 60)
 
-            for idx, article in enumerate(article_list):
-                em_dict[emoji_tup[idx]] = article_to_embed(article)
+        for idx, article in enumerate(article_list[:9]):
+            em_dict[emoji_tup[idx]] = await article_to_embed(
+                ctx.bot.aio_session, article
+            )
 
         bot_message = await ctx.send(embed=em_dict[emoji_tup[0]])
 
