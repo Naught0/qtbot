@@ -15,7 +15,9 @@ class Eval(commands.Cog):
     @commands.is_owner()
     async def shell_access(self, ctx, *, cmd):
         """Lets me access the VPS command line via the bot"""
-        process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE)
+        process = await asyncio.create_subprocess_shell(
+            cmd, stdout=asyncio.subprocess.PIPE
+        )
         stdout, stderr = await process.communicate()
         try:
             if stdout:
@@ -45,7 +47,7 @@ class Eval(commands.Cog):
     async def git_pull(self, ctx):
         """Shortcut for .eval git pull origin master"""
         cmd = self.bot.get_command("eval")
-        await ctx.invoke(cmd, cmd="git pull origin master")
+        await ctx.invoke(cmd, cmd="git pull")
 
     @commands.group(invoke_without_command=True, name="sql", hidden=True)
     @commands.is_owner()
@@ -59,7 +61,11 @@ class Eval(commands.Cog):
         if not res:
             return await ctx.error(f"Sorry, `{query}` did not return anything.")
 
-        await ctx.send(embed=discord.Embed(title=query, description=f"```sql\n{res}```", color=self.orange))
+        await ctx.send(
+            embed=discord.Embed(
+                title=query, description=f"```sql\n{res}```", color=self.orange
+            )
+        )
 
     @sql_execute.command(name="fetch")
     @commands.is_owner()
