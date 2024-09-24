@@ -138,9 +138,7 @@ class News(commands.Cog):
                     "reaction_add", check=check, timeout=30.0
                 )
             except asyncio.TimeoutError:
-                for emoji in emoji_tup:
-                    await bot_message.remove_reaction(emoji, ctx.author)
-                return
+                return await bot_message.clear_reactions()
 
             if reaction.emoji in em_dict:
                 await bot_message.edit(embed=em_dict[reaction.emoji])
