@@ -1,12 +1,8 @@
 import discord
 from discord.ext import commands
 
-from bot import QTBot
-
 
 class CustomContext(commands.Context):
-    bot: QTBot
-
     async def error(self, title: str, description: str = None):
         em = discord.Embed(
             title=f":no_entry_sign: {title}",
