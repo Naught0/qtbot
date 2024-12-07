@@ -1,57 +1,36 @@
-import discord
+import csv
 import random
+from datetime import datetime
+from typing import TypedDict, cast
 
-from dateutil.parser import parse
-from urllib.parse import quote_plus
+import discord
 from discord.ext import commands
-from discord.utils import escape_markdown
-from utils.aiohttp_wrap import aio_get_json
 
+
+class Tweet(TypedDict):
+    id: str
+    date: str
+    target: str
+    insult: str
+    tweet: str
 
 class Trump(commands.Cog):
     """A cog which nobody ever asked for, that fetches a random Trump tweet"""
-
-    RAND_URL = "https://api.tronalddump.io/random/quote"
-    SEARCH_URL = "https://api.tronalddump.io/search/quote"
-    PIC_URL = "https://www.tronalddump.io/img/tronalddump_850x850.png"
+    def __init__(self, *args, **kwargs):
+        with open("data/trump_insult_tweets_2014_to_2021.csv") as f:
+            self.insults = cast(tuple[Tweet], tuple(csv.DictReader(f)))
 
     @commands.command(name="trump", aliases=["tt"])
-    async def _trump(self, ctx: commands.Context, *, query: str = None):
-        """Get a random, dumb Trump quote -- alternatively, search for something similarly stupid he's said
-
-        Args:
-            ctx (commands.Context): Message context
-            query (str, optional): Optional query. Defaults to None.
-        """
-        if query:
-            search_results = await aio_get_json(
-                ctx.bot.aio_session,
-                self.SEARCH_URL,
-                params={"query": quote_plus(query)},
-            )
-            if search_results is None:
-                return await ctx.error(
-                    "Couldn't communicate with our dear leader",
-                    description="Please try again later -- or don't.",
-                )
-            if search_results["count"] == 0:
-                return await ctx.error(
-                    "No results",
-                    description=f"Couldn't find any Trumpisms on `{escape_markdown(query)}`",
-                )
-
-            resp = random.choice(search_results["_embedded"]["quotes"])
-        else:
-            resp = await aio_get_json(ctx.bot.aio_session, self.RAND_URL)
-
+    async def _trump(self, ctx: commands.Context):
+        """Consult the wise words of a stable genius"""
+        tweet = random.choice(self.insults)
         em = discord.Embed(color=0x00ACEE)
         em.set_author(
             name="Donald J. Trump ☑️",
-            icon_url=self.PIC_URL,
-            url=resp["_embedded"]["source"][0]["url"],
+            icon_url="https://s3.amazonaws.com/theoatmeal-img/comics/donmojis/trump_yelling.png",
         )
-        em.description = resp["value"]
-        em.timestamp = parse(resp["appeared_at"])
+        em.description = tweet["tweet"]
+        em.timestamp = datetime.fromisoformat(tweet["date"])
         em.set_footer(text="via twitter", icon_url="https://i.imgur.com/DUUkDwY.png")
 
         await ctx.send(embed=em)
