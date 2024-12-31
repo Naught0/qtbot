@@ -109,7 +109,7 @@ class Generic(commands.Cog):
         mojis = ":tada: :fireworks: :sparkler: :sparkles: :firecracker: :confetti_ball:".split()
         await ctx.send(f"{scramble('happy new year')} {random.choice(mojis)}")
 
-    @commands.command(name="hny", hidden=True)
+    @commands.command(name="hnye", hidden=True)
     async def _hnye(self, ctx: commands.Context):
         """merry new yearseve"""
         mojis = ":tada: :fireworks: :sparkler: :sparkles: :firecracker: :confetti_ball:".split()
