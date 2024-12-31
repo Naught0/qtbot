@@ -101,7 +101,7 @@ class Generic(commands.Cog):
     async def _hh(self, ctx: commands.Context):
         """Harry Hannuka"""
         mojis = ":menorah: :star_of_david: :snowflake: :candle:".split()
-        await ctx.send(f"{scramble("happy hanukkah")} {random.choice(mojis)}")
+        await ctx.send(f"{scramble('happy hanukkah')} {random.choice(mojis)}")
 
     @commands.command(name="hny", hidden=True)
     async def _hny(self, ctx: commands.Context):
