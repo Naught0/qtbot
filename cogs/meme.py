@@ -10,13 +10,13 @@ class FindMeme(commands.Cog):
         self.aio_session = bot.aio_session
         self.redis_client = bot.redis_client
         self.base_uri = "http://knowyourmeme.com{}"
-        self.request_uri = "http://knowyourmeme.com/search?context=entries&sort=relevance&q={}+category_name%3Ameme"
+        self.request_uri = "https://knowyourmeme.com/search?context=&sort=&q={}"
         self.headers = {
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
         }
 
-    @commands.command(name="meme", aliases=["mem", "maymay"])
-    async def get_meme_info(self, ctx, *, search):
+    @commands.command(name="meme", aliases=["mem", "maymay", "kym"])
+    async def get_meme_info(self, ctx, *, search: str):
         """Search for some dank meme information"""
         f_search = search.replace(" ", "+")
 
@@ -29,19 +29,27 @@ class FindMeme(commands.Cog):
                 self.request_uri.format(f_search),
                 headers=self.headers,
             )
+            if request_html is None:
+                return await ctx.send(
+                    f"Sorry I wasn't able to find anything for `{search}`."
+                )
+
             soup = BeautifulSoup(request_html, "lxml")
 
             link_list = []
-            for tr in soup.find_all("tr"):
-                if hasattr(tr.h2, "a"):
-                    link_list.append(self.base_uri.format(tr.h2.a["href"]))
+            for item in soup.find_all("a.item"):
+                link_list.append(self.base_uri.format(item["href"]))
 
             if not link_list:
-                return await ctx.send(f"Sorry I wasn't able to find anything for `{search}`.")
+                return await ctx.send(
+                    f"Sorry I wasn't able to find anything for `{search}`."
+                )
             else:
                 link = link_list[0]
                 # 1 day cache time as these pages are pretty much static
-                await self.redis_client.set(f"memecache:{f_search}", f"{link}", ex=86400)
+                await self.redis_client.set(
+                    f"memecache:{f_search}", f"{link}", ex=86400
+                )
 
         await ctx.send(f"{link}")
 
