@@ -37,7 +37,7 @@ class FindMeme(commands.Cog):
             soup = BeautifulSoup(request_html, "lxml")
 
             link_list = []
-            for item in soup.find_all("a.item"):
+            for item in soup.find_all(class_="item"):
                 link_list.append(self.base_uri.format(item["href"]))
 
             if not link_list:
