@@ -123,17 +123,17 @@ async def fetch_historical_data(
 def create_graph(xdata: Sequence, ydata: Sequence[Sequence[int]]) -> BytesIO:
     plt.style.use("dark_background")
     plt.rcParams["figure.figsize"] = (4, 2.3)
+    plt.rcParams["font.size"] = 8 
     fig, ax = plt.subplots()
 
     ax.plot(xdata, ydata, color="khaki", linewidth=1)
     ax.set_ylabel("Price (USD)", color="lightgrey")
     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+    ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(mdates.AutoDateLocator()))
     ax.tick_params(colors="lightgrey")
     for spine in ax.spines.values():
         spine.set_edgecolor("grey")
     ax.grid(True, alpha=0.4, color="lightgrey")
-    fig.autofmt_xdate()
 
     file = BytesIO()
     plt.savefig(file, format="webp", bbox_inches="tight")
