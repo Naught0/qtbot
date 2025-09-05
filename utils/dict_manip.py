@@ -1,5 +1,6 @@
 from functools import reduce
 from typing import Any, Hashable
+
 from nltk.metrics import edit_distance as ed
 
 
@@ -58,6 +59,9 @@ def dig(d: dict, *keys, default=None) -> Any:
 
     try:
         return reduce(func, keys, d)
-    # Ooo!! Ahh!! Bare except!
-    except:
+    except Exception:
         return default
+
+
+def digs(d: dict, path: str, default=None) -> Any:
+    return dig(d, *path.split("."), default=default)
