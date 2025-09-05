@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from aiohttp import ClientSession
 from dateutil.parser import parse as parse_date
 from discord.ext import commands
+from yarl import URL
 
 from utils.custom_context import CustomContext
 
@@ -68,7 +69,7 @@ async def fetch_wsj_data(
 
 async def fetch_historical_data(
     session: ClientSession, token: str, dialect: str
-) -> tuple[list[list[int]], list[int]]:
+) -> tuple[list[datetime], list[list[int]]]:
     json_data = {
         "Step": "P1D",
         "TimeFrame": "P1Y",
@@ -97,19 +98,31 @@ async def fetch_historical_data(
     }
     params = {
         "ckey": token[:10],
-        "json": quote(json.dumps(json_data)),
     }
     resp = await session.get(
-        "https://api.wsj.net/api/michelangelo/timeseries/history", params=params
+        URL(
+            f"https://api.wsj.net/api/michelangelo/timeseries/history?json={quote(json.dumps(json_data, separators=(',',':')), safe='')}",
+            encoded=True,
+        ),
+        params=params,
+        headers={
+            "accept-language": "en-US,en;q=0.9",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+            "Dylan2010.Entitlementtoken": token,
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+        },
     )
     resp.raise_for_status()
     data = await resp.json()
 
-    return data["Series"][0]["DataPoints"], data["TimeInfo"]["Ticks"]
+    return [datetime.fromtimestamp(x / 1000) for x in data["TimeInfo"]["Ticks"]], data[
+        "Series"
+    ][0]["DataPoints"]
 
 
-def create_graph(xdata: Sequence[Sequence[int]], ydata: Sequence[int]) -> BytesIO:
+def create_graph(xdata: Sequence, ydata: Sequence[Sequence[int]]) -> BytesIO:
     plt.style.use("dark_background")
+    plt.rcParams["figure.figsize"] = (4, 2.3)
     fig, ax = plt.subplots()
 
     ax.plot(xdata, ydata, color="khaki", linewidth=1)
@@ -147,6 +160,7 @@ class Stonks(commands.Cog):
             return await ctx.error("Couldn't find a matching stock")
 
         graph = create_graph(x, y)
+        graph.seek(0)
         graph_file_name = f"{symbol}-{datetime.now().timestamp():.0f}.webp"
         file = discord.File(graph, filename=graph_file_name)
 
@@ -155,7 +169,7 @@ class Stonks(commands.Cog):
         price_data = resp["CompositeTrading"]
         last_price = price_data["Last"]["Price"]["Value"]
         currency = price_data["Last"]["Price"]["Iso"]
-        open = price_data["Open"]["Value"]
+        open_ = price_data["Open"]["Value"]
         high = price_data["High"]["Value"]
         low = price_data["Low"]["Value"]
         percent_change = price_data["NetChange"]["Value"]
@@ -178,7 +192,7 @@ class Stonks(commands.Cog):
             value=f"{percent_change:,.2f}%",
             inline=False,
         )
-        em.add_field(name="Open", value=f"${open:,.2f}")
+        em.add_field(name="Open", value=f"${open_:,.2f}")
         em.add_field(name="High", value=f"${high:,.2f}")
         em.add_field(name="Low", value=f"${low:,.2f}")
         em.set_footer(text="last updated")
