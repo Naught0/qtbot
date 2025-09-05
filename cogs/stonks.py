@@ -1,3 +1,4 @@
+import json
 import re
 from collections.abc import Mapping, Sequence
 from datetime import datetime
@@ -67,7 +68,7 @@ async def fetch_wsj_data(
 async def fetch_historical_data(
     session: ClientSession, token: str, dialect: str
 ) -> tuple[list[list[int]], list[int]]:
-    json = {
+    json_data = {
         "Step": "P1D",
         "TimeFrame": "P1Y",
         "EntitlementToken": token,
@@ -95,7 +96,7 @@ async def fetch_historical_data(
     }
     params = {
         "ckey": token[:10],
-        "json": json,
+        "json": json.dumps(json_data),
     }
     resp = await session.get(
         "https://api.wsj.net/api/michelangelo/timeseries/history", params=params
