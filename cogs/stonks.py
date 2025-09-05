@@ -65,12 +65,13 @@ async def fetch_wsj_data(session: ClientSession, ticker: str) -> dict | None:
 class Stonks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.session = bot.aio_session
 
     @commands.command(name="stonk", aliases=["stock", "stocks", "stonks"])
     async def stonk(self, ctx: CustomContext, *, symbol: str):
         """Get current information on a stonk"""
-        resp = await fetch_wsj_data(self.session, symbol)
+        async with ClientSession() as session:
+            resp = await fetch_wsj_data(session, symbol)
+
         if not resp:
             return await ctx.error("Couldn't find a matching stock")
 
@@ -79,9 +80,9 @@ class Stonks(commands.Cog):
         price_data = resp["CompositeTrading"]
         last_price = price_data["Last"]["Price"]["Value"]
         currency = price_data["Last"]["Price"]["Iso"]
-        open = price_data["Open"]["Price"]["Value"]
-        high = price_data["High"]["Price"]["Value"]
-        low = price_data["Low"]["Price"]["Value"]
+        open = price_data["Open"]["Value"]
+        high = price_data["High"]["Value"]
+        low = price_data["Low"]["Value"]
         percent_change = price_data["NetChange"]["Value"]
         em = discord.Embed(
             title=f"{name} - {ticker}",
