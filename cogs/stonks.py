@@ -1,7 +1,11 @@
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
+from datetime import datetime
+from io import BytesIO
 
 import discord
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
 from aiohttp import ClientSession
 from dateutil.parser import parse as parse_date
 from discord.ext import commands
@@ -12,7 +16,7 @@ from utils.custom_context import CustomContext
 class MissingEntitlementToken(Exception): ...
 
 
-async def get_entitlement_token(session: ClientSession) -> str | None:
+async def get_entitlement_token(session: ClientSession) -> str:
     url = "https://www.marketwatch.com/"
     headers = {
         "accept-language": "en-US,en;q=0.9",
@@ -52,14 +56,74 @@ async def get_quote_data(
     return data
 
 
-async def fetch_wsj_data(session: ClientSession, ticker: str) -> dict | None:
-    entitlement_token = await get_entitlement_token(session)
-    if entitlement_token:
-        ckey = entitlement_token[:10]
-        quote_data = await get_quote_data(session, ticker, entitlement_token, ckey)
-        return quote_data["InstrumentResponses"][0]["Matches"][0]
-    else:
-        return None
+async def fetch_wsj_data(
+    session: ClientSession, ticker: str, entitlement_token: str
+) -> Mapping:
+    ckey = entitlement_token[:10]
+    quote_data = await get_quote_data(session, ticker, entitlement_token, ckey)
+    return quote_data["InstrumentResponses"][0]["Matches"][0]
+
+
+async def fetch_historical_data(
+    session: ClientSession, token: str, dialect: str
+) -> tuple[list[list[int]], list[int]]:
+    json = {
+        "Step": "P1D",
+        "TimeFrame": "P1Y",
+        "EntitlementToken": token,
+        "IncludeMockTick": True,
+        "FilterNullSlots": False,
+        "FilterClosedPoints": True,
+        "IncludeClosedSlots": False,
+        "IncludeOfficialClose": True,
+        "InjectOpen": False,
+        "ShowPreMarket": False,
+        "ShowAfterHours": False,
+        "UseExtendedTimeFrame": True,
+        "WantPriorClose": True,
+        "IncludeCurrentQuotes": False,
+        "ResetTodaysAfterHoursPercentChange": False,
+        "Series": [
+            {
+                "Key": dialect,
+                "Dialect": "Charting",
+                "Kind": "Ticker",
+                "SeriesId": "s1",
+                "DataTypes": ["Last"],
+            }
+        ],
+    }
+    params = {
+        "ckey": token[:10],
+        "json": json,
+    }
+    resp = await session.get(
+        "https://api.wsj.net/api/michelangelo/timeseries/history", params=params
+    )
+    resp.raise_for_status()
+    data = await resp.json()
+
+    return data["Series"][0]["DataPoints"], data["TimeInfo"]["Ticks"]
+
+
+def create_graph(xdata: Sequence[Sequence[int]], ydata: Sequence[int]) -> BytesIO:
+    plt.style.use("dark_background")
+    fig, ax = plt.subplots()
+
+    ax.plot(xdata, ydata, color="khaki", linewidth=1)
+    ax.set_ylabel("Price (USD)", fontsize=12, color="lightgrey")
+    ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+    ax.tick_params(colors="lightgrey")
+    for spine in ax.spines.values():
+        spine.set_edgecolor("grey")
+    ax.grid(True, alpha=0.4, color="lightgrey")
+    fig.autofmt_xdate()
+
+    file = BytesIO()
+    plt.savefig(file, format="webp", bbox_inches="tight")
+
+    return file
 
 
 class Stonks(commands.Cog):
@@ -70,10 +134,19 @@ class Stonks(commands.Cog):
     async def stonk(self, ctx: CustomContext, *, symbol: str):
         """Get current information on a stonk"""
         async with ClientSession() as session:
-            resp = await fetch_wsj_data(session, symbol)
+            entitlement_token = await get_entitlement_token(session)
+            resp = await fetch_wsj_data(session, symbol, entitlement_token)
+            dialect_symbols = resp["DialectSymbols"][0]["Symbols"][0]
+            x, y = await fetch_historical_data(
+                session, entitlement_token, dialect_symbols
+            )
 
         if not resp:
             return await ctx.error("Couldn't find a matching stock")
+
+        graph = create_graph(x, y)
+        graph_file_name = f"{symbol}-{datetime.now().timestamp():.0f}.webp"
+        file = discord.File(graph, filename=graph_file_name)
 
         ticker = resp["Instrument"]["Ticker"]
         name = resp["Instrument"]["CommonName"]
@@ -84,6 +157,7 @@ class Stonks(commands.Cog):
         high = price_data["High"]["Value"]
         low = price_data["Low"]["Value"]
         percent_change = price_data["NetChange"]["Value"]
+
         em = discord.Embed(
             title=f"{name} - {ticker}",
             color=(
@@ -107,8 +181,9 @@ class Stonks(commands.Cog):
         em.add_field(name="Low", value=f"${low:,.2f}")
         em.set_footer(text="last updated")
         em.timestamp = parse_date(price_data["Last"]["Time"])
+        em.set_image(url=f"attachment://{graph_file_name}")
 
-        await ctx.send(embed=em)
+        await ctx.send(embed=em, file=file)
 
 
 async def setup(bot):
