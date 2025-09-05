@@ -3,6 +3,7 @@ import re
 from collections.abc import Mapping, Sequence
 from datetime import datetime
 from io import BytesIO
+from urllib.parse import quote
 
 import discord
 import matplotlib.dates as mdates
@@ -96,7 +97,7 @@ async def fetch_historical_data(
     }
     params = {
         "ckey": token[:10],
-        "json": json.dumps(json_data),
+        "json": quote(json.dumps(json_data)),
     }
     resp = await session.get(
         "https://api.wsj.net/api/michelangelo/timeseries/history", params=params
