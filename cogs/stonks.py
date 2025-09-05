@@ -126,7 +126,7 @@ def create_graph(xdata: Sequence, ydata: Sequence[Sequence[int]]) -> BytesIO:
     fig, ax = plt.subplots()
 
     ax.plot(xdata, ydata, color="khaki", linewidth=1)
-    ax.set_ylabel("Price (USD)", fontsize=12, color="lightgrey")
+    ax.set_ylabel("Price (USD)", color="lightgrey")
     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
     ax.tick_params(colors="lightgrey")
