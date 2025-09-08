@@ -189,7 +189,7 @@ class Stonks(commands.Cog):
         em.url = f"https://finance.yahoo.com/quote/{ticker}"
         em.add_field(
             name=f"Last Price in {currency}",
-            value=f"${last_price:,.2f}",
+            value=f"{currency_symbol}{last_price:,.2f}",
         )
         em.add_field(
             name="Percent Change",
