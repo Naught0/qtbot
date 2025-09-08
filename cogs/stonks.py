@@ -9,7 +9,6 @@ import discord
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from aiohttp import ClientSession
-from dateutil.parser import parse as parse_date
 from discord.ext import commands
 from yarl import URL
 
@@ -69,7 +68,7 @@ async def fetch_wsj_data(
 
 async def fetch_historical_data(
     session: ClientSession, token: str, dialect: str
-) -> tuple[list[datetime], list[list[int]]]:
+) -> tuple[list[datetime], list[list[int]], str]:
     json_data = {
         "Step": "P1D",
         "TimeFrame": "P1Y",
@@ -115,19 +114,23 @@ async def fetch_historical_data(
     resp.raise_for_status()
     data = await resp.json()
 
-    return [datetime.fromtimestamp(x / 1000) for x in data["TimeInfo"]["Ticks"]], data[
-        "Series"
-    ][0]["DataPoints"]
+    return (
+        [datetime.fromtimestamp(x / 1000) for x in data["TimeInfo"]["Ticks"]],
+        data["Series"][0]["DataPoints"],
+        data["Series"][0]["FormatHints"]["UnitSymbol"],
+    )
 
 
-def create_graph(xdata: Sequence, ydata: Sequence[Sequence[int]]) -> BytesIO:
+def create_graph(
+    xdata: Sequence, ydata: Sequence[Sequence[int]], currency: str
+) -> BytesIO:
     plt.style.use("dark_background")
     plt.rcParams["figure.figsize"] = (4, 2.3)
-    plt.rcParams["font.size"] = 8 
-    fig, ax = plt.subplots()
+    plt.rcParams["font.size"] = 8
+    _, ax = plt.subplots()
 
     ax.plot(xdata, ydata, color="khaki", linewidth=1)
-    ax.set_ylabel("Price (USD)", color="lightgrey")
+    ax.set_ylabel(f"Price ({currency})", color="lightgrey")
     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
     ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(mdates.AutoDateLocator()))
     ax.tick_params(colors="lightgrey")
@@ -152,23 +155,24 @@ class Stonks(commands.Cog):
             entitlement_token = await get_entitlement_token(session)
             resp = await fetch_wsj_data(session, symbol, entitlement_token)
             dialect_symbols = resp["DialectSymbols"][0]["Symbols"][0]
-            x, y = await fetch_historical_data(
+            x, y, currency_symbol = await fetch_historical_data(
                 session, entitlement_token, dialect_symbols
             )
 
         if not resp:
             return await ctx.error("Couldn't find a matching stock")
 
-        graph = create_graph(x, y)
+        price_data = resp["CompositeTrading"]
+        currency = price_data["Last"]["Price"]["Iso"]
+
+        graph = create_graph(x, y, currency)
         graph.seek(0)
         graph_file_name = f"{symbol}-{datetime.now().timestamp():.0f}.webp"
         file = discord.File(graph, filename=graph_file_name)
 
         ticker = resp["Instrument"]["Ticker"]
         name = resp["Instrument"]["CommonName"]
-        price_data = resp["CompositeTrading"]
         last_price = price_data["Last"]["Price"]["Value"]
-        currency = price_data["Last"]["Price"]["Iso"]
         open_ = price_data["Open"]["Value"]
         high = price_data["High"]["Value"]
         low = price_data["Low"]["Value"]
@@ -192,11 +196,11 @@ class Stonks(commands.Cog):
             value=f"{percent_change:,.2f}%",
             inline=False,
         )
-        em.add_field(name="Open", value=f"${open_:,.2f}")
-        em.add_field(name="High", value=f"${high:,.2f}")
-        em.add_field(name="Low", value=f"${low:,.2f}")
+        em.add_field(name="Open", value=f"{currency_symbol}{open_:,.2f}")
+        em.add_field(name="High", value=f"{currency_symbol}{high:,.2f}")
+        em.add_field(name="Low", value=f"{currency_symbol}{low:,.2f}")
         em.set_footer(text="last updated")
-        em.timestamp = parse_date(price_data["Last"]["Time"])
+        em.timestamp = datetime.fromisoformat(price_data["Last"]["Time"])
         em.set_image(url=f"attachment://{graph_file_name}")
 
         await ctx.send(embed=em, file=file)
