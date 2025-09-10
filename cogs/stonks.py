@@ -193,7 +193,7 @@ class Stonks(commands.Cog):
         )
         em.add_field(
             name="Percent Change",
-            value=f"{percent_change:,.2f}%",
+            value=f"{'⬇️' if percent_change < 0 else '⬆️' if percent_change > 0 else ''} {abs(percent_change):,.2f}%",
             inline=False,
         )
         em.add_field(name="Open", value=f"{currency_symbol}{open_:,.2f}")
