@@ -29,18 +29,11 @@ async def generate_image(
         json={
             "input": {
                 "prompt": prompt[:256],
-                "sampler_name": "DDIM",
-                "steps": 25,
-                "cfg_scale": 7,
-                "width": 512,
-                "height": 512,
-                "batch_size": 1,
-                "n_iter": 1,
             }
         },
     ) as response:
         response.raise_for_status()
-        return (await response.json())["output"]["images"][0]
+        return (await response.json())["output"]["images"][0]["image"]
 
 
 def image_to_discord_file(image_data: str, file_name: str) -> discord.File:
