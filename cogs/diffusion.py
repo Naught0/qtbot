@@ -41,12 +41,16 @@ def image_to_discord_file(image_data: str, file_name: str) -> discord.File:
 class Diffusion(commands.Cog):
     ENDPOINT = os.environ["RUNPOD_ENDPOINT_ID"]
     API_KEY = os.environ["RUNPOD_API_KEY"]
+    ENABLED_GUILDS = os.environ["ENABLED_GUILDS"].split(",")
 
     def __init__(self, bot: QTBot):
         self.bot = bot
 
     @commands.command(aliases=["diffuse", "sd"])
     async def diffusion(self, ctx: CustomContext, *, prompt: str) -> None:
+        if not ctx.guild or ctx.guild.id not in self.ENABLED_GUILDS:
+            return
+
         async with ctx.typing():
             image = await generate_image(
                 self.bot.aio_session, self.ENDPOINT, self.API_KEY, prompt
