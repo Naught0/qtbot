@@ -26,11 +26,7 @@ async def generate_image(
             "accept": "application/json",
             "content-type": "application/json",
         },
-        json={
-            "input": {
-                "prompt": prompt[:256],
-            }
-        },
+        json={"input": {"prompt": prompt[:256], "num_inference_steps": 2}},
     ) as response:
         response.raise_for_status()
         return (await response.json())["output"]["images"][0]["image"]
