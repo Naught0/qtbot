@@ -20,7 +20,7 @@ async def generate_image(
     session: ClientSession, endpoint: str, api_key: str, prompt: str
 ) -> str:
     async with session.post(
-        f"https://api.runpod.ai/v2/pods/{endpoint}/runsync",
+        f"https://api.runpod.ai/v2/{endpoint}/runsync",
         headers={
             "Authorization": f"Bearer {api_key}",
             "accept": "application/json",
