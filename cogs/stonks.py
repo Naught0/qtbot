@@ -176,7 +176,7 @@ class Stonks(commands.Cog):
         open_ = price_data["Open"]["Value"]
         high = price_data["High"]["Value"]
         low = price_data["Low"]["Value"]
-        percent_change = price_data["NetChange"]["Value"]
+        percent_change = price_data["ChangePercent"]
 
         em = discord.Embed(
             title=f"{name} - {ticker}",
