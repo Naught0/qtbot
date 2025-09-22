@@ -31,7 +31,7 @@ async def generate_image(
             "input": {
                 "prompt": prompt[:256],
                 "negative_prompt": negative_prompt,
-                "num_inference_steps": 3,
+                "num_inference_steps": 5,
             }
         },
     ) as response:
