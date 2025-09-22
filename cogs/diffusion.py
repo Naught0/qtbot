@@ -41,7 +41,7 @@ def image_to_discord_file(image_data: str, file_name: str) -> discord.File:
 class Diffusion(commands.Cog):
     ENDPOINT = os.environ["RUNPOD_ENDPOINT_ID"]
     API_KEY = os.environ["RUNPOD_API_KEY"]
-    ENABLED_GUILDS = os.environ["ENABLED_GUILDS"].split(",")
+    ENABLED_GUILDS = os.environ["AI_ENABLED_GUILDS"].split(",")
 
     def __init__(self, bot: QTBot):
         self.bot = bot
