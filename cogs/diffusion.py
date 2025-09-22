@@ -44,7 +44,9 @@ async def generate_image(
 
 
 def image_to_discord_file(image_data: str, file_name: str) -> discord.File:
-    return discord.File(io.BytesIO(base64.urlsafe_b64decode(image_data)), file_name)
+    return discord.File(
+        io.BytesIO(base64.urlsafe_b64decode(image_data)), filename=file_name
+    )
 
 
 class Diffusion(commands.Cog):
@@ -60,9 +62,8 @@ class Diffusion(commands.Cog):
             image = await generate_image(
                 self.bot.aio_session, self.ENDPOINT, self.API_KEY, prompt
             )
-            file = image_to_discord_file(
-                image, f"{quote_plus(prompt)}_{int(datetime.now().timestamp())}.png"
-            )
+            filename = f"{quote_plus(prompt)}_{int(datetime.now().timestamp())}.png"
+            file = image_to_discord_file(image, filename)
             await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
 
 
