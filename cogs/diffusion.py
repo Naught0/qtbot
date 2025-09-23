@@ -5,7 +5,7 @@ from datetime import datetime
 from urllib.parse import quote_plus
 
 import discord
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientTimeout
 from discord.ext import commands
 
 from bot import QTBot
@@ -21,7 +21,7 @@ async def generate_image(
 ) -> str:
     async with session.post(
         f"https://api.runpod.ai/v2/{endpoint}/runsync",
-        timeout=60,
+        timeout=ClientTimeout(120),
         headers={
             "Authorization": f"Bearer {api_key}",
             "accept": "application/json",
