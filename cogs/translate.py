@@ -95,6 +95,7 @@ class Translate(commands.Cog):
         payload = {
             "q": text,
             "target": "en",
+            "translationMemory": True,
         }
 
         headers = {
