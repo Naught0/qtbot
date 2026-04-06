@@ -3,8 +3,6 @@ import os
 import discord
 from discord.ext import commands
 
-from utils import aiohttp_wrap as aw
-
 
 class Translate(commands.Cog):
     API_URL = "https://api.langbly.com/language/translate/v2"
@@ -105,17 +103,17 @@ class Translate(commands.Cog):
         }
 
         async with ctx.typing():
-            resp = await aw.aio_get_json(
-                self.session,
+            resp = await self.session.post(
                 self.API_URL,
                 headers=headers,
                 params=payload,
             )
+            data = await resp.json()
 
-        if resp is None or "data" not in resp:
+        if data is None or "data" not in data:
             return await ctx.error("Translation failed, try again later")
 
-        translation = resp["data"]["translations"][0]
+        translation = data["data"]["translations"][0]
         translated_text = translation["translatedText"]
         detected = translation.get("detectedSourceLanguage", "unknown")
         lang_name = self.LANG_NAMES.get(detected, detected.title())
