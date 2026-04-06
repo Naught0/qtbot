@@ -107,7 +107,7 @@ class Translate(commands.Cog):
             resp = await self.session.post(
                 self.API_URL,
                 headers=headers,
-                params=payload,
+                json=payload,
             )
             data = await resp.json()
 
