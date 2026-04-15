@@ -32,8 +32,8 @@ class MassiveClient:
         else:
             self.session = session
 
-    async def _get(self, endpoint: str, **kwargs):
-        return await self.session.get(f"{self._base_url}{endpoint}", **kwargs)
+    async def _get(self, endpoint: str, params = {}, **kwargs):
+        return await self.session.get(f"{self._base_url}{endpoint}", params={**params, "apiKey": self.api_key}, **kwargs)
 
     @cache_indefinitely
     async def get_ticker_info(self, ticker: str) -> TickerInfo | None:
