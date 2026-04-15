@@ -163,7 +163,8 @@ class Stonks(commands.Cog):
         em.add_field(name="High", value=f"{currency_symbol}{high:,.2f}")
         em.add_field(name="Low", value=f"{currency_symbol}{low:,.2f}")
         em.set_footer(text="last updated")
-        em.timestamp = datetime.fromisoformat(quote["from"])
+        timestamp = datetime.fromisoformat(quote["from"])
+        em.timestamp = datetime(timestamp.year, timestamp.month, timestamp.day, 20)
         em.set_image(url=f"attachment://{graph_file_name}")
 
         await ctx.send(embed=em, file=file)
