@@ -7,9 +7,10 @@ from pathlib import Path
 import aiohttp
 import asyncpg
 import discord
-import redis.asyncio as redis
 from discord.ext import commands
+
 from prisma import Prisma
+from utils.cache import redis_client
 from utils.custom_context import CustomContext
 
 
@@ -39,10 +40,7 @@ class QTBot(commands.Bot):
             **kwargs,
         )
 
-        # self.rune_client = lolrune.AioRuneClient()
-        self.redis_client = redis.Redis(
-            host=os.getenv("REDIS_HOST"), decode_responses=True
-        )
+        self.redis_client = redis_client
         self.startup_extensions = [x.stem for x in Path("cogs").glob("*.py")]
 
     def run(self):
