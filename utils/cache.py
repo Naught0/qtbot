@@ -1,3 +1,4 @@
+import inspect
 import functools
 import os
 import pickle
@@ -22,7 +23,10 @@ def cache(
                 return pickle.loads(value)
 
             print(f"Cache miss for {key}")
-            resp = func(*args, **kwargs)
+            if inspect.iscoroutinefunction(func):
+                resp = await func(*args, **kwargs)
+            else:
+                resp = func(*args, **kwargs)
             await redis.set(key, pickle.dumps(resp), ex=ttl)
             return resp
 
