@@ -1,182 +1,144 @@
-import json
-import re
-from collections.abc import Mapping, Sequence
-from datetime import datetime
-from io import BytesIO
-from urllib.parse import quote
+from __future__ import annotations
 
+import os
+from datetime import datetime, timedelta
+from io import BytesIO
+from typing import TypedDict
+
+import aiohttp
 import discord
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from aiohttp import ClientSession
 from discord.ext import commands
-from yarl import URL
+from redis.asyncio import Redis
 
+from utils.cache import cache, redis_client
 from utils.custom_context import CustomContext
 
+cache_indefinitely = cache(redis_client, namespace="stonks", ttl=None)
 
-class MissingEntitlementToken(Exception): ...
 
+class MassiveClient:
+    _base_url = "https://api.massive.com"
 
-async def get_entitlement_token(session: ClientSession) -> str:
-    url = "https://www.marketwatch.com/"
-    headers = {
-        "accept-language": "en-US,en;q=0.9",
-        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
-    }
-
-    async with session.get(url, headers=headers) as response:
-        response.raise_for_status()
-        html = await response.text()
-        match = re.search(r'"entitlementToken":"([^"]+)"', html)
-
-        if match:
-            token = match.group(1)
-            return token
+    def __init__(
+        self,
+        api_key: str,
+        session: ClientSession | None = None,
+        redis: Redis | None = None,
+    ):
+        self.api_key = api_key
+        self.redis = redis
+        if session is None:
+            self.session = ClientSession()
         else:
-            raise MissingEntitlementToken("Entitlement token not found in HTML")
+            self.session = session
+
+    async def _get(self, endpoint: str, **kwargs):
+        return await self.session.get(f"{self._base_url}{endpoint}", **kwargs)
+
+    @cache_indefinitely
+    async def get_ticker_info(self, ticker: str) -> TickerInfo | None:
+        resp = await self._get(f"/v3/ticker/{ticker.upper()}")
+        try:
+            resp.raise_for_status()
+        except aiohttp.ClientError:
+            print(f"Failed to get info for ticker {ticker}.", await resp.text())
+            return None
+
+        return (await resp.json())["results"]
+
+    async def get_quote(self, ticker: str) -> QuoteResponse:
+        ticker = ticker.upper()
+        params = {"adusted": True}
+        today = datetime.now().date().isoformat()
+        resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
+        resp.raise_for_status()
+
+        data = await resp.json()
+        return QuoteResponse(**data)
+
+    async def get_time_series(
+        self, ticker: str, start_date: str, end_date: str
+    ) -> TimeSeriesResponse:
+        resp = await self._get(
+            f"/v2/aggs/ticker/{ticker.upper()}/range/1/day/{start_date}/{end_date}?adjusted=true&sort=asc&limit=180"
+        )
+        resp.raise_for_status()
+        return await resp.json()
+
+    async def create_graph(self, ticker: str, start_date: str, end_date: str):
+        data = await self.get_time_series(ticker, start_date, end_date)
+        xdata = [datetime.fromtimestamp(x["t"]).isoformat() for x in data["results"]]
+        ydata = [x["c"] for x in data["results"]]
+
+        plt.style.use("dark_background")
+        plt.rcParams["figure.figsize"] = (4, 2.3)
+        plt.rcParams["font.size"] = 8
+        _, ax = plt.subplots()
+
+        ax.plot(xdata, ydata, color="khaki", linewidth=1)
+        ax.set_ylabel("Price", color="lightgrey")
+        ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+        ax.xaxis.set_major_formatter(
+            mdates.ConciseDateFormatter(mdates.AutoDateLocator())
+        )
+        ax.tick_params(colors="lightgrey")
+        for spine in ax.spines.values():
+            spine.set_edgecolor("grey")
+        ax.grid(True, alpha=0.4, color="lightgrey")
+
+        file = BytesIO()
+        plt.savefig(file, format="webp", bbox_inches="tight")
+
+        return file
 
 
-async def get_quote_data(
-    session: ClientSession, ticker: str, entitlement_token: str, ckey: str
-) -> Mapping:
-    api_url = "https://api.wsj.net/api/dylan/quotes/v2/comp/quoteByDialect"
-    params = {
-        "dialect": "charting",
-        "needed": "CompositeTrading|BluegrassChannels",
-        "MaxInstrumentMatches": 1,
-        "accept": "application/json",
-        "EntitlementToken": entitlement_token,
-        "ckey": ckey,
-        "dialects": "Charting",
-        "id": ticker,
-    }
-
-    resp = await session.get(api_url, params=params)
-    resp.raise_for_status()
-    data = await resp.json()
-    return data
-
-
-async def fetch_wsj_data(
-    session: ClientSession, ticker: str, entitlement_token: str
-) -> Mapping:
-    ckey = entitlement_token[:10]
-    quote_data = await get_quote_data(session, ticker, entitlement_token, ckey)
-    return quote_data["InstrumentResponses"][0]["Matches"][0]
-
-
-async def fetch_historical_data(
-    session: ClientSession, token: str, dialect: str
-) -> tuple[list[datetime], list[list[int]], str]:
-    json_data = {
-        "Step": "P1D",
-        "TimeFrame": "P1Y",
-        "EntitlementToken": token,
-        "IncludeMockTick": True,
-        "FilterNullSlots": False,
-        "FilterClosedPoints": True,
-        "IncludeClosedSlots": False,
-        "IncludeOfficialClose": True,
-        "InjectOpen": False,
-        "ShowPreMarket": False,
-        "ShowAfterHours": False,
-        "UseExtendedTimeFrame": True,
-        "WantPriorClose": True,
-        "IncludeCurrentQuotes": False,
-        "ResetTodaysAfterHoursPercentChange": False,
-        "Series": [
-            {
-                "Key": dialect,
-                "Dialect": "Charting",
-                "Kind": "Ticker",
-                "SeriesId": "s1",
-                "DataTypes": ["Last"],
-            }
-        ],
-    }
-    params = {
-        "ckey": token[:10],
-    }
-    resp = await session.get(
-        URL(
-            f"https://api.wsj.net/api/michelangelo/timeseries/history?json={quote(json.dumps(json_data, separators=(',',':')), safe='')}",
-            encoded=True,
-        ),
-        params=params,
-        headers={
-            "accept-language": "en-US,en;q=0.9",
-            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-            "Dylan2010.Entitlementtoken": token,
-            "Accept": "application/json, text/javascript, */*; q=0.01",
-        },
-    )
-    resp.raise_for_status()
-    data = await resp.json()
-
-    return (
-        [datetime.fromtimestamp(x / 1000) for x in data["TimeInfo"]["Ticks"]],
-        data["Series"][0]["DataPoints"],
-        data["Series"][0]["FormatHints"]["UnitSymbol"],
-    )
-
-
-def create_graph(
-    xdata: Sequence, ydata: Sequence[Sequence[int]], currency: str
-) -> BytesIO:
-    plt.style.use("dark_background")
-    plt.rcParams["figure.figsize"] = (4, 2.3)
-    plt.rcParams["font.size"] = 8
-    _, ax = plt.subplots()
-
-    ax.plot(xdata, ydata, color="khaki", linewidth=1)
-    ax.set_ylabel(f"Price ({currency})", color="lightgrey")
-    ax.xaxis.set_major_locator(mdates.AutoDateLocator())
-    ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(mdates.AutoDateLocator()))
-    ax.tick_params(colors="lightgrey")
-    for spine in ax.spines.values():
-        spine.set_edgecolor("grey")
-    ax.grid(True, alpha=0.4, color="lightgrey")
-
-    file = BytesIO()
-    plt.savefig(file, format="webp", bbox_inches="tight")
-
-    return file
+def get_date_range(days=180):
+    end_date = datetime.now().date()
+    start_date = end_date - timedelta(days=days)
+    return start_date.isoformat(), end_date.isoformat()
 
 
 class Stonks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.api_key = os.getenv("MASSIVE_API_KEY")
 
     @commands.command(name="stonk", aliases=["stock", "stocks", "stonks"])
     async def stonk(self, ctx: CustomContext, *, symbol: str):
         """Get current information on a stonk"""
+        if not self.api_key:
+            return print("Stock (https://massive.com) API key is not set")
+
         async with ClientSession() as session:
-            entitlement_token = await get_entitlement_token(session)
-            resp = await fetch_wsj_data(session, symbol, entitlement_token)
-            dialect_symbols = resp["DialectSymbols"][0]["Symbols"][0]
-            x, y, currency_symbol = await fetch_historical_data(
-                session, entitlement_token, dialect_symbols
-            )
+            massive = MassiveClient(self.api_key, session)
+            try:
+                quote = await massive.get_quote(symbol)
+            except aiohttp.ClientError:
+                return await ctx.error("Couldn't find a matching stock")
 
-        if not resp:
-            return await ctx.error("Couldn't find a matching stock")
+            ticker_info = await massive.get_ticker_info(symbol)
+            if ticker_info is None:
+                print(f"Found quote but failed to get ticker info for {symbol}")
+                return await ctx.error("Couldn't find a matching stock")
 
-        price_data = resp["CompositeTrading"]
-        currency = price_data["Last"]["Price"]["Iso"]
+            graph = await massive.create_graph(symbol, *get_date_range())
+            graph.seek(0)
+            graph_file_name = f"{symbol}-{datetime.now().timestamp():.0f}.webp"
+            file = discord.File(graph, filename=graph_file_name)
 
-        graph = create_graph(x, y, currency)
-        graph.seek(0)
-        graph_file_name = f"{symbol}-{datetime.now().timestamp():.0f}.webp"
-        file = discord.File(graph, filename=graph_file_name)
-
-        ticker = resp["Instrument"]["Ticker"]
-        name = resp["Instrument"]["CommonName"]
-        last_price = price_data["Last"]["Price"]["Value"]
-        open_ = price_data["Open"]["Value"]
-        high = price_data["High"]["Value"]
-        low = price_data["Low"]["Value"]
-        percent_change = price_data["ChangePercent"]
+        ticker = quote["symbol"]
+        name = ticker_info["name"]
+        last_price = quote["preMarket"]
+        open_ = quote["open"]
+        high = quote["high"]
+        low = quote["low"]
+        change = quote["open"] - quote["close"]
+        percent_change = change / quote["open"] * 100
+        currency = ticker_info["currency_name"]
+        currency_symbol = "$"
 
         em = discord.Embed(
             title=f"{name} - {ticker}",
@@ -200,7 +162,7 @@ class Stonks(commands.Cog):
         em.add_field(name="High", value=f"{currency_symbol}{high:,.2f}")
         em.add_field(name="Low", value=f"{currency_symbol}{low:,.2f}")
         em.set_footer(text="last updated")
-        em.timestamp = datetime.fromisoformat(price_data["Last"]["Time"])
+        em.timestamp = datetime.fromisoformat(quote["from"])
         em.set_image(url=f"attachment://{graph_file_name}")
 
         await ctx.send(embed=em, file=file)
@@ -208,3 +170,88 @@ class Stonks(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(Stonks(bot))
+
+
+class Address(TypedDict):
+    address1: str
+    city: str
+    postal_code: str
+    state: str
+
+
+class Branding(TypedDict):
+    icon_url: str
+    logo_url: str
+
+
+class TickerInfo(TypedDict):
+    active: bool
+    address: Address
+    branding: Branding
+    cik: str
+    composite_figi: str
+    currency_name: str
+    description: str
+    homepage_url: str
+    list_date: str
+    locale: str
+    market: str
+    market_cap: int
+    name: str
+    phone_number: str
+    primary_exchange: str
+    round_lot: int
+    share_class_figi: str
+    share_class_shares_outstanding: int
+    sic_code: str
+    sic_description: str
+    ticker: str
+    ticker_root: str
+    total_employees: int
+    type: str
+    weighted_shares_outstanding: int
+
+
+class Candle(TypedDict):
+    c: float  # close
+    h: float  # high
+    l: float  # low
+    n: int  # number trades
+    o: float  # open
+    t: int  # time of aggregate window start
+    v: int  # volume
+    vw: float  # volume weighted average price
+
+
+class TimeSeriesResponse(TypedDict):
+    adjusted: bool
+    next_url: str
+    queryCount: int
+    request_id: str
+    results: list[Candle]
+    resultsCount: int
+    status: str
+    ticker: str
+
+
+QuoteResponse = TypedDict(
+    "QuoteResponse",
+    {
+        "status": str,
+        "from": str,
+        "symbol": str,
+        "open": float,
+        "high": float,
+        "low": float,
+        "close": float,
+        "volume": float,
+        "afterHours": float,
+        "preMarket": float,
+    },
+)
+
+
+class QuoteNotFoundResponse(TypedDict):
+    status: str
+    request_id: str
+    message: str
