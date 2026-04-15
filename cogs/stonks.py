@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from datetime import datetime, timedelta
 from io import BytesIO
+import pickle
 from typing import TypedDict
 
 import aiohttp
@@ -11,8 +12,9 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from aiohttp import ClientSession
 from discord.ext import commands
+from redis.asyncio import Redis
 
-from utils.cache import cache, redis_client
+from utils.cache import redis_client
 from utils.custom_context import CustomContext
 
 
@@ -22,19 +24,37 @@ class MassiveClient:
     def __init__(
         self,
         api_key: str,
+        redis: Redis | None = None,
         session: ClientSession | None = None,
     ):
-        self.api_key = api_key
-        if session is None:
-            self.session = ClientSession()
+        self._api_key = api_key
+        if redis is None:
+            self._redis = redis_client
         else:
-            self.session = session
+            self._redis = redis
+
+        if session is None:
+            self._session = ClientSession()
+        else:
+            self._session = session
 
     async def _get(self, endpoint: str, params = {}, **kwargs):
-        return await self.session.get(f"{self._base_url}{endpoint}", params={**params, "apiKey": self.api_key}, **kwargs)
+        return await self._session.get(f"{self._base_url}{endpoint}", params={**params, "apiKey": self._api_key}, **kwargs)
 
-    @cache(redis_client, "stonks:ticker-info", None)
+    async def _set_cache(self, key: str, data, ex: int | None=300):
+        await self._redis.set(key, pickle.dumps(data), ex=ex)
+
+    async def _get_cache(self, key: str):
+        try:
+            return pickle.loads(await self._redis.get(key))
+        except Exception:
+            return None
+
     async def get_ticker_info(self, ticker: str) -> TickerInfo | None:
+        key = f"stonks:ticker-info:{ticker}"
+        if (data := await self._get_cache(key)):
+            return data
+        
         resp = await self._get(f"/v3/reference/tickers/{ticker.upper()}")
         try:
             resp.raise_for_status()
@@ -43,31 +63,39 @@ class MassiveClient:
             return None
 
         data = (await resp.json())["results"]
+        await self._set_cache(key, data, ex=None)
         print("Ticker info data:", data)
         return data
 
-    @cache(redis_client, "stonks:quote", 300)
     async def get_quote(self, ticker: str) -> QuoteResponse:
+        key = f"stonks:quote:{ticker}"
+        if (data := await self._get_cache(key)):
+            return data
+
         ticker = ticker.upper()
         params = {"adjusted": "true"}
         today = (datetime.now().date() - timedelta(days=1)).isoformat()
         resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
         data = await resp.json()
-        print("Quote data:", data)
+        await self._set_cache(key, data, ex=300)
         resp.raise_for_status()
 
         return QuoteResponse(**data)
 
-    @cache(redis_client, "stonks:time-series", 300)
     async def get_time_series(
         self, ticker: str, start_date: str, end_date: str
     ) -> TimeSeriesResponse:
+        key = f"stonks:time-series:{ticker}"
+        if (data := await self._get_cache(key)):
+            return data
+
         resp = await self._get(
             f"/v2/aggs/ticker/{ticker.upper()}/range/1/day/{start_date}/{end_date}?adjusted=true&sort=asc&limit=180"
         )
         resp.raise_for_status()
         data = await resp.json()
-        print("Time series data:", data)
+        await self._set_cache(key, data, ex=300)
+
         return data
 
 
