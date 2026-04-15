@@ -15,8 +15,6 @@ from discord.ext import commands
 from utils.cache import cache, redis_client
 from utils.custom_context import CustomContext
 
-cache_indefinitely = cache(redis_client, namespace="stonks", ttl=None)
-
 
 class MassiveClient:
     _base_url = "https://api.massive.com"
@@ -35,7 +33,7 @@ class MassiveClient:
     async def _get(self, endpoint: str, params = {}, **kwargs):
         return await self.session.get(f"{self._base_url}{endpoint}", params={**params, "apiKey": self.api_key}, **kwargs)
 
-    @cache_indefinitely
+    @cache(redis_client, "stonks:ticker-info", None)
     async def get_ticker_info(self, ticker: str) -> TickerInfo | None:
         resp = await self._get(f"/v3/reference/tickers/{ticker.upper()}")
         try:

@@ -16,7 +16,7 @@ def cache(
     def deco(func):
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
-            key = f"{namespace}:{func.__name__}:{args}:{kwargs}"
+            key = f"{namespace}:{args}:{kwargs}"
             value = await redis.get(key)
             if value:
                 print(f"Cache hit for {key}")
