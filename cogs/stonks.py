@@ -51,7 +51,7 @@ class MassiveClient:
     async def get_quote(self, ticker: str) -> QuoteResponse:
         ticker = ticker.upper()
         params = {"adjusted": "true"}
-        today = datetime.now().date().isoformat()
+        today = (datetime.now().date() - timedelta(days=1)).isoformat()
         resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
         data = await resp.json()
         print("Quote data:", data)
