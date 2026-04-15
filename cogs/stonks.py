@@ -46,6 +46,7 @@ class MassiveClient:
         print("Ticker info data:", data)
         return data
 
+    @cache(redis_client, "stonks:quote", 300)
     async def get_quote(self, ticker: str) -> QuoteResponse:
         ticker = ticker.upper()
         params = {"adjusted": "true"}
@@ -57,6 +58,7 @@ class MassiveClient:
 
         return QuoteResponse(**data)
 
+    @cache(redis_client, "stonks:time-series", 300)
     async def get_time_series(
         self, ticker: str, start_date: str, end_date: str
     ) -> TimeSeriesResponse:
@@ -164,7 +166,7 @@ class Stonks(commands.Cog):
         em.add_field(name="Low", value=f"{currency_symbol}{low:,.2f}")
         em.set_footer(text="last updated")
         timestamp = datetime.fromisoformat(quote["from"])
-        em.timestamp = datetime(timestamp.year, timestamp.month, timestamp.day, 20)
+        em.timestamp = datetime(timestamp.year, timestamp.month, timestamp.day, 21)
         em.set_image(url=f"attachment://{graph_file_name}")
 
         await ctx.send(embed=em, file=file)
