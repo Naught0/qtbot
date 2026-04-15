@@ -71,7 +71,7 @@ class MassiveClient:
 
     async def create_graph(self, ticker: str, start_date: str, end_date: str):
         data = await self.get_time_series(ticker, start_date, end_date)
-        xdata = [datetime.fromtimestamp(x["t"]).isoformat() for x in data["results"]]
+        xdata = [datetime.fromtimestamp(x["t"] / 1000).isoformat() for x in data["results"]]
         ydata = [x["c"] for x in data["results"]]
 
         plt.style.use("dark_background")
