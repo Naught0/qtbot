@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import os
+import pickle
 from datetime import datetime, timedelta
 from io import BytesIO
-import pickle
 from typing import TypedDict
 
 import aiohttp
@@ -40,10 +40,14 @@ class MassiveClient:
             self._owns_session = False
             self._session = session
 
-    async def _get(self, endpoint: str, params = {}, **kwargs):
-        return await self._session.get(f"{self._base_url}{endpoint}", params={**params, "apiKey": self._api_key}, **kwargs)
+    async def _get(self, endpoint: str, params={}, **kwargs):
+        return await self._session.get(
+            f"{self._base_url}{endpoint}",
+            params={**params, "apiKey": self._api_key},
+            **kwargs,
+        )
 
-    async def _set_cache(self, key: str, data, ex: int | None=300):
+    async def _set_cache(self, key: str, data, ex: int | None = 300):
         await self._redis.set(key, pickle.dumps(data), ex=ex)
 
     async def _get_cache(self, key: str):
@@ -54,9 +58,9 @@ class MassiveClient:
 
     async def get_ticker_info(self, ticker: str) -> TickerInfo | None:
         key = f"stonks:ticker-info:{ticker}"
-        if (data := await self._get_cache(key)):
+        if data := await self._get_cache(key):
             return data
-        
+
         resp = await self._get(f"/v3/reference/tickers/{ticker.upper()}")
         try:
             resp.raise_for_status()
@@ -71,7 +75,7 @@ class MassiveClient:
 
     async def get_quote(self, ticker: str) -> QuoteResponse:
         key = f"stonks:quote:{ticker}"
-        if (data := await self._get_cache(key)):
+        if data := await self._get_cache(key):
             return data
 
         ticker = ticker.upper()
@@ -79,6 +83,7 @@ class MassiveClient:
         today = (datetime.now().date() - timedelta(days=1)).isoformat()
         resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
         data = await resp.json()
+
         await self._set_cache(key, data, ex=300)
         resp.raise_for_status()
 
@@ -88,7 +93,7 @@ class MassiveClient:
         self, ticker: str, start_date: str, end_date: str
     ) -> TimeSeriesResponse:
         key = f"stonks:time-series:{ticker}"
-        if (data := await self._get_cache(key)):
+        if data := await self._get_cache(key):
             return data
 
         resp = await self._get(
@@ -100,10 +105,9 @@ class MassiveClient:
 
         return data
 
-
     async def create_graph(self, ticker: str, start_date: str, end_date: str):
         data = await self.get_time_series(ticker, start_date, end_date)
-        xdata = [datetime.fromtimestamp(x["t"] / 1000).isoformat() for x in data["results"]]
+        xdata = [datetime.fromtimestamp(x["t"] / 1000) for x in data["results"]]
         ydata = [x["c"] for x in data["results"]]
 
         plt.style.use("dark_background")
