@@ -11,7 +11,6 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from aiohttp import ClientSession
 from discord.ext import commands
-from redis.asyncio import Redis
 
 from utils.cache import cache, redis_client
 from utils.custom_context import CustomContext
@@ -26,10 +25,8 @@ class MassiveClient:
         self,
         api_key: str,
         session: ClientSession | None = None,
-        redis: Redis | None = None,
     ):
         self.api_key = api_key
-        self.redis = redis
         if session is None:
             self.session = ClientSession()
         else:
@@ -51,7 +48,7 @@ class MassiveClient:
 
     async def get_quote(self, ticker: str) -> QuoteResponse:
         ticker = ticker.upper()
-        params = {"adusted": True}
+        params = {"adjusted": "true"}
         today = datetime.now().date().isoformat()
         resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
         resp.raise_for_status()
