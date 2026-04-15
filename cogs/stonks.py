@@ -37,7 +37,7 @@ class MassiveClient:
 
     @cache_indefinitely
     async def get_ticker_info(self, ticker: str) -> TickerInfo | None:
-        resp = await self._get(f"/v3/ticker/{ticker.upper()}")
+        resp = await self._get(f"/v3/reference/tickers/{ticker.upper()}")
         try:
             resp.raise_for_status()
         except aiohttp.ClientError:
