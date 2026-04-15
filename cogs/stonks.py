@@ -44,16 +44,19 @@ class MassiveClient:
             print(f"Failed to get info for ticker {ticker}.", await resp.text())
             return None
 
-        return (await resp.json())["results"]
+        data = (await resp.json())["results"]
+        print("Ticker info data:", data)
+        return data
 
     async def get_quote(self, ticker: str) -> QuoteResponse:
         ticker = ticker.upper()
         params = {"adjusted": "true"}
         today = datetime.now().date().isoformat()
         resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
+        data = await resp.json()
+        print("Quote data:", data)
         resp.raise_for_status()
 
-        data = await resp.json()
         return QuoteResponse(**data)
 
     async def get_time_series(
@@ -63,7 +66,10 @@ class MassiveClient:
             f"/v2/aggs/ticker/{ticker.upper()}/range/1/day/{start_date}/{end_date}?adjusted=true&sort=asc&limit=180"
         )
         resp.raise_for_status()
-        return await resp.json()
+        data = await resp.json()
+        print("Time series data:", data)
+        return data
+
 
     async def create_graph(self, ticker: str, start_date: str, end_date: str):
         data = await self.get_time_series(ticker, start_date, end_date)

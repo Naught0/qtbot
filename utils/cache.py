@@ -18,8 +18,10 @@ def cache(
             key = f"{namespace}:{func.__name__}:{args}:{kwargs}"
             value = await redis.get(key)
             if value:
+                print(f"Cache hit for {key}")
                 return pickle.loads(value)
 
+            print(f"Cache miss for {key}")
             resp = func(*args, **kwargs)
             await redis.set(key, pickle.dumps(resp), ex=ttl)
             return resp
