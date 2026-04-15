@@ -35,7 +35,9 @@ class MassiveClient:
 
         if session is None:
             self._session = ClientSession()
+            self._owns_session = True
         else:
+            self._owns_session = False
             self._session = session
 
     async def _get(self, endpoint: str, params = {}, **kwargs):
@@ -125,6 +127,10 @@ class MassiveClient:
 
         return file
 
+    async def close(self):
+        if self._owns_session:
+            await self._session.close()
+
 
 def get_date_range(days=180):
     end_date = datetime.now().date()
@@ -143,22 +149,22 @@ class Stonks(commands.Cog):
         if not self.api_key:
             return print("Stock (https://massive.com) API key is not set")
 
-        async with ClientSession() as session:
-            massive = MassiveClient(self.api_key, session)
-            try:
-                quote = await massive.get_quote(symbol)
-            except aiohttp.ClientError:
-                return await ctx.error("Couldn't find a matching stock")
+        massive = MassiveClient(self.api_key)
+        try:
+            quote = await massive.get_quote(symbol)
+        except aiohttp.ClientError:
+            return await ctx.error("Couldn't find a matching stock")
 
-            ticker_info = await massive.get_ticker_info(symbol)
-            if ticker_info is None:
-                print(f"Found quote but failed to get ticker info for {symbol}")
-                return await ctx.error("Couldn't find a matching stock")
+        ticker_info = await massive.get_ticker_info(symbol)
+        if ticker_info is None:
+            print(f"Found quote but failed to get ticker info for {symbol}")
+            return await ctx.error("Couldn't find a matching stock")
 
-            graph = await massive.create_graph(symbol, *get_date_range())
-            graph.seek(0)
-            graph_file_name = f"{symbol}-{datetime.now().timestamp():.0f}.webp"
-            file = discord.File(graph, filename=graph_file_name)
+        graph = await massive.create_graph(symbol, *get_date_range())
+        graph.seek(0)
+        graph_file_name = f"{symbol}-{datetime.now().timestamp():.0f}.webp"
+        file = discord.File(graph, filename=graph_file_name)
+        await massive.close()
 
         ticker = quote["symbol"]
         name = ticker_info["name"]
