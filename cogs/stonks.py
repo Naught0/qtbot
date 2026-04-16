@@ -90,9 +90,9 @@ class MassiveClient:
         today = (datetime.now().date() - timedelta(days=1)).isoformat()
         resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
         data = await resp.json()
+        resp.raise_for_status()
 
         await self._set_cache(key, data)
-        resp.raise_for_status()
 
         return QuoteResponse(**data)
 
