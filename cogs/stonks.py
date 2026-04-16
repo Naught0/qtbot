@@ -4,8 +4,8 @@ import os
 import pickle
 from datetime import datetime, timedelta
 from io import BytesIO
-from traceback import print_exc
 from typing import TypedDict
+from urllib.parse import urlparse
 
 import aiohttp
 import discord
@@ -15,7 +15,7 @@ from aiohttp import ClientSession
 from discord.ext import commands
 from redis.asyncio import Redis
 
-from utils.cache import redis_client
+from utils.cache import redis_from_env
 from utils.custom_context import CustomContext
 
 
@@ -30,7 +30,7 @@ class MassiveClient:
     ):
         self._api_key = api_key
         if redis is None:
-            self._redis = redis_client
+            self._redis = redis_from_env(False)
         else:
             self._redis = redis
 
@@ -41,6 +41,12 @@ class MassiveClient:
             self._owns_session = False
             self._session = session
 
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
+
     async def _get(self, endpoint: str, params={}, **kwargs):
         return await self._session.get(
             f"{self._base_url}{endpoint}",
@@ -49,7 +55,6 @@ class MassiveClient:
         )
 
     async def _set_cache(self, key: str, data, ex: int | None = 60 * 60):
-        print("Cache miss:", key)
         await self._redis.set(key, pickle.dumps(data), ex=ex)
 
     async def _get_cache(self, key: str):
@@ -57,10 +62,9 @@ class MassiveClient:
             dta = await self._redis.get(key)
             if dta is None:
                 return None
-            print("Cache hit:", key, dta)
-            return pickle.loads(dta)
-        except Exception:
-            print_exc()
+            return pickle.loads(bytes(dta))
+        except Exception as e:
+            print("Error deserializing:", key, e)
             return None
 
     async def get_ticker_info(self, ticker: str) -> TickerInfo | None:
@@ -77,7 +81,6 @@ class MassiveClient:
 
         data = (await resp.json())["results"]
         await self._set_cache(key, data, ex=None)
-        print("Ticker info data:", data)
         return data
 
     async def get_quote(self, ticker: str) -> QuoteResponse:
@@ -114,10 +117,7 @@ class MassiveClient:
 
     async def create_graph(self, ticker: str, start_date: str, end_date: str):
         data = await self.get_time_series(ticker, start_date, end_date)
-        xdata = [
-            datetime.fromtimestamp(x["t"] / 1000).date().isoformat()
-            for x in data["results"]
-        ]
+        xdata = [datetime.fromtimestamp(x["t"] / 1000) for x in data["results"]]
         ydata = [x["c"] for x in data["results"]]
 
         plt.style.use("dark_background")
@@ -125,7 +125,7 @@ class MassiveClient:
         plt.rcParams["font.size"] = 8
         _, ax = plt.subplots()
 
-        ax.plot(xdata, ydata, color="khaki", linewidth=1)
+        ax.plot(xdata, ydata, color="khaki", linewidth=1)  # type: ignore
         ax.set_ylabel("Price", color="lightgrey")
         ax.xaxis.set_major_locator(mdates.AutoDateLocator())
         ax.xaxis.set_major_formatter(
@@ -146,7 +146,7 @@ class MassiveClient:
             await self._session.close()
 
 
-def get_date_range(days=180):
+def get_date_range(days=120):
     end_date = datetime.now().date()
     start_date = end_date - timedelta(days=days)
     return start_date.isoformat(), end_date.isoformat()
@@ -163,22 +163,21 @@ class Stonks(commands.Cog):
         if not self.api_key:
             return print("Stock (https://massive.com) API key is not set")
 
-        massive = MassiveClient(self.api_key)
-        try:
-            quote = await massive.get_quote(symbol)
-        except aiohttp.ClientError:
-            return await ctx.error("Couldn't find a matching stock")
+        async with MassiveClient(self.api_key) as massive:
+            try:
+                quote = await massive.get_quote(symbol)
+            except aiohttp.ClientError:
+                return await ctx.error("Couldn't find a matching stock")
 
-        ticker_info = await massive.get_ticker_info(symbol)
-        if ticker_info is None:
-            print(f"Found quote but failed to get ticker info for {symbol}")
-            return await ctx.error("Couldn't find a matching stock")
+            ticker_info = await massive.get_ticker_info(symbol)
+            if ticker_info is None:
+                return await ctx.error("Couldn't find a matching stock")
 
-        graph = await massive.create_graph(symbol, *get_date_range())
+            graph = await massive.create_graph(symbol, *get_date_range())
+
         graph.seek(0)
         graph_file_name = f"{symbol}-{datetime.now().timestamp():.0f}.webp"
         file = discord.File(graph, filename=graph_file_name)
-        await massive.close()
 
         ticker = quote["symbol"]
         name = ticker_info["name"]
@@ -192,14 +191,25 @@ class Stonks(commands.Cog):
         currency_symbol = ticker_info.get("currency_symbol") or "$"
 
         em = discord.Embed(
-            title=f"{name} - {ticker}",
             color=(
                 discord.Color.dark_green()
                 if percent_change > 0
                 else discord.Color.dark_red()
             ),
         )
-        em.url = f"https://finance.yahoo.com/quote/{ticker}"
+
+        yahoo_url = f"https://finance.yahoo.com/quote/{ticker}"
+        if homepage := ticker_info.get("homepage_url"):
+            parsed = urlparse(homepage)
+            em.set_author(
+                name=f"{name} - {ticker}",
+                icon_url=f"https://twenty-icons.com/{parsed.hostname}",
+                url=yahoo_url,
+            )
+        else:
+            em.title = f"{name} - {ticker}"
+            em.url = yahoo_url
+
         em.add_field(
             name=f"Last Price ({currency})",
             value=f"{currency_symbol}{last_price:,.2f}",
