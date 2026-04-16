@@ -4,6 +4,7 @@ import os
 import pickle
 from datetime import datetime, timedelta
 from io import BytesIO
+from traceback import print_exc
 from typing import TypedDict
 
 import aiohttp
@@ -47,13 +48,19 @@ class MassiveClient:
             **kwargs,
         )
 
-    async def _set_cache(self, key: str, data, ex: int | None = 300):
+    async def _set_cache(self, key: str, data, ex: int | None = 60 * 60):
+        print("Cache miss:", key)
         await self._redis.set(key, pickle.dumps(data), ex=ex)
 
     async def _get_cache(self, key: str):
         try:
-            return pickle.loads(await self._redis.get(key))
+            dta = await self._redis.get(key)
+            if dta is None:
+                return None
+            print("Cache hit:", key, dta)
+            return pickle.loads(dta)
         except Exception:
+            print_exc()
             return None
 
     async def get_ticker_info(self, ticker: str) -> TickerInfo | None:
@@ -84,7 +91,7 @@ class MassiveClient:
         resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
         data = await resp.json()
 
-        await self._set_cache(key, data, ex=300)
+        await self._set_cache(key, data)
         resp.raise_for_status()
 
         return QuoteResponse(**data)
@@ -101,13 +108,16 @@ class MassiveClient:
         )
         resp.raise_for_status()
         data = await resp.json()
-        await self._set_cache(key, data, ex=300)
+        await self._set_cache(key, data)
 
         return data
 
     async def create_graph(self, ticker: str, start_date: str, end_date: str):
         data = await self.get_time_series(ticker, start_date, end_date)
-        xdata = [datetime.fromtimestamp(x["t"] / 1000) for x in data["results"]]
+        xdata = [
+            datetime.fromtimestamp(x["t"] / 1000).date().isoformat()
+            for x in data["results"]
+        ]
         ydata = [x["c"] for x in data["results"]]
 
         plt.style.use("dark_background")
@@ -178,8 +188,8 @@ class Stonks(commands.Cog):
         low = quote["low"]
         change = quote["open"] - quote["close"]
         percent_change = change / quote["open"] * 100
-        currency = ticker_info["currency_name"]
-        currency_symbol = "$"
+        currency = ticker_info["currency_name"].upper()
+        currency_symbol = ticker_info.get("currency_symbol") or "$"
 
         em = discord.Embed(
             title=f"{name} - {ticker}",
@@ -191,7 +201,7 @@ class Stonks(commands.Cog):
         )
         em.url = f"https://finance.yahoo.com/quote/{ticker}"
         em.add_field(
-            name=f"Last Price in {currency}",
+            name=f"Last Price ({currency})",
             value=f"{currency_symbol}{last_price:,.2f}",
         )
         em.add_field(
