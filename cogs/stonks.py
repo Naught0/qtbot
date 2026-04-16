@@ -13,6 +13,7 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from aiohttp import ClientSession
 from discord.ext import commands
+from discord.utils import escape_markdown
 from redis.asyncio import Redis
 
 from utils.cache import redis_from_env
@@ -146,7 +147,7 @@ class MassiveClient:
             await self._session.close()
 
 
-def get_date_range(days=120):
+def get_date_range(days=180):
     end_date = datetime.now().date()
     start_date = end_date - timedelta(days=days)
     return start_date.isoformat(), end_date.isoformat()
@@ -163,15 +164,17 @@ class Stonks(commands.Cog):
         if not self.api_key:
             return print("Stock (https://massive.com) API key is not set")
 
+        symbol = escape_markdown(symbol.upper())
+
         async with MassiveClient(self.api_key) as massive:
             try:
                 quote = await massive.get_quote(symbol)
             except aiohttp.ClientError:
-                return await ctx.error("Couldn't find a matching stock")
+                return await ctx.error(f"Couldn't get a quote for `{symbol}`")
 
             ticker_info = await massive.get_ticker_info(symbol)
             if ticker_info is None:
-                return await ctx.error("Couldn't find a matching stock")
+                return await ctx.error(f"Couldn't find ticker info on `{symbol}`")
 
             graph = await massive.create_graph(symbol, *get_date_range())
 
