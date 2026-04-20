@@ -85,16 +85,20 @@ class MassiveClient:
         return data
 
     async def get_quote(self, ticker: str) -> QuoteResponse:
+        ticker = ticker.upper()
         key = f"stonks:quote:{ticker}"
         if data := await self._get_cache(key):
             return data
 
-        ticker = ticker.upper()
         params = {"adjusted": "true"}
         today = (datetime.now().date() - timedelta(days=1)).isoformat()
         resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
         data = await resp.json()
-        resp.raise_for_status()
+        try:
+            resp.raise_for_status()
+        except Exception as e:
+            print(f"Error getting quote for {ticker}", data)
+            raise e
 
         await self._set_cache(key, data)
 
@@ -103,6 +107,7 @@ class MassiveClient:
     async def get_time_series(
         self, ticker: str, start_date: str, end_date: str
     ) -> TimeSeriesResponse:
+        ticker = ticker.upper()
         key = f"stonks:time-series:{ticker}"
         if data := await self._get_cache(key):
             return data
@@ -110,13 +115,18 @@ class MassiveClient:
         resp = await self._get(
             f"/v2/aggs/ticker/{ticker.upper()}/range/1/day/{start_date}/{end_date}?adjusted=true&sort=asc&limit=180"
         )
-        resp.raise_for_status()
+        try:
+            resp.raise_for_status()
+        except Exception as e:
+            print(f"Error getting time series for {ticker}", await resp.text())
+            raise e
         data = await resp.json()
         await self._set_cache(key, data)
 
         return data
 
     async def create_graph(self, ticker: str, start_date: str, end_date: str):
+        ticker = ticker.upper()
         data = await self.get_time_series(ticker, start_date, end_date)
         xdata = [datetime.fromtimestamp(x["t"] / 1000) for x in data["results"]]
         ydata = [x["c"] for x in data["results"]]
