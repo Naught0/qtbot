@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import pickle
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from io import BytesIO
 from typing import TypedDict
 from urllib.parse import urlparse
@@ -18,6 +19,16 @@ from redis.asyncio import Redis
 
 from utils.cache import redis_from_env
 from utils.custom_context import CustomContext
+
+
+def most_recent_trading_date():
+    today = datetime.now(tz=ZoneInfo("America/New_York"))
+    ret = today.date() - timedelta(days=1)
+    weekends = (6, 7)
+    while ret.isoweekday() in weekends:
+        ret = ret - timedelta(days=1)
+
+    return ret
 
 
 class MassiveClient:
@@ -69,11 +80,12 @@ class MassiveClient:
             return None
 
     async def get_ticker_info(self, ticker: str) -> TickerInfo | None:
+        ticker = ticker.upper()
         key = f"stonks:ticker-info:{ticker}"
         if data := await self._get_cache(key):
             return data
 
-        resp = await self._get(f"/v3/reference/tickers/{ticker.upper()}")
+        resp = await self._get(f"/v3/reference/tickers/{ticker}")
         try:
             resp.raise_for_status()
         except aiohttp.ClientError:
@@ -84,14 +96,14 @@ class MassiveClient:
         await self._set_cache(key, data, ex=None)
         return data
 
-    async def get_quote(self, ticker: str) -> QuoteResponse:
+    async def get_latest_quote(self, ticker: str) -> QuoteResponse:
         ticker = ticker.upper()
         key = f"stonks:quote:{ticker}"
         if data := await self._get_cache(key):
             return data
 
         params = {"adjusted": "true"}
-        today = (datetime.now().date() - timedelta(days=1)).isoformat()
+        today = most_recent_trading_date()
         resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
         data = await resp.json()
         try:
@@ -113,7 +125,7 @@ class MassiveClient:
             return data
 
         resp = await self._get(
-            f"/v2/aggs/ticker/{ticker.upper()}/range/1/day/{start_date}/{end_date}?adjusted=true&sort=asc&limit=180"
+            f"/v2/aggs/ticker/{ticker}/range/1/day/{start_date}/{end_date}?adjusted=true&sort=asc&limit=180"
         )
         try:
             resp.raise_for_status()
@@ -178,7 +190,7 @@ class Stonks(commands.Cog):
 
         async with MassiveClient(self.api_key) as massive:
             try:
-                quote = await massive.get_quote(symbol)
+                quote = await massive.get_latest_quote(symbol)
             except aiohttp.ClientError:
                 return await ctx.error(f"Couldn't get a quote for `{symbol}`")
 
