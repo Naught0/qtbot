@@ -42,6 +42,7 @@ class QTBot(commands.Bot):
 
         self.redis_client = redis_client
         self.startup_extensions = [x.stem for x in Path("cogs").glob("*.py")]
+        self.add_check(self.block_bots)
 
     def run(self):
         super().run(self.token)
@@ -53,6 +54,9 @@ class QTBot(commands.Bot):
         await db.connect()
         self.prisma = db
         self.aio_session = aiohttp.ClientSession()
+
+        # Add the application command interaction check to filter slash commands if you use them
+        self.tree.interaction_check = self.block_bot_interactions
 
         if not hasattr(self, "start_time"):
             self.start_time = datetime.now()
@@ -75,7 +79,6 @@ class QTBot(commands.Bot):
 
     async def load_all_prefixes(self):
         pres = await self.pg_con.fetch("SELECT * from custom_prefix")
-        # Load custom prefixes into a dict
         self.pre_dict = {r["guild_id"]: r["prefix"] for r in pres}
 
     async def get_prefix(self, message: discord.Message):
@@ -87,6 +90,15 @@ class QTBot(commands.Bot):
     async def create_db_pool(self):
         self.pg_con = await asyncpg.create_pool(os.getenv("DATABASE_URL"))
 
+    async def block_bots(self, ctx: commands.Context) -> bool:
+        return not ctx.author.bot
+
+    async def block_bot_interactions(self, interaction: discord.Interaction) -> bool:
+        return not interaction.user.bot
+
     async def on_message(self, message):
+        if message.author.bot:
+            return
+
         ctx = await self.get_context(message, cls=CustomContext)
         await self.invoke(ctx)
