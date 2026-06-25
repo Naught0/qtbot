@@ -8,13 +8,17 @@ import aiohttp
 class ImageSearch:
     base_url = "https://serpapi.com"
 
-    def __init__(self, session: aiohttp.ClientSession, engine="google_images_light"):
+    def __init__(
+        self, session: aiohttp.ClientSession, api_key: str, engine="google_images_light"
+    ):
         self.session = session
         self.engine = engine
+        self.api_key = api_key
 
     async def _make_request(self, query: str):
         resp = await self.session.get(
-            f"{self.base_url}/search", params={"engine": self.engine, "q": query[:256]}
+            f"{self.base_url}/search",
+            params={"api_key": self.api_key, "engine": self.engine, "q": query[:256]},
         )
         return resp
 
