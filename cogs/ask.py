@@ -27,7 +27,7 @@ class Google(commands.Cog):
         self.bot = bot
         self.session = bot.aio_session
         self.redis = bot.redis_client
-        self.image_search = ImageSearch(self.session, os.environ["serpapi_api_key"])
+        self.image_search = ImageSearch(self.session, os.environ["SERPAPI_API_KEY"])
 
     @commands.group(
         invoke_without_command=True, name="google", aliases=["g", "ddg", "ask"]
