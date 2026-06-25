@@ -38,6 +38,10 @@ async def paginate(
         await msg.add_reaction(emoji)
 
     current_index = 0
+    total = len(embeds)
+    embeds[current_index].set_footer(text=f"({current_index + 1}/{total})")
+    await msg.edit(embed=embeds[current_index])
+
     while True:
         try:
             reaction, _ = await ctx.bot.wait_for(
@@ -61,5 +65,6 @@ async def paginate(
                 else len(embeds) - 1
             )
 
+        embeds[current_index].set_footer(text=f"({current_index + 1}/{total})")
         await msg.edit(embed=embeds[current_index])
         await msg.remove_reaction(reaction.emoji, ctx.author)
