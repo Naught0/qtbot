@@ -1,13 +1,12 @@
-import asyncio
-import re
-from typing import List
-
 import discord
 from bs4 import BeautifulSoup
 from discord.ext import commands
-from discord.utils import escape_markdown
+from discord.utils import escape_markdown, escape_mentions
 
+from lib.image_search import ImageSearch, LightImageResult
 from utils import aiohttp_wrap as aw
+from utils.custom_context import CustomContext
+from utils.paginate import paginate
 
 
 class Google(commands.Cog):
@@ -26,13 +25,14 @@ class Google(commands.Cog):
         self.bot = bot
         self.session = bot.aio_session
         self.redis = bot.redis_client
+        self.image_search = ImageSearch(self.session)
 
     @commands.group(
         invoke_without_command=True, name="google", aliases=["g", "ddg", "ask"]
     )
-    async def _google(self, ctx, *, query: str = None):
+    async def _google(self, ctx, *, query: str = ""):
         """Get search results from [REDACTED], now that Google hates me."""
-        if query is None or query.strip() == "":
+        if not query.strip():
             return await ctx.error("Feel free to search something")
 
         resp = await aw.aio_get_text(
@@ -54,50 +54,27 @@ class Google(commands.Cog):
             f"**Top Result:**\n{links[0]}\n**See Also:**\n1. <{links[1]}>\n2. <{links[2]}>"
         )
 
-    @staticmethod
-    def link_to_embed(query: str, link: str) -> discord.Embed:
-        em = discord.Embed(title=query)
-        em.set_image(url=link)
-        return em
-
     @_google.command(name="-image", aliases=["-i", "-images"])
-    async def images(self, ctx: commands.Context, *, query: str = None):
+    async def images(self, ctx: CustomContext, *, query: str = ""):
         """Search for images"""
-        if query is None or query.strip() == "":
+        if not query.strip():
             return await ctx.error("Feel free to search for something")
 
-        resp = await aw.aio_get_text(
-            self.session, self.IMAGE_URI, headers=self.IE6_HEADERS, params={"q": query}
-        )
-        soup = BeautifulSoup(resp, "lxml")
-        embeds = [
-            self.link_to_embed(query, x["href"])
-            for x in soup.find_all("a", {"class": "thumb"})
-            if re.match("^https:\/\/.+", x["href"])
-        ][:5]
-
+        results = (await self.image_search.search(query))["images_results"]
+        embeds = [create_image_embed(query, r) for r in results[:8]]
         msg = await ctx.send(embed=embeds[0])
+        await paginate(ctx, msg, embeds)
 
-        for x in self.EMOJIS[: len(embeds)]:
-            await msg.add_reaction(x)
 
-        while True:
-            try:
-                reaction, _ = await self.bot.wait_for(
-                    "reaction_add",
-                    timeout=30.0,
-                    check=lambda reaction, user: (
-                        user == ctx.author
-                        and reaction.emoji in self.EMOJIS
-                        and reaction.message.id == msg.id
-                    ),
-                )
-            except asyncio.TimeoutError:
-                return await msg.clear_reactions()
+def create_image_embed(query: str, result: LightImageResult):
+    em = discord.Embed(
+        title=f"Results for {escape_mentions(escape_markdown(query))}",
+        description=f"[{result['title']}]({result['link']})",
+        color=discord.Color.blurple(),
+    )
+    em.set_image(url=result["original"])
 
-            if reaction.emoji in self.EMOJIS:
-                await msg.edit(embed=embeds[self.EMOJIS.index(reaction.emoji)])
-                await msg.remove_reaction(reaction.emoji, ctx.author)
+    return em
 
 
 async def setup(bot):
