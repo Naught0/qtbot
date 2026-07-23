@@ -1,5 +1,8 @@
+import base64
+import io
 import os
-from typing import TypedDict
+from datetime import datetime
+from urllib.parse import quote_plus
 
 import discord
 from aiohttp import ClientSession, ClientTimeout
@@ -13,14 +16,9 @@ class DiffusionError(Exception):
     pass
 
 
-class Output(TypedDict):
-    cost: float
-    result: str
-
-
 async def generate_image(
     session: ClientSession, endpoint: str, api_key: str, prompt: str, negative_prompt=""
-) -> Output:
+) -> str:
     async with session.post(
         f"https://api.runpod.ai/v2/{endpoint}/runsync",
         timeout=ClientTimeout(120),
@@ -32,21 +30,23 @@ async def generate_image(
         json={
             "input": {
                 "prompt": prompt[:256],
-                "enable_safety_checker": bool(negative_prompt),
-                "size": "512*512",
+                "negative_prompt": negative_prompt,
+                "num_inference_steps": 7,
             }
         },
     ) as response:
         response.raise_for_status()
-        return (await response.json())["output"]
+        return (await response.json())["output"]["images"][0]["image"]
 
 
-def make_embed(prompt: str, output: Output) -> discord.Embed:
-    em = discord.Embed(description=f"{prompt}", color=discord.Color.blurple())
-    em.set_image(url=output["result"])
-    em.set_footer(text=f"Cost: ${output['cost']:.4f}")
+def image_to_discord_file(image_data: str, file_name: str) -> discord.File:
+    return discord.File(
+        io.BytesIO(base64.urlsafe_b64decode(image_data)), filename=file_name
+    )
 
-    return em
+
+def make_file_name(prompt: str) -> str:
+    return f"{quote_plus(prompt)}_{int(datetime.now().timestamp())}.png"
 
 
 class Diffusion(commands.Cog):
@@ -64,14 +64,15 @@ class Diffusion(commands.Cog):
             return
 
         async with ctx.typing():
-            output = await generate_image(
+            image = await generate_image(
                 self.bot.aio_session,
                 self.ENDPOINT,
                 self.API_KEY,
                 prompt,
                 self.SFW_NEGATIVE_PROMPT,
             )
-            await ctx.send(ctx.author.mention, embed=make_embed(prompt, output))
+            file = image_to_discord_file(image, make_file_name(prompt))
+            await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
 
     @commands.command(name="nsd", hidden=True)
     async def unrestricted_diffusion(self, ctx: CustomContext, *, prompt: str) -> None:
@@ -79,10 +80,14 @@ class Diffusion(commands.Cog):
             return
 
         async with ctx.typing():
-            output = await generate_image(
+            image = await generate_image(
                 self.bot.aio_session, self.ENDPOINT, self.API_KEY, prompt
             )
-            await ctx.send(ctx.author.mention, embed=make_embed(prompt, output))
+            file = image_to_discord_file(image, f"SPOILER_{make_file_name(prompt)}")
+            await ctx.send(
+                f"{ctx.author.mention}: {prompt}",
+                file=file,
+            )
 
 
 async def setup(bot):
