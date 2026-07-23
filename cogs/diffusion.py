@@ -1,3 +1,4 @@
+import json
 import base64
 import io
 import os
@@ -39,7 +40,14 @@ async def generate_image(
         },
     ) as response:
         response.raise_for_status()
-        return (await response.json())["output"]["images"][0]["image"]
+        data = await response.json()
+        try:
+            img = data["output"]["images"][0]["image"]
+        except KeyError:
+            print(json.dumps(data, indent=2))
+            raise
+        else:
+            return img
 
 
 def image_to_discord_file(image_data: str, file_name: str) -> discord.File:
