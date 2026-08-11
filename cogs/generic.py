@@ -1,7 +1,7 @@
 import random
 import re
-from datetime import datetime
 from asyncio import sleep
+from datetime import datetime
 
 import discord
 from discord.ext import commands
@@ -39,7 +39,9 @@ class Generic(commands.Cog):
         options = [x.strip() for x in to_decide.split(",")]
         choice = random.choice(options)
 
-        await ctx.send(embed=discord.Embed(color=discord.Color.blurple(), description=choice))
+        await ctx.send(
+            embed=discord.Embed(color=discord.Color.blurple(), description=choice)
+        )
 
     @commands.command(name="await", hidden=True)
     async def _await(self, ctx: commands.Context):
@@ -82,22 +84,13 @@ class Generic(commands.Cog):
     @commands.command(name="ht", hidden=True)
     async def _ht(self, ctx: commands.Context):
         """Habby thnaksgiving"""
-        app = list("app")
-        hanksgivin = list("hanksgivin")
-        random.shuffle(app)
-        random.shuffle(hanksgivin)
-        happy = f"h{''.join(app)}y"
-        thanksgiving = f"t{''.join(hanksgivin)}g"
-
-        await ctx.send(f"{happy} {thanksgiving} :turkey:")
+        await ctx.send(f"{scramble('happy thanksgiving')} :turkey:")
 
     @commands.command(name="mc", hidden=True)
     async def _mc(self, ctx: commands.Context):
         """Merry Chrimmins"""
         mojis = ":snowflake: :christmas_tree: :mrs_claus: :mx_claus: :snowman: :snowman2:".split()
-        await ctx.send(
-            f"m{''.join(random.sample('err', 3))}y c{''.join(random.sample('hristma', 7))}s {random.choice(mojis)}"
-        )
+        await ctx.send(f"{scramble('merry christmas')} {random.choice(mojis)}")
 
     @commands.command(name="mx", hidden=True)
     async def _mx(self, ctx: commands.Context):
@@ -108,9 +101,19 @@ class Generic(commands.Cog):
     async def _hh(self, ctx: commands.Context):
         """Harry Hannuka"""
         mojis = ":menorah: :star_of_david: :snowflake: :candle:".split()
-        await ctx.send(
-            f"h{''.join(random.sample('app', 3))}y h{''.join(random.sample('anukka', 6))}h {random.choice(mojis)}"
-        )
+        await ctx.send(f"{scramble('happy hanukkah')} {random.choice(mojis)}")
+
+    @commands.command(name="hny", hidden=True)
+    async def _hny(self, ctx: commands.Context):
+        """merry new year"""
+        mojis = ":tada: :fireworks: :sparkler: :sparkles: :firecracker: :confetti_ball:".split()
+        await ctx.send(f"{scramble('happy new year')} {random.choice(mojis)}")
+
+    @commands.command(name="hnye", hidden=True)
+    async def _hnye(self, ctx: commands.Context):
+        """merry new yearseve"""
+        mojis = ":tada: :fireworks: :sparkler: :sparkles: :firecracker: :confetti_ball:".split()
+        await ctx.send(f"{scramble('happy new years eve')} {random.choice(mojis)}")
 
     @commands.command(hidden=True)
     async def say(self, ctx: commands.Context, *, message):
@@ -168,21 +171,27 @@ class Generic(commands.Cog):
 
     @commands.command()
     async def resame(self, ctx):
-        await ctx.send(":white_check_mark: same\n:white_check_mark: re:same\n:green_square: unsame")
+        await ctx.send(
+            ":white_check_mark: same\n:white_check_mark: re:same\n:green_square: unsame"
+        )
 
     @commands.command()
     async def slap(self, ctx: commands.Context, *, target=None):
         """Teach someone a lesson"""
         if target is None:
-            return await ctx.send(f"{ctx.author.name} thrusts his hands wildly about in the air.")
+            return await ctx.send(
+                f"{ctx.author.name} thrusts his hands wildly about in the air."
+            )
 
-        await ctx.send(f"{ctx.author.name} slaps {target} around a bit with a large trout.")
+        await ctx.send(
+            f"{ctx.author.name} slaps {target} around a bit with a large trout."
+        )
 
     @commands.command()
     async def report(self, ctx):
         """Report a user"""
         await ctx.success(
-            f"Thank you for your report. This incident has been sent to the proper authorities. "
+            "Thank you for your report. This incident has been sent to the proper authorities. "
             "We'll take it from here."
         )
 
@@ -212,7 +221,9 @@ class Generic(commands.Cog):
         current_time = datetime.now()
         em = discord.Embed(title=":clock1: Qtbot Uptime", color=self.blue)
         em.add_field(name="Initialized", value=self.bot.start_time_str, inline=False)
-        em.add_field(name="Uptime", value=str(current_time - self.bot.start_time).split(".")[0])
+        em.add_field(
+            name="Uptime", value=str(current_time - self.bot.start_time).split(".")[0]
+        )
 
         await ctx.send(embed=em)
 
@@ -258,3 +269,23 @@ class Generic(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(Generic(bot))
+
+
+def scramble(s: str):
+    words = s.split()
+    ret = []
+    for word in words:
+        length = len(word)
+        if length <= 3:
+            ret.append("".join(random.sample(word, length)))
+            continue
+
+        if length < 5:
+            ret.append(f"{word[0]}{''.join(random.sample(word[1:], length - 1))}")
+            continue
+
+        ret.append(
+            f"{word[0]}{''.join(random.sample(word[1:-1], length - 2))}{word[-1]}"
+        )
+
+    return " ".join(ret)

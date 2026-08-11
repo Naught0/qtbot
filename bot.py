@@ -7,12 +7,16 @@ from pathlib import Path
 import aiohttp
 import asyncpg
 import discord
-import redis.asyncio as redis
 from discord.ext import commands
+
+from prisma import Prisma
+from utils.cache import redis_client
 from utils.custom_context import CustomContext
 
 
 class QTBot(commands.Bot):
+    prisma: Prisma
+
     def __init__(self, config_file, *args, **kwargs):
         self.config_file = config_file
         self.description = "qtbot is a big qt written in python3 and love."
@@ -36,11 +40,9 @@ class QTBot(commands.Bot):
             **kwargs,
         )
 
-        # self.rune_client = lolrune.AioRuneClient()
-        self.redis_client = redis.Redis(
-            host=os.getenv("REDIS_HOST"), decode_responses=True
-        )
+        self.redis_client = redis_client
         self.startup_extensions = [x.stem for x in Path("cogs").glob("*.py")]
+        self.add_check(self.block_bots)
 
     def run(self):
         super().run(self.token)
@@ -48,7 +50,13 @@ class QTBot(commands.Bot):
     async def setup_hook(self):
         await self.create_db_pool()
         await self.load_all_prefixes()
+        db = Prisma()
+        await db.connect()
+        self.prisma = db
         self.aio_session = aiohttp.ClientSession()
+
+        # Add the application command interaction check to filter slash commands if you use them
+        self.tree.interaction_check = self.block_bot_interactions
 
         if not hasattr(self, "start_time"):
             self.start_time = datetime.now()
@@ -71,10 +79,9 @@ class QTBot(commands.Bot):
 
     async def load_all_prefixes(self):
         pres = await self.pg_con.fetch("SELECT * from custom_prefix")
-        # Load custom prefixes into a dict
         self.pre_dict = {r["guild_id"]: r["prefix"] for r in pres}
 
-    async def get_prefix(self, message):
+    async def get_prefix(self, message: discord.Message):
         try:
             return ("qt.", self.pre_dict[message.guild.id])
         except (KeyError, AttributeError):
@@ -83,6 +90,15 @@ class QTBot(commands.Bot):
     async def create_db_pool(self):
         self.pg_con = await asyncpg.create_pool(os.getenv("DATABASE_URL"))
 
+    async def block_bots(self, ctx: commands.Context) -> bool:
+        return not ctx.author.bot
+
+    async def block_bot_interactions(self, interaction: discord.Interaction) -> bool:
+        return not interaction.user.bot
+
     async def on_message(self, message):
+        if message.author.bot:
+            return
+
         ctx = await self.get_context(message, cls=CustomContext)
         await self.invoke(ctx)

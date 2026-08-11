@@ -17,3 +17,4 @@ rename_script.py
 data/.DS_Store
 .DS_Store
 .env
+docker-compose.override.yml

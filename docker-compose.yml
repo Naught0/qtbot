@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   qtbot:
     platform: "linux/amd64"
@@ -12,11 +11,14 @@ services:
       - qtbot
     volumes:
       - .:/qtbot
+    restart: always
   redis:
     image: redis
     restart: always
     networks:
       - qtbot
+    ports:
+      - "127.0.0.1:6379:6379"
 networks:
   qtbot:
     name: qtbot-network

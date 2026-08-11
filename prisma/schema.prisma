@@ -1,0 +1,52 @@
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+}
+
+datasource postgresql-db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CustomPrefix {
+  guild_id BigInt  @id
+  prefix   String?
+
+  @@map("custom_prefix")
+}
+
+model Tag {
+  id           Int      @id @default(autoincrement())
+  server_id    BigInt
+  owner_id     BigInt
+  tag_name     String
+  tag_contents String
+  created_at   DateTime @default(now())
+  total_uses   Int      @default(0)
+
+  @@unique([server_id, tag_name], map: "unique_tags")
+  @@map("tags")
+}
+
+model UserFact {
+  id         Int      @id @default(autoincrement())
+  guild_id   BigInt
+  member_id  BigInt
+  contents   String
+  created_at DateTime @default(now()) @map("created")
+
+  @@unique([guild_id, contents], map: "unique_facts")
+  @@map("user_facts")
+}
+
+model UserInfo {
+  member_id   BigInt  @id
+  zipcode     String?
+  league_name String?
+  osrs_name   String?
+  osrs_pic    String?
+  lastfm      String?
+
+  @@map("user_info")
+}

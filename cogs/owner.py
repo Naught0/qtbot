@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 
 
@@ -24,14 +23,14 @@ class Owner(commands.Cog):
     @commands.is_owner()
     async def unload(self, ctx, extension_name: str):
         """Unloads an extension."""
-        await self.bot.unload_extension(extension_name)
+        await self.bot.unload_extension(f"cogs.{extension_name}")
         await ctx.success(f"Cog `{extension_name}` has been unloaded.")
 
     @commands.command(aliases=["r"], hidden=True)
     @commands.is_owner()
     async def reload(self, ctx, extension_name: str):
         """Reloads an extension"""
-        await self.bot.reload_extension(extension_name)
+        await self.bot.reload_extension(f"cogs.{extension_name}")
         await ctx.success(f"Cog `{extension_name}` has been reloaded.")
 
     @commands.command(name="reload_all", aliases=["ra"], hidden=True)

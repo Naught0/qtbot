@@ -1,34 +1,22 @@
-import discord
+import json
 import random
 
-from discord.utils import escape_markdown
+import discord
 from discord.ext import commands
-from utils import aiohttp_wrap as aw
+from discord.utils import escape_markdown
 
 
 class RNG(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.session = bot.aio_session
-        self.fact_url = "https://uselessfacts.jsph.pl/random.json?language=en"
+        with open("data/facts.json", encoding="utf8") as f:
+            self.facts = json.load(f)
 
     @commands.command(aliases=["facts"])
     async def fact(self, ctx):
         """Get a random fun fact (potentially NSFW)"""
-        fact = await aw.aio_get_json(self.session, self.fact_url)
+        fact = random.choice(self.facts)
 
-        if not fact:
-            return await ctx.send(
-                random.choice(
-                    [
-                        "Sorry, I get nervous in front of crowds",
-                        "Oh god, I'm blanking",
-                        "Just a second, I'll think of something...",
-                        "This is no time for fun or facts.",
-                    ]
-                )
-            )
-        # Create embed
         em = discord.Embed(description=escape_markdown(fact["text"]))
         em.set_thumbnail(url="https://i.imgur.com/c36rUx9.png")
 

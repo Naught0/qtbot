@@ -1,62 +1,344 @@
-import discord
-import re
+from __future__ import annotations
 
-from bs4 import BeautifulSoup
-from dateutil.parser import parse as parse_date
+import os
+import pickle
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+from io import BytesIO
+from typing import TypedDict
+from urllib.parse import urlparse
+
+import aiohttp
+import discord
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+from aiohttp import ClientSession
 from discord.ext import commands
 from discord.utils import escape_markdown
-from utils.aiohttp_wrap import aio_get_text
+from redis.asyncio import Redis
+
+from utils.cache import redis_from_env
+from utils.custom_context import CustomContext
+
+
+def most_recent_trading_date():
+    today = datetime.now(tz=ZoneInfo("America/New_York"))
+    ret = today.date() - timedelta(days=1)
+    weekends = (6, 7)
+    while ret.isoweekday() in weekends:
+        ret = ret - timedelta(days=1)
+
+    return ret
+
+
+class MassiveClient:
+    _base_url = "https://api.massive.com"
+
+    def __init__(
+        self,
+        api_key: str,
+        redis: Redis | None = None,
+        session: ClientSession | None = None,
+    ):
+        self._api_key = api_key
+        if redis is None:
+            self._redis = redis_from_env(False)
+        else:
+            self._redis = redis
+
+        if session is None:
+            self._session = ClientSession()
+            self._owns_session = True
+        else:
+            self._owns_session = False
+            self._session = session
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
+
+    async def _get(self, endpoint: str, params={}, **kwargs):
+        return await self._session.get(
+            f"{self._base_url}{endpoint}",
+            params={**params, "apiKey": self._api_key},
+            **kwargs,
+        )
+
+    async def _set_cache(self, key: str, data, ex: int | None = 60 * 60):
+        await self._redis.set(key, pickle.dumps(data), ex=ex)
+
+    async def _get_cache(self, key: str):
+        try:
+            dta = await self._redis.get(key)
+            if dta is None:
+                return None
+            return pickle.loads(bytes(dta))
+        except Exception as e:
+            print("Error deserializing:", key, e)
+            return None
+
+    async def get_ticker_info(self, ticker: str) -> TickerInfo | None:
+        ticker = ticker.upper()
+        key = f"stonks:ticker-info:{ticker}"
+        if data := await self._get_cache(key):
+            return data
+
+        resp = await self._get(f"/v3/reference/tickers/{ticker}")
+        try:
+            resp.raise_for_status()
+        except aiohttp.ClientError:
+            print(f"Failed to get info for ticker {ticker}.", await resp.text())
+            return None
+
+        data = (await resp.json())["results"]
+        await self._set_cache(key, data, ex=None)
+        return data
+
+    async def get_latest_quote(self, ticker: str) -> QuoteResponse:
+        ticker = ticker.upper()
+        key = f"stonks:quote:{ticker}"
+        if data := await self._get_cache(key):
+            return data
+
+        params = {"adjusted": "true"}
+        today = most_recent_trading_date()
+        resp = await self._get(f"/v1/open-close/{ticker}/{today}", params=params)
+        data = await resp.json()
+        try:
+            resp.raise_for_status()
+        except Exception as e:
+            print(f"Error getting quote for {ticker}", data)
+            raise e
+
+        await self._set_cache(key, data)
+
+        return QuoteResponse(**data)
+
+    async def get_time_series(
+        self, ticker: str, start_date: str, end_date: str
+    ) -> TimeSeriesResponse:
+        ticker = ticker.upper()
+        key = f"stonks:time-series:{ticker}"
+        if data := await self._get_cache(key):
+            return data
+
+        resp = await self._get(
+            f"/v2/aggs/ticker/{ticker}/range/1/day/{start_date}/{end_date}?adjusted=true&sort=asc&limit=180"
+        )
+        try:
+            resp.raise_for_status()
+        except Exception as e:
+            print(f"Error getting time series for {ticker}", await resp.text())
+            raise e
+        data = await resp.json()
+        await self._set_cache(key, data)
+
+        return data
+
+    async def create_graph(self, ticker: str, start_date: str, end_date: str):
+        ticker = ticker.upper()
+        data = await self.get_time_series(ticker, start_date, end_date)
+        xdata = [datetime.fromtimestamp(x["t"] / 1000) for x in data["results"]]
+        ydata = [x["c"] for x in data["results"]]
+
+        plt.style.use("dark_background")
+        plt.rcParams["figure.figsize"] = (4, 2.3)
+        plt.rcParams["font.size"] = 8
+        _, ax = plt.subplots()
+
+        ax.plot(xdata, ydata, color="khaki", linewidth=1)  # type: ignore
+        ax.set_ylabel("Price", color="lightgrey")
+        ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+        ax.xaxis.set_major_formatter(
+            mdates.ConciseDateFormatter(mdates.AutoDateLocator())
+        )
+        ax.tick_params(colors="lightgrey")
+        for spine in ax.spines.values():
+            spine.set_edgecolor("grey")
+        ax.grid(True, alpha=0.4, color="lightgrey")
+
+        file = BytesIO()
+        plt.savefig(file, format="webp", bbox_inches="tight")
+
+        return file
+
+    async def close(self):
+        if self._owns_session:
+            await self._session.close()
+
+
+def get_date_range(days=180):
+    end_date = datetime.now().date()
+    start_date = end_date - timedelta(days=days)
+    return start_date.isoformat(), end_date.isoformat()
 
 
 class Stonks(commands.Cog):
-    URL = "https://bigcharts.marketwatch.com/quickchart/quickchart.asp"
-    TTL = 60 * 15
-
     def __init__(self, bot):
         self.bot = bot
-        self.session = bot.aio_session
-        self.redis_client = bot.redis_client
+        self.api_key = os.getenv("MASSIVE_API_KEY")
 
     @commands.command(name="stonk", aliases=["stock", "stocks", "stonks"])
-    async def stonk(self, ctx: commands.Context, *, symbol: str):
+    async def stonk(self, ctx: CustomContext, *, symbol: str):
         """Get current information on a stonk"""
-        html = await aio_get_text(self.session, self.URL, params={"symb": symbol})
-        soup = BeautifulSoup(html, "lxml")
-        if soup.select_one("caption.shaded") and "unable to find" in soup.select_one("caption.shaded").text:
-            return await ctx.error(f"Could not find security, fund, or index matching: `{escape_markdown(symbol)}`")
+        if not self.api_key:
+            return print("Stock (https://massive.com) API key is not set")
+
+        symbol = escape_markdown(symbol.upper())
+
+        async with MassiveClient(self.api_key) as massive:
+            try:
+                quote = await massive.get_latest_quote(symbol)
+            except aiohttp.ClientError:
+                return await ctx.error(f"Couldn't get a quote for `{symbol}`")
+
+            ticker_info = await massive.get_ticker_info(symbol)
+            if ticker_info is None:
+                return await ctx.error(f"Couldn't find ticker info on `{symbol}`")
+
+            graph = await massive.create_graph(symbol, *get_date_range())
+
+        graph.seek(0)
+        graph_file_name = f"{symbol}-{datetime.now().timestamp():.0f}.webp"
+        file = discord.File(graph, filename=graph_file_name)
+
+        ticker = quote["symbol"]
+        name = ticker_info["name"]
+        last_price = quote["preMarket"]
+        open_ = quote["open"]
+        high = quote["high"]
+        low = quote["low"]
+        change = quote["open"] - quote["close"]
+        percent_change = change / quote["open"] * 100
+        currency = ticker_info["currency_name"].upper()
+        currency_symbol = ticker_info.get("currency_symbol") or "$"
 
         em = discord.Embed(
-            title=f"{soup.select_one('.header .fleft:nth-child(2)').text} - {soup.select_one('.header .fleft').text.strip()}"
+            color=(
+                discord.Color.dark_green()
+                if percent_change > 0
+                else discord.Color.dark_red()
+            ),
         )
-        em.url = f"https://finance.yahoo.com/quote/{symbol}"
+
+        yahoo_url = f"https://finance.yahoo.com/quote/{ticker}"
+        if homepage := ticker_info.get("homepage_url"):
+            parsed = urlparse(homepage)
+            em.set_author(
+                name=f"{name} - {ticker}",
+                icon_url=f"https://twenty-icons.com/{parsed.hostname}",
+                url=yahoo_url,
+            )
+        else:
+            em.title = f"{name} - {ticker}"
+            em.url = yahoo_url
+
         em.add_field(
-            name="Last Price $USD",
-            value=f"${float(soup.select_one('.last > div').text.strip().replace(',', '')):.2f}",
+            name=f"Last Price ({currency})",
+            value=f"{currency_symbol}{last_price:,.2f}",
         )
-        percent_change = soup.select_one(".change:nth-child(1) div").text.strip()
         em.add_field(
             name="Percent Change",
-            value=f"{'⬇️' if '-' in percent_change else '⬆️'} {re.sub('[-+]', '', percent_change)}",
+            value=f"{'⬇️' if percent_change < 0 else '⬆️' if percent_change > 0 else ''} {abs(percent_change):,.2f}%",
             inline=False,
         )
-        em.add_field(
-            name="Open",
-            value=f"${soup.select_one('tr:nth-child(3) > td:nth-child(3) > div').text}",
-        )
-        em.add_field(
-            name="High",
-            value=f"${soup.select_one('tr:nth-child(3) > td:nth-child(4) > div').text}",
-        )
-        em.add_field(
-            name="Low",
-            value=f"${soup.select_one('tr:nth-child(3) > td:nth-child(5) > div').text}",
-        )
+        em.add_field(name="Open", value=f"{currency_symbol}{open_:,.2f}")
+        em.add_field(name="High", value=f"{currency_symbol}{high:,.2f}")
+        em.add_field(name="Low", value=f"{currency_symbol}{low:,.2f}")
         em.set_footer(text="last updated")
-        em.timestamp = parse_date(f"{soup.select_one('.soft.time').text} -0400")
-        em.set_image(url=soup.select_one(".vatop img")["src"])
+        timestamp = datetime.fromisoformat(quote["from"])
+        em.timestamp = datetime(timestamp.year, timestamp.month, timestamp.day, 21)
+        em.set_image(url=f"attachment://{graph_file_name}")
 
-        await ctx.send(embed=em)
+        await ctx.send(embed=em, file=file)
 
 
 async def setup(bot):
     await bot.add_cog(Stonks(bot))
+
+
+class Address(TypedDict):
+    address1: str
+    city: str
+    postal_code: str
+    state: str
+
+
+class Branding(TypedDict):
+    icon_url: str
+    logo_url: str
+
+
+class TickerInfo(TypedDict):
+    active: bool
+    address: Address
+    branding: Branding
+    cik: str
+    composite_figi: str
+    currency_name: str
+    description: str
+    homepage_url: str
+    list_date: str
+    locale: str
+    market: str
+    market_cap: int
+    name: str
+    phone_number: str
+    primary_exchange: str
+    round_lot: int
+    share_class_figi: str
+    share_class_shares_outstanding: int
+    sic_code: str
+    sic_description: str
+    ticker: str
+    ticker_root: str
+    total_employees: int
+    type: str
+    weighted_shares_outstanding: int
+
+
+class Candle(TypedDict):
+    c: float  # close
+    h: float  # high
+    l: float  # low
+    n: int  # number trades
+    o: float  # open
+    t: int  # time of aggregate window start
+    v: int  # volume
+    vw: float  # volume weighted average price
+
+
+class TimeSeriesResponse(TypedDict):
+    adjusted: bool
+    next_url: str
+    queryCount: int
+    request_id: str
+    results: list[Candle]
+    resultsCount: int
+    status: str
+    ticker: str
+
+
+QuoteResponse = TypedDict(
+    "QuoteResponse",
+    {
+        "status": str,
+        "from": str,
+        "symbol": str,
+        "open": float,
+        "high": float,
+        "low": float,
+        "close": float,
+        "volume": float,
+        "afterHours": float,
+        "preMarket": float,
+    },
+)
+
+
+class QuoteNotFoundResponse(TypedDict):
+    status: str
+    request_id: str
+    message: str

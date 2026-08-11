@@ -1,15 +1,13 @@
-import asyncio
+import json
+import base64
 import io
-from random import randint
-import backoff
-
-from uuid import uuid4
-from typing import Literal, List
+import os
+from datetime import datetime
 from urllib.parse import quote_plus
 
-from discord import File
+import discord
+from aiohttp import ClientSession, ClientTimeout
 from discord.ext import commands
-from aiohttp import ClientResponseError, ClientResponse
 
 from bot import QTBot
 from utils.custom_context import CustomContext
@@ -19,94 +17,88 @@ class DiffusionError(Exception):
     pass
 
 
+async def generate_image(
+    session: ClientSession, endpoint: str, api_key: str, prompt: str, negative_prompt=""
+) -> str:
+    async with session.post(
+        f"https://api.runpod.ai/v2/{endpoint}/runsync",
+        timeout=ClientTimeout(120),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "accept": "application/json",
+            "content-type": "application/json",
+        },
+        json={
+            "input": {
+                "prompt": prompt[:256],
+                "negative_prompt": negative_prompt,
+                "height": 512,
+                "width": 512,
+                "num_inference_steps": 3,
+                "num_images": 1,
+            }
+        },
+    ) as response:
+        response.raise_for_status()
+        data = await response.json()
+        try:
+            img = data["output"]["images"][0]["image"]
+        except KeyError:
+            print(json.dumps(data, indent=2))
+            raise
+        else:
+            return img
+
+
+def image_to_discord_file(image_data: str, file_name: str) -> discord.File:
+    return discord.File(
+        io.BytesIO(base64.urlsafe_b64decode(image_data)), filename=file_name
+    )
+
+
+def make_file_name(prompt: str) -> str:
+    return f"{quote_plus(prompt)}_{int(datetime.now().timestamp())}.png"
+
+
 class Diffusion(commands.Cog):
-    URLS = {
-        "replicate": "https://inpainter.vercel.app/api/predictions",
-    }
-    HEADERS = {"Content-Type": "application/json"}
+    ENDPOINT = os.environ["RUNPOD_ENDPOINT_ID"]
+    API_KEY = os.environ["RUNPOD_API_KEY"]
+    ENABLED_GUILDS = set(int(id) for id in os.environ["AI_ENABLED_GUILDS"].split(","))
+    SFW_NEGATIVE_PROMPT = os.environ["SFW_NEGATIVE_PROMPT"]
 
     def __init__(self, bot: QTBot):
         self.bot = bot
 
-    async def image_to_file(self, url: str, prompt: str, spoiler: bool = False) -> File:
-        image = await (await self.bot.aio_session.get(url)).read()
-        return File(
-            io.BytesIO(image),
-            filename=f"{'SPOILER_' if spoiler else ''}{quote_plus(prompt)}.png",
-        )
-
-    @backoff.on_exception(
-        backoff.expo,
-        ClientResponseError,
-        max_tries=3,
-        giveup=lambda x: x.status == 402,
-    )
-    async def req(
-        self,
-        verb: Literal["GET", "POST"],
-        url: str = "",
-        params: dict = {},
-        headers: dict = {},
-        data: dict = None,
-        service: Literal["replicate", "happy"] = "replicate",
-    ) -> ClientResponse:
-        resp = await self.bot.aio_session.request(
-            verb,
-            f"{self.URLS[service]}{url}",
-            params=params,
-            headers={**headers, **self.HEADERS},
-            json=data,
-        )
-
-        resp.raise_for_status()
-
-        return resp
-
-    async def start_replicate_job(self, prompt: str) -> str:
-        payload = {"prompt": prompt}
-        resp = await self.req("POST", data=payload)
-        resp = await resp.json(content_type=None)
-        if resp.get("error"):
-            raise DiffusionError(resp["error"])
-
-        return resp["id"]
-
-    async def get_replicate_output(self, id: str) -> List[str]:
-        checks = 0
-        while True:
-            if checks >= 45:
-                await self.req("POST", url=f"/{id}/cancel", data={})
-                raise DiffusionError(
-                    "Couldn't get a result after 90 seconds. Aborting."
-                )
-
-            resp = await self.req("GET", url=f"/{id}")
-            resp = await resp.json(content_type=None)
-
-            if resp.get("error"):
-                raise DiffusionError(resp["error"])
-            if resp.get("completed_at"):
-                return resp["output"]
-
-            checks += 1
-            await asyncio.sleep(2)
-
     @commands.command(aliases=["diffuse", "sd"])
     async def diffusion(self, ctx: CustomContext, *, prompt: str) -> None:
-        async with ctx.typing():
-            try:
-                job_id = await self.start_replicate_job(prompt)
-                images = await self.get_replicate_output(job_id)
-            except DiffusionError as e:
-                return await ctx.error("API Error", f"{ctx.author.mention} {e}")
-            except ClientResponseError as e:
-                return await ctx.error(
-                    "API Error",
-                    f"{ctx.author.mention} Received status code `{e.status}`\n{e.message}",
-                )
+        if not ctx.guild or ctx.guild.id not in self.ENABLED_GUILDS:
+            return
 
-            file = await self.image_to_file(images[0], prompt)
-            return await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
+        async with ctx.typing():
+            image = await generate_image(
+                self.bot.aio_session,
+                self.ENDPOINT,
+                self.API_KEY,
+                prompt,
+                self.SFW_NEGATIVE_PROMPT,
+            )
+            file = image_to_discord_file(image, make_file_name(prompt))
+            await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
+
+    @commands.command(name="nsd", hidden=True)
+    async def unrestricted_diffusion(self, ctx: CustomContext, *, prompt: str) -> None:
+        if not ctx.guild or ctx.guild.id not in self.ENABLED_GUILDS:
+            return
+
+        async with ctx.typing():
+            image = await generate_image(
+                self.bot.aio_session, self.ENDPOINT, self.API_KEY, prompt
+            )
+            file = image_to_discord_file(image, f"SPOILER_{make_file_name(prompt)}")
+            await ctx.send(
+                f"{ctx.author.mention}: {prompt}",
+                file=file,
+            )
 
 
 async def setup(bot):

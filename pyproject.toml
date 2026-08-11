@@ -1,31 +1,35 @@
-[tool.poetry]
+[project]
 name = "qtbot"
 version = "0.1.0"
 description = ""
-authors = ["naught0"]
-license = "MIT"
+authors = [
+    {name = "naught0"},
+]
+license = {text = "MIT"}
+requires-python = "<4.0,>=3.10"
+dependencies = [
+    "requests<3.0.0,>=2.32.3",
+    "aiohttp<4.0.0,>=3.9.3",
+    "asyncpg==0.27",
+    "asyncurban==0.3.3",
+    "beautifulsoup4==4.9.1",
+    "lxml==4.9.1",
+    "nltk==3.6.6",
+    "riotwatcher==3.1.0",
+    "tmdbsimple==2.6.6",
+    "wolframalpha==4.0.0",
+    "python-dateutil<3.0.0,>=2.8.1",
+    "discord-py<3.0.0,>=2.3.2",
+    "CairoSVG<3.0.0,>=2.5.2",
+    "backoff<3.0.0,>=2.1.2",
+    "redis<6.0.0,>=5.0.1",
+    "prisma<1.0.0,>=0.12.0",
+    "selenium<5.0.0,>=4.24.0",
+    "matplotlib>=3.10.6",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-requests = "2.24.0"
-aiohttp = "^3.9.1"
-asyncpg = "0.27"
-asyncurban = "0.3.3"
-beautifulsoup4 = "4.9.1"
-lxml = "4.9.1"
-nltk = "3.6.6"
-riotwatcher = "3.1.0"
-tmdbsimple = "2.6.6"
-wolframalpha = "4.0.0"
-python-dateutil = "^2.8.1"
-"discord.py" = "^2.3.2"
-CairoSVG = "^2.5.2"
-backoff = "^2.1.2"
-redis = "^5.0.1"
-
-[tool.poetry.dev-dependencies]
-black = "^22.10.0"
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[dependency-groups]
+dev = [
+    "isort<6.0.0,>=5.13.2",
+    "black<25.0.0,>=24.10.0",
+]

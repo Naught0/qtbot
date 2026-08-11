@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from utils.custom_context import CustomContext
 
 
 # This bit allows me to more easily unban members via ID or name#discrim
@@ -50,14 +51,18 @@ class Moderator(commands.Cog):
             await ctx.send(f"Member `{member.user}` unbanned.\n" f"Reason: `{reason}`.")
 
         else:
-            await ctx.send("Sorry, I couldn't find that user. Maybe they're not banned :thinking:")
+            await ctx.send(
+                "Sorry, I couldn't find that user. Maybe they're not banned :thinking:"
+            )
 
     @commands.command(aliases=["purge"])
     @commands.has_permissions(manage_messages=True)
     async def clean(self, ctx, num_msg: int):
         """Remove bot messages from the last X messages"""
         if num_msg > 100:
-            return await ctx.send("Sorry, number of messages to be deleted must not exceed 100.")
+            return await ctx.send(
+                "Sorry, number of messages to be deleted must not exceed 100."
+            )
 
         # Check so that only bot msgs are removed
         def check(message):
@@ -70,7 +75,7 @@ class Moderator(commands.Cog):
 
     @commands.command(name="prefix", aliases=["set_pre", "pre"])
     @commands.has_permissions(manage_guild=True)
-    async def set_prefix(self, ctx, *, prefix: str = None):
+    async def set_prefix(self, ctx: CustomContext, *, prefix: str = None):
         """Set the server's command prefix for qtbot"""
         # Return prefix if not provided with a change
         if not prefix:
@@ -84,7 +89,7 @@ class Moderator(commands.Cog):
             em = discord.Embed(color=discord.Color.blurple())
             em.set_author(
                 name=f"{'Bot prefix' if len(prefixes) == 1 else 'Bot Prefixes'} for {ctx.guild.name}",
-                icon_url=ctx.guild.icon_url,
+                icon_url=ctx.guild.icon.url if ctx.guild.icon else None,
             )
             em.set_footer(text="Use qt.pre <New_Prefix> to set a new prefix")
 
