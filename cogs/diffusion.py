@@ -75,15 +75,19 @@ class Diffusion(commands.Cog):
             return
 
         async with ctx.typing():
-            image = await generate_image(
-                self.bot.aio_session,
-                self.ENDPOINT,
-                self.API_KEY,
-                prompt,
-                self.SFW_NEGATIVE_PROMPT,
-            )
-            file = image_to_discord_file(image, make_file_name(prompt))
-            await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
+            try:
+                image = await generate_image(
+                    self.bot.aio_session,
+                    self.ENDPOINT,
+                    self.API_KEY,
+                    prompt,
+                    self.SFW_NEGATIVE_PROMPT,
+                )
+            except KeyError:
+                await ctx.message.add_reaction("❌")
+            else:
+                file = image_to_discord_file(image, make_file_name(prompt))
+                await ctx.send(f"{ctx.author.mention}: {prompt}", file=file)
 
     @commands.command(name="nsd", hidden=True)
     async def unrestricted_diffusion(self, ctx: CustomContext, *, prompt: str) -> None:
