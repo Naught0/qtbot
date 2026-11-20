@@ -2,63 +2,14 @@ from __future__ import annotations
 
 from typing import TypedDict
 
-import aiohttp
+from lib.serpapi import SearchMetadata, SearchParameters, SerpApiBase, SerpapiPagination
 
 
-class ImageSearch:
-    base_url = "https://serpapi.com"
-
-    def __init__(
-        self, session: aiohttp.ClientSession, api_key: str, engine="google_images_light"
-    ):
-        self.session = session
-        self.engine = engine
-        self.api_key = api_key
-
-    async def _make_request(self, query: str):
-        resp = await self.session.get(
-            f"{self.base_url}/search",
-            params={"api_key": self.api_key, "engine": self.engine, "q": query[:256]},
-        )
-        return resp
-
-    async def search(self, query: str) -> SearchResult:
-        resp = await self._make_request(query)
-        resp.raise_for_status()
-
-        data = await resp.json()
-        return data
-
-
-class SearchResult(TypedDict):
-    search_metadata: SearchMetadata
-    search_parameters: SearchParameters
-    search_information: SearchInformation
-    images_results: list[LightImageResult]
-    serpapi_pagination: SerpapiPagination
-
-
-class SearchMetadata(TypedDict):
-    id: str
-    status: str
-    json_endpoint: str
-    created_at: str
-    processed_at: str
+class ImageSearchMetadata(SearchMetadata):
     google_images_light_url: str
-    raw_html_file: str
-    total_time_taken: float
 
 
-class SearchParameters(TypedDict):
-    engine: str
-    q: str
-    google_domain: str
-    hl: str
-    gl: str
-    device: str
-
-
-class SearchInformation(TypedDict):
+class ImageSearchInformation(TypedDict):
     image_results_state: str
 
 
@@ -77,6 +28,13 @@ class LightImageResult(TypedDict):
     serpapi_related_content_link: str
 
 
-class SerpapiPagination(TypedDict):
-    current: int
-    next: str
+class ImageSearchResult(TypedDict):
+    search_metadata: ImageSearchMetadata
+    search_parameters: SearchParameters
+    search_information: ImageSearchInformation
+    images_results: list[LightImageResult]
+    serpapi_pagination: SerpapiPagination
+
+
+class ImageSearch(SerpApiBase[ImageSearchResult]):
+    engine = "google_images_light"

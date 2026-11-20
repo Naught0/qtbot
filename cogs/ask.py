@@ -1,60 +1,46 @@
 import os
 
 import discord
-from bs4 import BeautifulSoup
 from discord.ext import commands
 from discord.utils import escape_markdown, escape_mentions
 
+from lib.google_search import GoogleSearch
 from lib.image_search import ImageSearch, LightImageResult
-from utils import aiohttp_wrap as aw
 from utils.custom_context import CustomContext
 from utils.paginate import paginate
 
 
 class Google(commands.Cog):
-    SEARCH_URI = "https://duckduckgo.com/html/"
-    IMAGE_URI = "https://bing.com/images/search"
-    IE6_HEADERS = {
-        "user-agent": "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)"
-    }
-    HEADERS = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/41.0.2228.0 Safari/537.36"
-    }
-    EMOJIS = [f"{x}\U000020e3" for x in range(1, 10)]
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.session = bot.aio_session
         self.redis = bot.redis_client
-        self.image_search = ImageSearch(self.session, os.environ["SERPAPI_API_KEY"])
+        api_key = os.environ["SERPAPI_API_KEY"]
+        self.image_search = ImageSearch(self.session, api_key)
+        self.google_search = GoogleSearch(self.session, api_key)
 
     @commands.group(
         invoke_without_command=True, name="google", aliases=["g", "ddg", "ask"]
     )
     async def _google(self, ctx, *, query: str = ""):
-        """Get search results from [REDACTED], now that Google hates me."""
+        """Get search results from Google, now that Google hates me."""
         if not query.strip():
             return await ctx.error("Feel free to search something")
 
-        resp = await aw.aio_get_text(
-            self.session, self.SEARCH_URI, headers=self.HEADERS, params={"q": query}
-        )
-
-        soup = BeautifulSoup(resp, "lxml")
-        links = [
-            x["href"]
-            for x in soup.find_all("a", {"class": "result__a"})
-            if "y.js" not in x["href"]
-        ]
-        if len(links) == 0:
+        results = (await self.google_search.search(query)).get("organic_results", [])
+        if len(results) == 0:
             return await ctx.error(
                 f"Sorry, couldn't find anything for `{escape_markdown(query)}`"
             )
 
-        await ctx.send(
-            f"**Top Result:**\n{links[0]}\n**See Also:**\n1. <{links[1]}>\n2. <{links[2]}>"
+        message = f"**Top Result:**\n{results[0]['link']}"
+        see_also = "\n".join(
+            f"{i}. <{result['link']}>" for i, result in enumerate(results[1:3], start=1)
         )
+        if see_also:
+            message += f"\n**See Also:**\n{see_also}"
+
+        await ctx.send(message)
 
     @_google.command(name="-image", aliases=["-i", "-images"])
     async def images(self, ctx: CustomContext, *, query: str = ""):
